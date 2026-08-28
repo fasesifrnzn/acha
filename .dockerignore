@@ -1,0 +1,7 @@
+.git
+.gitignore
+data/db.json
+pocv-data
+*.zip
+*.bat
+README-Docker.md

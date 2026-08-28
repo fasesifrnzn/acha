@@ -1,0 +1,25 @@
+services:
+  pocv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pocv
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_FILE: /var/data/db.json
+    volumes:
+      - pocv_data:/var/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  pocv_data:
+    name: pocv_data

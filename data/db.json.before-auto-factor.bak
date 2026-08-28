@@ -9347,8 +9347,7 @@
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 129
+      "vinculo": "Efetivo"
     },
     {
       "id": 19,
@@ -9363,8 +9362,7 @@
       "management": "Direção-Geral",
       "managementPct": 0,
       "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 126
+      "vinculo": "Efetivo"
     },
     {
       "id": 20,
@@ -9394,8 +9392,7 @@
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 127
+      "vinculo": "Efetivo"
     },
     {
       "id": 22,
@@ -9530,8 +9527,7 @@
       "management": "Direção-Geral",
       "managementPct": 0,
       "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 130
+      "vinculo": "Efetivo"
     },
     {
       "id": 31,
@@ -9703,16 +9699,15 @@
       "name": "Ligyanne Karla de Alencar",
       "discipline": "Educação Física",
       "group": "Educação Física",
-      "degree": "Mestrado",
+      "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
-      "leave": "Afastamento capacitação (100%)",
-      "leavePct": 0,
+      "leave": "Não se aplica",
+      "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
-      "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 132
+      "classFactor": 1,
+      "vinculo": "Efetivo"
     },
     {
       "id": 43,
@@ -9737,13 +9732,12 @@
       "degree": "Mestrado",
       "regime": "DE",
       "regimePct": 1,
-      "leave": "Afastamento capacitação (100%)",
-      "leavePct": 0,
+      "leave": "Não se aplica",
+      "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
-      "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 131
+      "classFactor": 1,
+      "vinculo": "Efetivo"
     },
     {
       "id": 45,
@@ -9968,8 +9962,7 @@
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 125
+      "vinculo": "Efetivo"
     },
     {
       "id": 60,
@@ -10204,13 +10197,12 @@
       "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
-      "leave": "Afastamento capacitação (100%)",
-      "leavePct": 0,
+      "leave": "Não se aplica",
+      "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
-      "classFactor": 0,
-      "vinculo": "Efetivo",
-      "substituteId": 133
+      "classFactor": 1,
+      "vinculo": "Efetivo"
     },
     {
       "id": 76,
@@ -10303,132 +10295,94 @@
       "vinculo": "Efetivo"
     },
     {
-      "id": 125,
-      "name": "Antonio Carlos de Queiroz Santos",
-      "discipline": "Logística",
+      "id": 124,
+      "name": "Aldir Melo do Nascimento",
+      "discipline": "Administração Contábil e Financeira",
       "group": "Gestão",
       "degree": "",
-      "regime": "40",
+      "regime": "40 horas",
       "regimePct": 1,
       "leave": "Não se aplica",
       "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 1,
-      "vinculo": "Substituto temporário",
-      "substituteForId": 59
+      "vinculo": "Substituto temporário"
+    },
+    {
+      "id": 125,
+      "name": "Antonio Carlos de Queiroz Santos",
+      "discipline": "",
+      "group": "Gestão",
+      "degree": "",
+      "regime": "40 horas",
+      "regimePct": 1,
+      "leave": "Não se aplica",
+      "leavePct": 1,
+      "management": "Não se aplica",
+      "managementPct": 1,
+      "classFactor": 1,
+      "vinculo": "Substituto temporário"
     },
     {
       "id": 126,
       "name": "Francisco Anderson de Souza",
-      "discipline": "Matemática",
+      "discipline": "",
       "group": "Matemática",
       "degree": "",
-      "regime": "40",
+      "regime": "40 horas",
       "regimePct": 1,
       "leave": "Não se aplica",
       "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 1,
-      "vinculo": "Substituto temporário",
-      "substituteForId": 19
+      "vinculo": "Substituto temporário"
     },
     {
       "id": 127,
-      "name": "Daniyel Ferreira de Medeiros",
-      "discipline": "Administração Contábil e Financeira",
+      "name": "Substituto Financeiro",
+      "discipline": "",
       "group": "Finanças",
       "degree": "Doutorado",
-      "regime": "40",
+      "regime": "40 horas",
       "regimePct": 1,
       "leave": "Não se aplica",
       "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 1,
-      "vinculo": "Substituto temporário",
-      "substituteForId": 21
+      "vinculo": "Substituto temporário"
+    },
+    {
+      "id": 128,
+      "name": "Substituto Sistemas de Informação",
+      "discipline": "",
+      "group": "Informática",
+      "degree": "",
+      "regime": "40 horas",
+      "regimePct": 1,
+      "leave": "Não se aplica",
+      "leavePct": 1,
+      "management": "Não se aplica",
+      "managementPct": 1,
+      "classFactor": 1,
+      "vinculo": "Substituto temporário"
     },
     {
       "id": 129,
-      "name": "Heitor Mariano de Aquino Camara",
-      "discipline": "Redes de Computadores",
+      "name": "Substituto de Redes de Computadores",
+      "discipline": "",
       "group": "Redes",
       "degree": "",
-      "regime": "40",
+      "regime": "40 horas",
       "regimePct": 1,
       "leave": "Não se aplica",
       "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 1,
-      "vinculo": "Substituto temporário",
-      "substituteForId": 18
-    },
-    {
-      "id": 130,
-      "name": "Allan Robson Silva Venceslau",
-      "discipline": "Sistemas de Informação",
-      "group": "Informática",
-      "degree": "",
-      "regime": "40",
-      "regimePct": 1,
-      "leave": "Não se aplica",
-      "management": "Não se aplica",
-      "vinculo": "Substituto temporário",
-      "managementPct": 1,
-      "leavePct": 1,
-      "classFactor": 1,
-      "substituteForId": 30
-    },
-    {
-      "id": 131,
-      "name": "Eduardo Luciano de Lucena",
-      "discipline": "",
-      "group": "Eletrônica",
-      "degree": "",
-      "regime": "DE",
-      "regimePct": 1,
-      "leave": "Não se aplica",
-      "management": "Não se aplica",
-      "vinculo": "Substituto temporário",
-      "managementPct": 1,
-      "leavePct": 1,
-      "classFactor": 1,
-      "substituteForId": 44
-    },
-    {
-      "id": 132,
-      "name": "Mayara Cristina Mendes Maia",
-      "discipline": "Educação Física",
-      "group": "Educação Física",
-      "degree": "",
-      "regime": "DE",
-      "regimePct": 1,
-      "leave": "Não se aplica",
-      "management": "Não se aplica",
-      "vinculo": "Substituto temporário",
-      "managementPct": 1,
-      "leavePct": 1,
-      "classFactor": 1,
-      "substituteForId": 42
-    },
-    {
-      "id": 133,
-      "name": "Anna Carolina",
-      "discipline": "Geografia",
-      "group": "Geografia",
-      "degree": "",
-      "regime": "DE",
-      "regimePct": 1,
-      "leave": "Não se aplica",
-      "management": "Não se aplica",
-      "vinculo": "Substituto temporário",
-      "managementPct": 1,
-      "leavePct": 1,
-      "classFactor": 1,
-      "substituteForId": 75
+      "vinculo": "Substituto temporário"
     }
   ],
   "offers": {}

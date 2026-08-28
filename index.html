@@ -17,13 +17,22 @@ th{position:sticky;top:0;background:#f8fafc;color:#475569;font-size:12px;z-index
 td{padding:9px 10px}tr:hover td{background:#f8fafc}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#ecfdf5;color:#166534;font-size:11px;font-weight:700}
 .empty{padding:35px;text-align:center;color:var(--muted)}.count{font-size:12px;color:var(--muted)}
 @media(max-width:900px){.controls,.filtergrid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
-th[data-col="turma"]{width:12%}th[data-col="matrix"]{width:8%}th[data-col="course"]{width:20%}th[data-col="period"]{width:8%}th[data-col="turn"]{width:10%}th[data-col="name"]{width:22%}th[data-col="ch"]{width:7%}th[data-col="group"]{width:13%}.dragging{opacity:.45}th{cursor:grab}.mainnav{max-width:1500px;margin:14px auto 0;padding:0 18px;display:flex;gap:8px;flex-wrap:wrap}.mainnav a{padding:9px 13px;border-radius:9px;background:#e2e8f0;color:#334155;text-decoration:none;font-weight:700}.mainnav a.active,.mainnav a:hover{background:#0f766e;color:#fff}</style></head>
+th[data-col="turma"]{width:12%}th[data-col="matrix"]{width:8%}th[data-col="course"]{width:20%}th[data-col="period"]{width:8%}th[data-col="turn"]{width:10%}th[data-col="name"]{width:22%}th[data-col="ch"]{width:7%}th[data-col="group"]{width:13%}.dragging{opacity:.45}th{cursor:grab}.mainnav{max-width:1500px;margin:14px auto 0;padding:0 18px;display:flex;gap:8px;flex-wrap:wrap}.mainnav a{padding:9px 13px;border-radius:9px;background:#e2e8f0;color:#334155;text-decoration:none;font-weight:700}.mainnav a.active,.mainnav a:hover{background:#0f766e;color:#fff}
+.actions-cell{width:92px;text-align:center!important;overflow:visible}
+.row-actions{display:flex;gap:5px;justify-content:center;align-items:center}
+.icon-btn{width:30px;height:30px;padding:0!important;border:1px solid var(--line);background:#fff!important;color:#334155!important;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer}
+.icon-btn:hover{background:#f0fdfa!important;color:#0f766e!important}
+.icon-btn.delete:hover{background:#fef2f2!important;color:#b91c1c!important}
+th[data-col="actions"]{width:92px;cursor:default}
+.drag-over{box-shadow:inset 3px 0 0 var(--accent)}
+.inline-editor{width:100%;min-width:0;padding:6px 7px;border:1px solid var(--accent);border-radius:7px;background:#fff;font:inherit}.discipline-cell{cursor:pointer}.discipline-cell:hover{background:#f0fdfa}
+</style><link rel="stylesheet" href="style.css"><script src="app.js"></script></head>
 <body><header><h1>Oferta Acadêmica — IFRN Campus Natal-Zona Norte</h1><p>Planejamento de turmas e disciplinas por semestre</p></header>
-<nav class="mainnav"><a href="index.html" class="active">📋 Oferta</a><a href="projecao.html">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
+<nav class="mainnav"><a href="index.html" class="active">📋 Oferta</a><a href="projecao.html">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls">
 <div><label>SEMESTRE</label><select id="semester"></select></div>
 <div><label>BUSCA LIVRE</label><input id="search" placeholder="Curso, disciplina, grupo, matriz, período ou turno..."></div>
-<div><button id="csv">Exportar CSV</button></div></div>
+<div class="table-head-action"><a class="demand-button" href="demandas.html"><span aria-hidden="true">＋</span> Demanda avulsa</a><button id="csv">Exportar CSV</button></div></div>
 <div class="filtergrid">
 <div><label>CURSO</label><select id="fCourse"><option value="">Todos</option></select></div>
 <div><label>MATRIZ</label><select id="fMatrix"><option value="">Todas</option></select></div>
@@ -42,7 +51,7 @@ th[data-col="turma"]{width:12%}th[data-col="matrix"]{width:8%}th[data-col="cours
 <th draggable="true" data-col="turma"><button class="sort" data-key="turma">Turma ↕</button></th><th draggable="true" data-col="matrix"><button class="sort" data-key="matrix">Matriz ↕</button></th><th draggable="true" data-col="course"><button class="sort" data-key="course">Curso ↕</button></th>
 <th draggable="true" data-col="period"><button class="sort" data-key="period">Período ↕</button></th><th draggable="true" data-col="turn"><button class="sort" data-key="turn">Turno ↕</button></th>
 <th draggable="true" data-col="name"><button class="sort" data-key="name">Disciplina ↕</button></th><th draggable="true" data-col="ch"><button class="sort" data-key="ch">CH ↕</button></th>
-<th draggable="true" data-col="group"><button class="sort" data-key="group">Grupo ↕</button></th>
+<th draggable="true" data-col="group"><button class="sort" data-key="group">Grupo ↕</button></th><th data-col="actions" class="actions-head">Ações</th>
 </tr></thead><tbody id="tbody"></tbody></table></div><div id="empty" class="empty" style="display:none">Nenhuma oferta encontrada.</div></section>
 </main>
 
@@ -79,49 +88,59 @@ const CODE_BY_COURSE_NAME={
   "Técnico em Comércio":"4506","Técnico em Eletrônica":"4206",
   "Técnico em Informática para Internet":"4111","EJA FIC":"0000"
 };
-function courseCode(cl){
-  const c=courses[String(cl.matrix)]||{};
-  const n=String(c.name||"");
-  for(const [code,name] of Object.entries(COURSE_CODES)){
-    if(n===name || n.includes(name)) return code;
-  }
-  if(String(cl.matrix)==="20") return "4103";
-  if(String(cl.matrix)==="19") return "4103";
-  if(String(cl.matrix)==="16" || String(cl.matrix)==="17" || String(cl.matrix)==="18") return "4069";
-  if(String(cl.matrix)==="12" || String(cl.matrix)==="13" || String(cl.matrix)==="14" || String(cl.matrix)==="15") return n.includes("EJA")?"4510":"4506";
-  if(String(cl.matrix)==="5" || String(cl.matrix)==="6" || String(cl.matrix)==="7") return "4407";
-  if(String(cl.matrix)==="1" || String(cl.matrix)==="2") return "4206";
-  if(String(cl.matrix)==="8" || String(cl.matrix)==="9") return "4111";
-  if(String(cl.matrix)==="10" || String(cl.matrix)==="11") return "4411";
-  return "0000";
+const MATRIX_COURSE_CODES={1:'4206',2:'4206',3:'0000',4:'0000',5:'4407',6:'4407',7:'4407',8:'4111',9:'4111',10:'4411',11:'4411',12:'4506',13:'4506',14:'4510',15:'4510',16:'4069',17:'4069',18:'4069',19:'4103',20:'4103'};
+function courseCode(cl){return MATRIX_COURSE_CODES[String(cl.matrix)]||'0000'}
+function turnCode(t){const x=String(t||'').toLowerCase();if(x.includes('manh'))return 'M';if(x.includes('tard')||x.includes('vesp'))return 'V';if(x.includes('noit'))return 'N';return 'X'}
+function makeTurmaCode(cl){return `${cl.period}.${courseCode(cl)}.${cl.seq}${turnCode(turn(cl.matrix,cl.period,cl.seq))}`}
+function allRows(){
+  let rows=[];const semSource=DB?.data?.semesters||semesters,courseSource=DB?.data?.courses||courses,matrixSource=DB?.data?.matrices||matrix;
+  (semSource[semSel.value]||[]).forEach(cl=>{const course=POCV.courseName(courseSource,cl.matrix),m=matrixSource[String(cl.matrix)]||{};(m?.disciplines||[]).forEach((d,di)=>{let ch=d.periods?.[String(cl.period)];if(ch==null)return;let key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB?.offers?.[semSel.value]?.[key]||{};rows.push({_key:key,matrix:cl.matrix,course:ov.course??course,period:cl.period,turn:turn(cl.matrix,cl.period,cl.seq),name:ov.name??d.name,ch:Number(ov.ch??ch),group:ov.group??(d.group||''),turma:makeTurmaCode(cl),extra:false})})});
+  (DB?.extraOffers?.[semSel.value]||[]).forEach(x=>rows.push({_key:`extra:${x.id}`,_extra:true,matrix:'—',course:x.course||'Demanda reprimida',period:x.period||'—',turn:x.turn||'—',name:x.name,ch:Number(x.ch||0),group:x.group||'',turma:'AVULSA',type:x.type||'Dependência',notes:x.notes||''}));
+  return rows
 }
-function turnCode(t){
-  const x=String(t||"").toLowerCase();
-  if(x.includes("manh")) return "M";
-  if(x.includes("tard") || x.includes("vesp")) return "V";
-  if(x.includes("noit")) return "N";
-  return "X";
+function disciplineValues(){
+  const names=[];
+  const src=DB?.data?.matrices||matrix;
+  Object.values(src||{}).forEach(m=>(m?.disciplines||[]).forEach(d=>{if(d?.name)names.push(String(d.name).trim())}));
+  return [...new Set(names)].sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
 }
-function makeTurmaCode(cl){
-  const t=turn(cl.matrix,cl.period,cl.seq);
-  const code=courseCode(cl);
-  return `${cl.period}.${code}.${cl.seq}${turnCode(t)}`;
+function disciplineSelectHtml(selected){
+  const vals=disciplineValues();
+  if(selected && !vals.includes(String(selected))) vals.push(String(selected));
+  vals.sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
+  return '<option value="">— Não informado —</option>'+vals.map(v=>'<option value="'+esc(v)+'" '+(String(v)===String(selected)?'selected':'')+'>'+esc(v)+'</option>').join('');
 }
 
-function allRows(){let rows=[];(semesters[semSel.value]||[]).forEach(cl=>{let c=courses[String(cl.matrix)]||{name:""},m=matrix[String(cl.matrix)];(m?.disciplines||[]).forEach((d,di)=>{let ch=d.periods[String(cl.period)];if(ch==null)return;let key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`;let ov=DB?.offers?.[semSel.value]?.[key]||{};rows.push({_key:key,matrix:cl.matrix,course:ov.course??c.name,period:ov.period??cl.period,turn:ov.turn??turn(cl.matrix,cl.period,cl.seq),name:ov.name??d.name,ch:Number(ov.ch??ch),group:ov.group??(d.group||""),turma:ov.turma??makeTurmaCode(cl)})})});return rows}
 function fillSelect(sel,values){let old=sel.value;sel.innerHTML='<option value="">Todos</option>';[...new Set(values)].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR',{numeric:true})).forEach(v=>{let o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)});if([...sel.options].some(o=>o.value===old))sel.value=old}
 function refreshFilterOptions(rows){fillSelect(filters.course,rows.map(r=>r.course));fillSelect(filters.matrix,rows.map(r=>r.matrix));fillSelect(filters.period,rows.map(r=>r.period));fillSelect(filters.turn,rows.map(r=>r.turn));fillSelect(filters.group,rows.map(r=>r.group))}
 function getFiltered(rows){let q=search.value.toLowerCase().trim();return rows.filter(r=>(!q||Object.values(r).join(' ').toLowerCase().includes(q))&&(!filters.course.value||r.course===filters.course.value)&&(!filters.matrix.value||String(r.matrix)===filters.matrix.value)&&(!filters.period.value||String(r.period)===filters.period.value)&&(!filters.turn.value||r.turn===filters.turn.value)&&(!filters.group.value||r.group===filters.group.value))}
 function compare(a,b){let x=a[sortKey],y=b[sortKey];if(typeof x==='number'&&typeof y==='number')return(x-y)*sortDir;return String(x??'').localeCompare(String(y??''),'pt-BR',{numeric:true,sensitivity:'base'})*sortDir}
 function updateSortLabels(){document.querySelectorAll('.sort').forEach(b=>{let labels={matrix:'Matriz',course:'Curso',period:'Período',turn:'Turno',name:'Disciplina',ch:'CH',group:'Grupo',turma:'Turma'};b.textContent=labels[b.dataset.key]+' '+(b.dataset.key===sortKey?(sortDir===1?'↑':'↓'):'↕')})}
-function build(){let base=allRows();refreshFilterOptions(base);currentRows=getFiltered(base).sort(compare);tbody.innerHTML=currentRows.map((r,i)=>`<tr data-index="${i}" title="Duplo clique para editar"><td data-col="turma">${esc(r.turma)}</td><td data-col="matrix"><span class="badge">${r.matrix}</span></td><td data-col="course">${esc(r.course)}</td><td data-col="period">${r.period}º</td><td data-col="turn">${esc(r.turn)}</td><td data-col="name">${esc(r.name)}</td><td data-col="ch">${r.ch}</td><td data-col="group" class="group-cell" title="Clique para alterar o grupo"><span class="group-value">${esc(r.group)}</span></td></tr>`).join('');$('empty').style.display=currentRows.length?'none':'block';$('nTurmas').textContent=(semesters[semSel.value]||[]).length;$('nOfertas').textContent=currentRows.length;$('ch').textContent=currentRows.reduce((a,r)=>a+Number(r.ch||0),0).toLocaleString('pt-BR');$('nCursos').textContent=new Set(currentRows.map(r=>r.matrix)).size;$('title').textContent='Oferta acadêmica — '+semSel.value;$('filterStatus').textContent=`${currentRows.length} registros exibidos`;updateSortLabels()}
+async function apiSave(semester,key,changes){
+  const response=await fetch('/api/offer',{
+    method:'PUT',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({semester,key,changes})
+  });
+  if(!response.ok){
+    const data=await response.json().catch(()=>({}));
+    throw new Error(data.error||`Servidor respondeu ${response.status}`);
+  }
+  return response;
+}
+
+function preparePocvTags(){
+  const gs=[];const cs=[];Object.values(DB?.data?.matrices||matrix||{}).forEach(m=>{if(m?.name)cs.push(m.name);(m?.disciplines||[]).forEach(d=>{if(d?.group)gs.push(d.group)})});Object.values(DB?.data?.courses||courses||{}).forEach(c=>{if(c?.name)cs.push(c.name)});POCV.setGroups(gs);POCV.setCourses(cs);
+}
+function build(){let base=allRows();preparePocvTags();refreshFilterOptions(base);currentRows=getFiltered(base).sort(compare);tbody.innerHTML=currentRows.map((r,i)=>`<tr data-index="${i}" title="Duplo clique para editar"><td data-col="turma">${esc(r.turma)}</td><td data-col="matrix"><span class="badge">${r.matrix}</span></td><td data-col="course">${POCV.tag(r.course,'course')}</td><td data-col="period">${r.period}º</td><td data-col="turn">${esc(r.turn)}</td><td data-col="name" class="discipline-cell" title="Duplo clique para alterar a disciplina/área">${esc(r.name)}</td><td data-col="ch">${r.ch}</td><td data-col="group" class="group-cell" title="Clique para alterar o grupo">${r.group?POCV.tag(r.group,'group'):'<span class="muted">—</span>'}</td><td data-col="actions" class="actions-cell"><div class="row-actions"><button type="button" class="icon-btn edit-row" title="Editar" aria-label="Editar">✎</button><button type="button" class="icon-btn delete delete-row" title="Excluir" aria-label="Excluir">🗑</button></div></td></tr>`).join('');$('empty').style.display=currentRows.length?'none':'block';$('nTurmas').textContent=(semesters[semSel.value]||[]).length;$('nOfertas').textContent=currentRows.length;$('ch').textContent=currentRows.reduce((a,r)=>a+Number(r.ch||0),0).toLocaleString('pt-BR');$('nCursos').textContent=new Set(currentRows.map(r=>r.matrix)).size;$('title').textContent='Oferta acadêmica — '+semSel.value;$('filterStatus').textContent=`${currentRows.length} registros exibidos`;updateSortLabels();applyColumnOrder()}
 semSel.onchange=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');build()};search.oninput=build;Object.values(filters).forEach(s=>s.onchange=build);
 document.querySelectorAll('.sort').forEach(b=>b.onclick=()=>{let k=b.dataset.key;if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1}build()});
 $('clear').onclick=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');build()};
 $('csv').onclick=()=>{if(!currentRows.length)return;let head=['Matriz','Curso','Período','Turno','Disciplina','CH','Grupo','Turma'];let csv=[head,...currentRows.map(r=>[r.matrix,r.course,r.period,r.turn,r.name,r.ch,r.group,r.turma])].map(a=>a.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8'}));a.download='oferta_'+semSel.value+'.csv';a.click()};
 
 let editingRow=null;
-const columnOrder=JSON.parse(localStorage.getItem('oferta_column_order')||'["turma","matrix","course","period","turn","name","ch","group"]');
+const columnOrder=JSON.parse(localStorage.getItem('oferta_column_order')||'["turma","matrix","course","period","turn","name","ch","group","actions"]');
+if(!columnOrder.includes('actions')) columnOrder.push('actions');
 function applyColumnOrder(){
   const table=document.querySelector('table');
   const rows=[...table.rows];
@@ -136,29 +155,71 @@ document.querySelectorAll('th[draggable="true"]').forEach(th=>{
   th.addEventListener('dragstart',e=>{th.classList.add('dragging');e.dataTransfer.setData('text/plain',th.dataset.col)});
   th.addEventListener('dragend',()=>{th.classList.remove('dragging')});
   th.addEventListener('dragover',e=>e.preventDefault());
+  th.addEventListener('dragenter',e=>{e.preventDefault();th.classList.add('drag-over')});
+  th.addEventListener('dragleave',()=>th.classList.remove('drag-over'));
   th.addEventListener('drop',e=>{
-    e.preventDefault();const from=e.dataTransfer.getData('text/plain'),to=th.dataset.col;
-    if(!from||from===to)return;
+    e.preventDefault();th.classList.remove('drag-over');
+    const from=e.dataTransfer.getData('text/plain'),to=th.dataset.col;
+    if(!from||!to||from===to||to==='actions'||from==='actions')return;
     const a=columnOrder.indexOf(from),b=columnOrder.indexOf(to);
-    columnOrder.splice(a,1);columnOrder.splice(b,0,from);
+    if(a<0||b<0)return;
+    columnOrder.splice(a,1);
+    const target=columnOrder.indexOf(to);
+    columnOrder.splice(target,0,from);
     localStorage.setItem('oferta_column_order',JSON.stringify(columnOrder));applyColumnOrder();
   });
 });
+tbody.addEventListener('dblclick',async e=>{
+  const cell=e.target.closest('td.discipline-cell');
+  if(!cell || cell.querySelector('select')) return;
+  const tr=cell.closest('tr'), row=currentRows[Number(tr?.dataset.index)]; if(!row) return;
+  const select=document.createElement('select'); select.className='inline-editor'; select.innerHTML=disciplineSelectHtml(row.name); select.value=row.name||'';
+  cell.innerHTML=''; cell.appendChild(select); select.focus();
+  let done=false;
+  const finish=async(saveIt)=>{if(done)return;done=true; if(!saveIt){build();return;} const value=select.value; try{await apiSave(semSel.value,row._key,{name:value}); DB=await (await fetch('/api/db')).json(); build();}catch(err){alert('Não foi possível salvar: '+err.message);build();}};
+  select.onchange=()=>finish(true); select.onblur=()=>finish(true); select.onkeydown=ev=>{if(ev.key==='Escape')finish(false);};
+});
+
+tbody.addEventListener('click',async e=>{
+  const edit=e.target.closest('.edit-row');
+  const del=e.target.closest('.delete-row');
+  if(!edit&&!del)return;
+  const tr=e.target.closest('tr'), row=currentRows[Number(tr?.dataset.index)];
+  if(!row)return;
+  if(edit){
+    if(row._extra){
+      const name=prompt('Disciplina/demanda:',row.name); if(name==null)return; const ch=prompt('Carga horária (h/a):',row.ch); if(ch==null)return; const group=prompt('Grupo (deixe vazio se ainda não definido):',row.group||''); try{await fetch('/api/extra-offer',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({semester:semSel.value,id:row._key.split(':')[1],changes:{name:name.trim(),ch:Number(ch)||0,group:group.trim()}})}); DB=await (await fetch('/api/db',{cache:'no-store'})).json(); build();}catch(err){alert('Não foi possível salvar: '+err.message)} return; }
+    editingRow=row;
+    const fields=[['turma','Turma'],['course','Curso'],['period','Período'],['turn','Turno'],['name','Disciplina'],['ch','CH'],['group','Grupo']];
+    $('editFields').innerHTML=fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
+    $('editModal').style.display='flex';
+    return;
+  }
+  if(del){
+    if(row._extra){const ok=confirm(`Excluir esta demanda avulsa?\n\n${row.name}`);if(!ok)return;try{await fetch(`/api/extra-offer?semester=${encodeURIComponent(semSel.value)}&id=${encodeURIComponent(row._key.split(':')[1])}`,{method:'DELETE'});DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();}catch(err){alert('Não foi possível excluir: '+err.message)}return;}
+    const ok=confirm(`Excluir esta oferta?\n\n${row.turma} — ${row.name}\n${row.course} · ${row.period}º · ${row.turn}\nGrupo: ${row.group||'—'}`);
+    if(!ok)return;
+    try{
+      await fetch(`/api/offer?semester=${encodeURIComponent(semSel.value)}&key=${encodeURIComponent(row._key)}`,{method:'DELETE'});
+      DB=await (await fetch('/api/db')).json(); build();
+    }catch(err){alert('Não foi possível excluir a oferta: '+err.message)}
+  }
+});
 tbody.addEventListener('click',e=>{
 const cell=e.target.closest('td.group-cell');if(!cell||cell.querySelector('select'))return;
-const tr=cell.closest('tr'),row=currentRows[Number(tr.dataset.index)];if(!row)return;
-const select=document.createElement('select');select.style.width='100%';select.style.minWidth='0';
-const vals=[...new Set([...GROUP_OPTIONS,...(row.group?[row.group]:[])])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-select.innerHTML='<option value="">— Sem grupo —</option>'+vals.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');
-select.value=row.group||'';cell.innerHTML='';cell.appendChild(select);select.focus();
-const save=async()=>{row.group=select.value;try{await apiSave(semSel.value,row._key,{group:row.group});DB=await (await fetch('/api/db')).json();build()}catch(err){console.error(err);build()}};
-select.onchange=save;select.onblur=save;select.onkeydown=ev=>{if(ev.key==='Escape')build()};
+const tr=cell.closest('tr'),row=currentRows[Number(tr.dataset.index)];if(!row||row._extra)return;
+const select=document.createElement('select');select.className='inline-editor';
+const vals=[...new Set([...GROUP_OPTIONS,...(row.group?[row.group]:[])])].filter(Boolean).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+select.innerHTML='<option value="">—</option>'+vals.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');select.value=row.group||'';cell.innerHTML='';cell.appendChild(select);select.focus();
+let done=false;const save=async(ok=true)=>{if(done)return;done=true;if(!ok){build();return}const value=select.value;try{await apiSave(semSel.value,row._key,{group:value});DB=await (await fetch('/api/db',{cache:'no-store'})).json();build()}catch(err){alert('Não foi possível salvar o grupo: '+err.message);build()}};
+select.onchange=()=>save(true);select.onblur=()=>save(true);select.onkeydown=ev=>{if(ev.key==='Escape')save(false)};
 });
 tbody.addEventListener('dblclick',e=>{
-  const tr=e.target.closest('tr'); if(!tr)return;
+  if(e.target.closest('td.discipline-cell')) return;
+  const tr=e.target.closest('tr'); if(!tr||e.target.closest('.row-actions'))return;
   editingRow=currentRows[Number(tr.dataset.index)]; if(!editingRow)return;
   const fields=[['turma','Turma'],['course','Curso'],['period','Período'],['turn','Turno'],['name','Disciplina'],['ch','CH'],['group','Grupo']];
-  $('editFields').innerHTML=fields.map(([k,l])=>`<div><label>${l}</label><input data-edit="${k}" value="${esc(editingRow[k])}"></div>`).join('');
+  $('editFields').innerHTML=fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:k==='group'?`<select data-edit="group"><option value="">—</option>${[...new Set(GROUP_OPTIONS)].filter(Boolean).map(v=>`<option value="${esc(v)}" ${v===editingRow.group?'selected':''}>${esc(v)}</option>`).join('')}</select>`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
   $('editModal').style.display='flex';
 });
 $('cancelEdit').onclick=()=>$('editModal').style.display='none';
