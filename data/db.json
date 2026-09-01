@@ -3802,140 +3802,180 @@
         "name": "Técnico em Eletrônica (2012)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado"
+        "form": "Integrado",
+        "course_id": "ELETRONICA",
+        "course_name": "Eletrônica"
       },
       {
         "matrix": 2,
         "name": "Técnico em Eletrônica (2024)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado"
+        "form": "Integrado",
+        "course_id": "ELETRONICA",
+        "course_name": "Eletrônica"
       },
       {
         "matrix": 3,
         "name": "Auxiliar em Eletricista",
         "type": "Outras Ofertas",
         "level": "Fundamental",
-        "form": "PROEJA FIC Fundamental"
+        "form": "PROEJA FIC Fundamental",
+        "course_id": "AUX_ELETRICISTA",
+        "course_name": "Auxiliar em Eletricista"
       },
       {
         "matrix": 4,
         "name": "Auxiliar em Operador de Computador",
         "type": "Outras Ofertas",
         "level": "Fundamental",
-        "form": "PROEJA FIC Fundamental"
+        "form": "PROEJA FIC Fundamental",
+        "course_id": "AUX_OPERADOR_COMPUTADOR",
+        "course_name": "Auxiliar em Operador de Computador"
       },
       {
         "matrix": 5,
         "name": "Técnico em Manutenção e Suporte e Informática (2012)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Subsequente"
+        "form": "Subsequente",
+        "course_id": "MSI",
+        "course_name": "Manutenção e Suporte em Informática"
       },
       {
         "matrix": 6,
         "name": "Técnico em Manutenção e Suporte e Informática (2026) - Diurno",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Subsequente"
+        "form": "Subsequente",
+        "course_id": "MSI",
+        "course_name": "Manutenção e Suporte em Informática"
       },
       {
         "matrix": 7,
         "name": "Técnico em Manutenção e Suporte e Informática (2026) - Noturno",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Subsequente"
+        "form": "Subsequente",
+        "course_id": "MSI",
+        "course_name": "Manutenção e Suporte em Informática"
       },
       {
         "matrix": 8,
         "name": "Técnico em Informática para Internet (2013)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado"
+        "form": "Integrado",
+        "course_id": "INFORMATICA_INTERNET",
+        "course_name": "Informática para Internet"
       },
       {
         "matrix": 9,
         "name": "Técnico em Informática para Internet (2024)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado"
+        "form": "Integrado",
+        "course_id": "INFORMATICA_INTERNET",
+        "course_name": "Informática para Internet"
       },
       {
         "matrix": 10,
         "name": "Licenciatura em Informática (2018)",
         "type": "Formação de Professores",
         "level": "Graduação",
-        "form": "Licenciatura"
+        "form": "Licenciatura",
+        "course_id": "LICENCIATURA_INFORMATICA",
+        "course_name": "Licenciatura em Informática"
       },
       {
         "matrix": 11,
         "name": "Licenciatura em Informática (2026)",
         "type": "Formação de Professores",
         "level": "Graduação",
-        "form": "Licenciatura"
+        "form": "Licenciatura",
+        "course_id": "LICENCIATURA_INFORMATICA",
+        "course_name": "Licenciatura em Informática"
       },
       {
         "matrix": 12,
         "name": "Técnico em Comércio (2012)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado"
+        "form": "Integrado",
+        "course_id": "COMERCIO",
+        "course_name": "Comércio"
       },
       {
         "matrix": 13,
         "name": "Técnico em Comércio (2024)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado"
+        "form": "Integrado",
+        "course_id": "COMERCIO",
+        "course_name": "Comércio"
       },
       {
         "matrix": 14,
         "name": "Técnico em Comércio (2012)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado EJA"
+        "form": "Integrado EJA",
+        "course_id": "COMERCIO_EJA",
+        "course_name": "Comércio"
       },
       {
         "matrix": 15,
         "name": "Técnico em Comércio (2026)",
         "type": "Técnico",
         "level": "Médio",
-        "form": "Integrado EJA"
+        "form": "Integrado EJA",
+        "course_id": "COMERCIO_EJA",
+        "course_name": "Comércio"
       },
       {
         "matrix": 16,
         "name": "Tecnologia em Marketing (2019)",
         "type": "Outras Ofertas",
         "level": "Graduação",
-        "form": "Tecnologia"
+        "form": "Tecnologia",
+        "course_id": "MARKETING",
+        "course_name": "Marketing"
       },
       {
         "matrix": 17,
         "name": "Tecnologia em Marketing (2026) Diurno",
         "type": "Outras Ofertas",
         "level": "Graduação",
-        "form": "Tecnologia"
+        "form": "Tecnologia",
+        "course_id": "MARKETING",
+        "course_name": "Marketing"
       },
       {
         "matrix": 18,
         "name": "Tecnologia em Marketing (2026) Noturno",
         "type": "Outras Ofertas",
         "level": "Graduação",
-        "form": "Tecnologia"
+        "form": "Tecnologia",
+        "course_id": "MARKETING",
+        "course_name": "Marketing"
       },
       {
         "matrix": 19,
         "name": "Especialização em Ensino",
         "type": "Formação de Professores",
         "level": "Pós-graduação",
-        "form": "Especialização para professores"
+        "form": "Especialização para professores",
+        "course_id": "ESPECIALIZACAO_ENSINO",
+        "course_name": "Especialização em Ensino"
       },
       {
         "matrix": 20,
         "name": "Especialização em Ensino (2026)",
         "type": "Formação de Professores",
         "level": "Pós-graduação",
-        "form": "Especialização para professores"
+        "form": "Especialização para professores",
+        "course_id": "ESPECIALIZACAO_ENSINO",
+        "course_name": "Especialização em Ensino"
       }
     ],
     "matrices": {
@@ -4329,7 +4369,7 @@
           },
           {
             "name": "Filosofia II",
-            "group": "filosofia",
+            "group": "Filosofia",
             "periods": {
               "4": 2
             }
@@ -4597,7 +4637,9 @@
               "8": 2
             }
           }
-        ]
+        ],
+        "year": 2024,
+        "duration": 8
       },
       "3": {
         "name": "Auxiliar em Eletricista",
@@ -6069,14 +6111,16 @@
             "group": "Educação",
             "periods": {
               "6": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativa - 6 - II",
             "group": "Informática",
             "periods": {
               "6": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "LIBRAS",
@@ -6125,14 +6169,16 @@
             "group": "Informática",
             "periods": {
               "7": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativa - 7 - II",
             "group": "Informática",
             "periods": {
               "7": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Interação Humano-Computador",
@@ -6181,28 +6227,237 @@
             "group": "Informática",
             "periods": {
               "8": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativa - 8 - II",
             "group": "Informática",
             "periods": {
               "8": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativa - 8 - III",
             "group": "Informática",
             "periods": {
               "8": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativa - 8 - IV",
             "group": "Informática",
             "periods": {
               "8": 4
-            }
+            },
+            "optional": true
+          }
+        ],
+        "optionalCatalog": [
+          {
+            "name": "Espanhol",
+            "group": "Espanhol",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Concepções e Práticas de Avaliação da Aprendizagem",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Concepções e Práticas da Educação de Jovens e Adultos",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Educação em Direitos Humanos",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Educação para a Diversidade",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Educação para o Desenvolvimento Sustentável",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Ética da Docência",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Filosofia da Educação",
+            "group": "Filosofia",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Filosofia da Técnica e da Tecnologia",
+            "group": "Filosofia",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Formação de Professores e Trabalho Docente",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Fundamentos da Educação a Distância",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Fundamentos da Educação Profissional Técnica e Tecnológica",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "LIBRAS II",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Teoria e Organização Curricular",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Arquitetura de Software",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Desenvolvimento de Jogos Digitais",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Desenvolvimento de Sistemas Corporativos",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Desenvolvimento para Dispositivos Móveis",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Eletricidade e Eletrônica Analógica",
+            "group": "Eletrônica",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão de Tecnologia da Informação",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Instalação e Manutenção de Computadores",
+            "group": "Manutenção",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Jogos Digitais na Educação",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Laboratório de Sistemas Operacionais",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Legislação em Computação",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Programação e Administração de Banco de Dados",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Projeto de Software Educacional",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Segurança da Informação",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Tecnologias Digitais na Educação",
+            "group": "Educação",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Web Semântica e Ontologias",
+            "group": "Informática",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
           }
         ]
       },
@@ -8079,14 +8334,16 @@
             "group": "Gestão",
             "periods": {
               "3": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Disciplina Optativa 3-II",
             "group": "Gestão",
             "periods": {
               "3": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Gestão da Cadeia de Suprimentos",
@@ -8156,14 +8413,16 @@
             "group": "Gestão",
             "periods": {
               "5": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Disciplina Optativa 5-II",
             "group": "Gestão",
             "periods": {
               "5": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Gestão Estratégica de Marketing",
@@ -8191,14 +8450,144 @@
             "group": "Gestão",
             "periods": {
               "6": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Disciplina Optativa 6-II",
             "group": "Gestão",
             "periods": {
               "6": 2
-            }
+            },
+            "optional": true
+          }
+        ],
+        "optionalCatalog": [
+          {
+            "name": "Empreendedorismo em Marketing",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão Estratégica Aplicada ao Marketing",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Marketing Cultural",
+            "group": "Artes",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing Esportivo",
+            "group": "Educação Física",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Análise Financeira",
+            "group": "Finanças",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing para o Turismo",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ciência de Dados Aplicada ao Marketing",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing Político e Eleitoral",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Direito do Consumidor",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Semiótica Aplicada ao Marketing",
+            "group": "Artes",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ética e Antropologia Filosófica",
+            "group": "Filosofia",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Tendências e Comportamento do Consumidor",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ferramentas Aplicadas ao Marketing Digital",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão de Franquias",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão de Vendas e Negociação",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão de Projetos",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão da Qualidade em Marketing",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Libras",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
           }
         ]
       },
@@ -8413,49 +8802,184 @@
             "group": "Gestão",
             "periods": {
               "4": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo III (Filosofia)",
             "group": "Filosofia",
             "periods": {
               "4": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo III (Artes)",
             "group": "Artes",
             "periods": {
               "4": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo III (Gestão)",
             "group": "Gestão",
             "periods": {
               "4": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo III (Gestão)",
             "group": "Gestão",
             "periods": {
               "4": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo IV",
             "group": "Gestão",
             "periods": {
               "4": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo IV",
             "group": "Finanças",
             "periods": {
               "4": 4
-            }
+            },
+            "optional": true
+          }
+        ],
+        "optionalCatalog": [
+          {
+            "name": "Empreendedorismo em Marketing",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão Estratégica Aplicada ao Marketing",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Marketing Cultural",
+            "group": "Artes",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing Esportivo",
+            "group": "Educação Física",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Análise Financeira",
+            "group": "Finanças",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing para o Turismo",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ciência de Dados Aplicada ao Marketing",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing Político e Eleitoral",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Direito do Consumidor",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Semiótica Aplicada ao Marketing",
+            "group": "Artes",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ética e Antropologia Filosófica",
+            "group": "Filosofia",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Tendências e Comportamento do Consumidor",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ferramentas Aplicadas ao Marketing Digital",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão de Franquias",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão de Vendas e Negociação",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão de Projetos",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão da Qualidade em Marketing",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Libras",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
           }
         ]
       },
@@ -8670,42 +9194,176 @@
             "group": "Finanças",
             "periods": {
               "3": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo III",
             "group": "Gestão",
             "periods": {
               "3": 2
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo IV",
             "group": "Gestão",
             "periods": {
               "4": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo IV",
             "group": "Gestão",
             "periods": {
               "4": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo V",
             "group": "Finanças",
             "periods": {
               "5": 4
-            }
+            },
+            "optional": true
           },
           {
             "name": "Optativo V",
             "group": "Gestão",
             "periods": {
               "5": 4
-            }
+            },
+            "optional": true
+          }
+        ],
+        "optionalCatalog": [
+          {
+            "name": "Empreendedorismo em Marketing",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão Estratégica Aplicada ao Marketing",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Marketing Cultural",
+            "group": "Artes",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing Esportivo",
+            "group": "Educação Física",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Análise Financeira",
+            "group": "Finanças",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing para o Turismo",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ciência de Dados Aplicada ao Marketing",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Marketing Político e Eleitoral",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Direito do Consumidor",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Semiótica Aplicada ao Marketing",
+            "group": "Artes",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ética e Antropologia Filosófica",
+            "group": "Filosofia",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Tendências e Comportamento do Consumidor",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Ferramentas Aplicadas ao Marketing Digital",
+            "group": "Informática",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão de Franquias",
+            "group": "Gestão",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
+          },
+          {
+            "name": "Gestão de Vendas e Negociação",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão de Projetos",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Gestão da Qualidade em Marketing",
+            "group": "Gestão",
+            "weekly": 4,
+            "clockHours": 60,
+            "lessonHours": 80
+          },
+          {
+            "name": "Libras",
+            "group": "Educação",
+            "weekly": 2,
+            "clockHours": 30,
+            "lessonHours": 40
           }
         ]
       },
@@ -9256,7 +9914,8 @@
       "type": "Formação Profissional",
       "regime": 16.666666666666668,
       "idx": 2.25
-    }
+    },
+    "pocvTurnRule": "Cada coorte permanece no turno de ingresso durante toda a duração da matriz. Alternância de turnos, quando configurada, aplica-se às novas ofertas/coortes sucessivas, não aos períodos internos da mesma coorte."
   },
   "teachers": [
     {
@@ -9287,7 +9946,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "2813232",
+      "coordinatorCourseId": "LICENCIATURA_INFORMATICA",
+      "coordinatorCourseName": "Licenciatura em Informática"
     },
     {
       "id": 15,
@@ -9531,7 +10193,8 @@
       "managementPct": 0,
       "classFactor": 0,
       "vinculo": "Efetivo",
-      "substituteId": 130
+      "substituteId": 130,
+      "matricula": "1835439"
     },
     {
       "id": 31,
@@ -10431,5 +11094,3013 @@
       "substituteForId": 75
     }
   ],
-  "offers": {}
+  "offers": {},
+  "pocvScenarios": [
+    {
+      "id": "real",
+      "name": "Cenário Real",
+      "isReal": true,
+      "startSemester": "2027.1",
+      "endSemester": "2033.2",
+      "placements": [
+        {
+          "id": "p1",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2024.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã",
+            "2027.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p2",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2024.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p3",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2024.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2024.1": "Manhã",
+            "2024.2": "Manhã",
+            "2025.1": "Manhã",
+            "2025.2": "Manhã",
+            "2026.1": "Manhã",
+            "2026.2": "Manhã",
+            "2027.1": "Manhã",
+            "2027.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p4",
+          "matrix": 10,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2024.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2024.1": "Tarde",
+            "2024.2": "Tarde",
+            "2025.1": "Tarde",
+            "2025.2": "Tarde",
+            "2026.1": "Tarde",
+            "2026.2": "Tarde",
+            "2027.1": "Tarde",
+            "2027.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p5",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2024.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2024.1": "Tarde",
+            "2024.2": "Tarde",
+            "2025.1": "Tarde",
+            "2025.2": "Tarde",
+            "2026.1": "Tarde",
+            "2026.2": "Tarde",
+            "2027.1": "Tarde",
+            "2027.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p6",
+          "matrix": 14,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2024.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p7",
+          "matrix": 16,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2024.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 6,
+          "source": "real",
+          "locked": false,
+          "periodicity": "semestral",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p8",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2025.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã",
+            "2028.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p9",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2025.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p10",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2025.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2025.1": "Tarde",
+            "2025.2": "Tarde",
+            "2026.1": "Tarde",
+            "2026.2": "Tarde",
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p11",
+          "matrix": 10,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2025.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2025.1": "Noite",
+            "2025.2": "Noite",
+            "2026.1": "Noite",
+            "2026.2": "Noite",
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite",
+            "2028.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Noite",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p12",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2025.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2025.1": "Manhã",
+            "2025.2": "Manhã",
+            "2026.1": "Manhã",
+            "2026.2": "Manhã",
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã",
+            "2028.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p13",
+          "matrix": 16,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2025.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 6,
+          "source": "real",
+          "locked": false,
+          "periodicity": "semestral",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Noite",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p14",
+          "matrix": 5,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2025.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "semestral",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p15",
+          "matrix": 16,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2025.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Noite",
+            "2028.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 6,
+          "source": "real",
+          "locked": false,
+          "periodicity": "semestral",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Noite"
+          ]
+        },
+        {
+          "id": "p16",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2026.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã",
+            "2029.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p17",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2026.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p18",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2026.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p19",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2026.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2026.1": "Manhã",
+            "2026.2": "Manhã",
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã",
+            "2029.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p20",
+          "matrix": 10,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2026.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2026.1": "Tarde",
+            "2026.2": "Tarde",
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Noite"
+          ]
+        },
+        {
+          "id": "p21",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2026.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2026.1": "Tarde",
+            "2026.2": "Tarde",
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p22",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2026.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p23",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2026.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p24",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2026.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p25",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2026.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p26",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2026.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p27",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2027.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã",
+            "2030.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p28",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2027.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p29",
+          "matrix": 4,
+          "seq": 1,
+          "courseId": "AUX_OPERADOR_COMPUTADOR",
+          "startSemester": "2027.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p30",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2027.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p31",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2027.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.1": "Tarde",
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p32",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2027.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite",
+            "2028.2": "Noite",
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite",
+            "2030.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p33",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2027.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2027.1": "Manhã",
+            "2027.2": "Manhã",
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã",
+            "2030.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p34",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2027.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite",
+            "2028.2": "Noite",
+            "2029.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p35",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2027.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.1": "Noite",
+            "2027.2": "Noite",
+            "2028.1": "Noite",
+            "2028.2": "Noite",
+            "2029.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p36",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2027.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.2": "Noite",
+            "2028.1": "Noite",
+            "2028.2": "Noite",
+            "2029.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p37",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2027.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2027.2": "Tarde",
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p38",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2027.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2027.2": "Noite",
+            "2028.1": "Noite",
+            "2028.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p39",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2028.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã",
+            "2031.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p40",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2028.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p41",
+          "matrix": 3,
+          "seq": 1,
+          "courseId": "AUX_ELETRICISTA",
+          "startSemester": "2028.1",
+          "turn": "A definir",
+          "turnSchedule": {
+            "2028.1": "A definir",
+            "2028.2": "A definir"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "A definir"
+          ]
+        },
+        {
+          "id": "p42",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2028.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p43",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2028.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2028.1": "Manhã",
+            "2028.2": "Manhã",
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã",
+            "2031.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p44",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2028.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p45",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2028.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2028.1": "Tarde",
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p46",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2028.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2028.1": "Noite",
+            "2028.2": "Noite",
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p47",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2028.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2028.1": "Noite",
+            "2028.2": "Noite",
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p48",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2028.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2028.2": "Noite",
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p49",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2028.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2028.2": "Tarde",
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p50",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2028.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2028.2": "Noite",
+            "2029.1": "Noite",
+            "2029.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p51",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2029.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã",
+            "2032.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p52",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2029.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p53",
+          "matrix": 4,
+          "seq": 1,
+          "courseId": "AUX_OPERADOR_COMPUTADOR",
+          "startSemester": "2029.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2029.1": "Noite",
+            "2029.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p54",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2029.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p55",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2029.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2029.1": "Tarde",
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p56",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2029.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite",
+            "2030.2": "Noite",
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite",
+            "2032.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p57",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2029.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2029.1": "Manhã",
+            "2029.2": "Manhã",
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã",
+            "2032.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p58",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2029.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite",
+            "2030.2": "Noite",
+            "2031.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p59",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2029.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2029.1": "Noite",
+            "2029.2": "Noite",
+            "2030.1": "Noite",
+            "2030.2": "Noite",
+            "2031.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p60",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2029.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2029.2": "Noite",
+            "2030.1": "Noite",
+            "2030.2": "Noite",
+            "2031.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p61",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2029.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2029.2": "Tarde",
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p62",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2029.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2029.2": "Noite",
+            "2030.1": "Noite",
+            "2030.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p63",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2030.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã",
+            "2033.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p64",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2030.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p65",
+          "matrix": 3,
+          "seq": 1,
+          "courseId": "AUX_ELETRICISTA",
+          "startSemester": "2030.1",
+          "turn": "A definir",
+          "turnSchedule": {
+            "2030.1": "A definir",
+            "2030.2": "A definir"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "A definir"
+          ]
+        },
+        {
+          "id": "p66",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2030.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p67",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2030.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2030.1": "Manhã",
+            "2030.2": "Manhã",
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã",
+            "2033.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p68",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2030.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p69",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2030.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2030.1": "Tarde",
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p70",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2030.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2030.1": "Noite",
+            "2030.2": "Noite",
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p71",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2030.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2030.1": "Noite",
+            "2030.2": "Noite",
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p72",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2030.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2030.2": "Noite",
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p73",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2030.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2030.2": "Tarde",
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p74",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2030.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2030.2": "Noite",
+            "2031.1": "Noite",
+            "2031.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p75",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2031.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã",
+            "2033.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p76",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2031.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p77",
+          "matrix": 4,
+          "seq": 1,
+          "courseId": "AUX_OPERADOR_COMPUTADOR",
+          "startSemester": "2031.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2031.1": "Noite",
+            "2031.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p78",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2031.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p79",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2031.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2031.1": "Tarde",
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde",
+            "2034.1": "Tarde",
+            "2034.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p80",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2031.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite",
+            "2032.2": "Noite",
+            "2033.1": "Noite",
+            "2033.2": "Noite",
+            "2034.1": "Noite",
+            "2034.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p81",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2031.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2031.1": "Manhã",
+            "2031.2": "Manhã",
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã",
+            "2033.2": "Manhã",
+            "2034.1": "Manhã",
+            "2034.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p82",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2031.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite",
+            "2032.2": "Noite",
+            "2033.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p83",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2031.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2031.1": "Noite",
+            "2031.2": "Noite",
+            "2032.1": "Noite",
+            "2032.2": "Noite",
+            "2033.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p84",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2031.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2031.2": "Noite",
+            "2032.1": "Noite",
+            "2032.2": "Noite",
+            "2033.1": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p85",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2031.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2031.2": "Tarde",
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p86",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2031.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2031.2": "Noite",
+            "2032.1": "Noite",
+            "2032.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p87",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2032.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã",
+            "2033.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p88",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2032.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p89",
+          "matrix": 3,
+          "seq": 1,
+          "courseId": "AUX_ELETRICISTA",
+          "startSemester": "2032.1",
+          "turn": "A definir",
+          "turnSchedule": {
+            "2032.1": "A definir",
+            "2032.2": "A definir"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "A definir"
+          ]
+        },
+        {
+          "id": "p90",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2032.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p91",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2032.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2032.1": "Manhã",
+            "2032.2": "Manhã",
+            "2033.1": "Manhã",
+            "2033.2": "Manhã",
+            "2034.1": "Manhã",
+            "2034.2": "Manhã",
+            "2035.1": "Manhã",
+            "2035.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Tarde",
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p92",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2032.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde",
+            "2034.1": "Tarde",
+            "2034.2": "Tarde",
+            "2035.1": "Tarde",
+            "2035.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p93",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2032.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2032.1": "Tarde",
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde",
+            "2034.1": "Tarde",
+            "2034.2": "Tarde",
+            "2035.1": "Tarde",
+            "2035.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": true,
+          "alternatingTurns": [
+            "Manhã",
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p94",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2032.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2032.1": "Noite",
+            "2032.2": "Noite",
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p95",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2032.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2032.1": "Noite",
+            "2032.2": "Noite",
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p96",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2032.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2032.2": "Noite",
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p97",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2032.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2032.2": "Tarde",
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p98",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2032.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2032.2": "Noite",
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p99",
+          "matrix": 2,
+          "seq": 1,
+          "courseId": "ELETRONICA",
+          "startSemester": "2033.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2033.1": "Manhã",
+            "2033.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p100",
+          "matrix": 2,
+          "seq": 2,
+          "courseId": "ELETRONICA",
+          "startSemester": "2033.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2033.1": "Tarde",
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p101",
+          "matrix": 4,
+          "seq": 1,
+          "courseId": "AUX_OPERADOR_COMPUTADOR",
+          "startSemester": "2033.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 2,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p102",
+          "matrix": 6,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2033.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2033.1": "Manhã",
+            "2033.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p103",
+          "matrix": 9,
+          "seq": 1,
+          "courseId": "INFORMATICA_INTERNET",
+          "startSemester": "2033.1",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2033.1": "Tarde",
+            "2033.2": "Tarde",
+            "2034.1": "Tarde",
+            "2034.2": "Tarde",
+            "2035.1": "Tarde",
+            "2035.2": "Tarde",
+            "2036.1": "Tarde",
+            "2036.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p104",
+          "matrix": 11,
+          "seq": 1,
+          "courseId": "LICENCIATURA_INFORMATICA",
+          "startSemester": "2033.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2033.1": "Noite",
+            "2033.2": "Noite",
+            "2034.1": "Noite",
+            "2034.2": "Noite",
+            "2035.1": "Noite",
+            "2035.2": "Noite",
+            "2036.1": "Noite",
+            "2036.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p105",
+          "matrix": 13,
+          "seq": 1,
+          "courseId": "COMERCIO",
+          "startSemester": "2033.1",
+          "turn": "Manhã",
+          "turnSchedule": {
+            "2033.1": "Manhã",
+            "2033.2": "Manhã",
+            "2034.1": "Manhã",
+            "2034.2": "Manhã",
+            "2035.1": "Manhã",
+            "2035.2": "Manhã",
+            "2036.1": "Manhã",
+            "2036.2": "Manhã"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 8,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Manhã"
+          ]
+        },
+        {
+          "id": "p106",
+          "matrix": 15,
+          "seq": 1,
+          "courseId": "COMERCIO_EJA",
+          "startSemester": "2033.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p107",
+          "matrix": 18,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2033.1",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2033.1": "Noite",
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 5,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p108",
+          "matrix": 7,
+          "seq": 1,
+          "courseId": "MSI",
+          "startSemester": "2033.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        },
+        {
+          "id": "p109",
+          "matrix": 17,
+          "seq": 1,
+          "courseId": "MARKETING",
+          "startSemester": "2033.2",
+          "turn": "Tarde",
+          "turnSchedule": {
+            "2033.2": "Tarde"
+          },
+          "quantity": 1,
+          "vacancies": 40,
+          "startPeriod": 1,
+          "span": 4,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Tarde"
+          ]
+        },
+        {
+          "id": "p110",
+          "matrix": 20,
+          "seq": 1,
+          "courseId": "ESPECIALIZACAO_ENSINO",
+          "startSemester": "2033.2",
+          "turn": "Noite",
+          "turnSchedule": {
+            "2033.2": "Noite"
+          },
+          "quantity": 1,
+          "vacancies": 60,
+          "startPeriod": 1,
+          "span": 3,
+          "source": "real",
+          "locked": false,
+          "periodicity": "anual",
+          "alternatesTurns": false,
+          "alternatingTurns": [
+            "Noite"
+          ]
+        }
+      ],
+      "realModelVersion": 7,
+      "createdAt": "2026-08-29T12:53:59.774Z",
+      "updatedAt": "2026-09-01T17:22:21.424Z"
+    }
+  ],
+  "authUsers": [
+    {
+      "id": "usr-14",
+      "teacherId": 14,
+      "username": "alba",
+      "displayName": "Alba Sandyra Bezerra Lopes Campos",
+      "role": "coordenador_curso",
+      "passwordHash": "96343972fec90d80f867daaa467a1541daf7b3c4dac705007f2d623024047f65",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": "2813232"
+    },
+    {
+      "id": "usr-16",
+      "teacherId": 16,
+      "username": "álvaro",
+      "displayName": "Álvaro Medeiros Avelino",
+      "role": "coordenador_curso",
+      "passwordHash": "2a8a8f147675e15f25289402139138ca7ea0fe1a1698961f7cd6cf3b489b903f",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-19",
+      "teacherId": 19,
+      "username": "andreilson",
+      "displayName": "Andreilson Oliveira da Silva",
+      "role": "diretor_geral",
+      "passwordHash": "6687d4738f99d8bfa71082634b8979fa6f20322a07337e946a77155130cc6b75",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-27",
+      "teacherId": 27,
+      "username": "daniel",
+      "displayName": "Daniel Guerra Vale da Fonseca",
+      "role": "coordenador_curso",
+      "passwordHash": "12d212f8cb9ea6b514b23ffe4923f8786e08058ee4bec20a6258aeaa9553b69d",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-30",
+      "teacherId": 30,
+      "username": "edmilson",
+      "displayName": "Edmilson Barbalho Campos Neto",
+      "role": "diretor_geral",
+      "passwordHash": "222be96d05403b25ec898fc17be43250894a6eb5ffdcb83dc4a3e8c6d04bb4d9",
+      "photoData": "",
+      "suapUsername": "1835439",
+      "suapMatricula": "1835439",
+      "suapName": "Edmilson Campos",
+      "suapPhotoUrl": "https://suap.ifrn.edu.br/djtools/arquivo/comum/vinculo/b172763c-e07c-4fe9-ad67-eb023ea2f6e2/foto/150x200/"
+    },
+    {
+      "id": "usr-33",
+      "teacherId": 33,
+      "username": "fabricia",
+      "displayName": "Fabricia Abrantes Figueiredo da Rocha",
+      "role": "diretoria_academica",
+      "passwordHash": "7506e51284b5864f508593a0613038004737be56635c9f7bd12939426365f85c",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-53",
+      "teacherId": 53,
+      "username": "marlene",
+      "displayName": "Marlene Medeiros",
+      "role": "coordenador_curso",
+      "passwordHash": "3c59f2a931cce6d6fc4518649b713bc0c54da333478dfa13dae2b3adbe08156f",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-55",
+      "teacherId": 55,
+      "username": "monique",
+      "displayName": "Monique Fonseca Cardoso",
+      "role": "coordenador_curso",
+      "passwordHash": "5d5518aea9544624bbb5f3d8414bd5fb92cd375594e8fbf4736318c6bbe5ed06",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-62",
+      "teacherId": 62,
+      "username": "priscilla",
+      "displayName": "Priscilla Suene de Santana Nogueira Silverio",
+      "role": "coordenador_curso",
+      "passwordHash": "ae35d30acb567d767f6804cb7efe344df6fd2c3542177fffcce6b9dc318086b1",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-69",
+      "teacherId": 69,
+      "username": "severino",
+      "displayName": "Severino Carlos Gomes",
+      "role": "coordenador_curso",
+      "passwordHash": "1c574b17eefa532b6d61c963550a82d2d3dfca4a7fb69e183374cfafd5328ee4",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-71",
+      "teacherId": 71,
+      "username": "tatiane",
+      "displayName": "Tatiane Nunes Viana de Almeida",
+      "role": "coordenador_curso",
+      "passwordHash": "54e75fa9750ca9785496310044685ad40beacf0663e5ba187cf445aa3494d761",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    }
+  ]
 }

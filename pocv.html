@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACHA — Cenários</title>
+<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.0"></script>
+<style>
+.pocv-page{max-width:1500px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border-radius:9px;border:1px solid var(--line);background:#fff;color:#334155;font-weight:800;cursor:pointer}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.danger{color:#b91c1c;background:#fff;border-color:#fecaca}.btn:disabled{opacity:.5;cursor:not-allowed}
+.scenario-strip{display:flex;gap:10px;overflow:auto;padding:2px 2px 5px}.scenario-card{min-width:230px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;cursor:pointer;box-shadow:0 2px 8px #00000008}.scenario-card.active{border-color:#0f766e;box-shadow:0 0 0 2px #ccfbf1}.scenario-card .sc-title{font-weight:900}.scenario-card .sc-meta{font-size:12px;color:var(--muted);margin-top:4px}.real-pill{display:inline-flex;margin-top:8px;padding:3px 7px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:10px;font-weight:900}
+.editor-head{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:end}.scenario-name{font-size:20px;font-weight:900;border:1px solid transparent;padding:5px 7px;margin:-5px -7px;border-radius:7px;background:transparent}.scenario-name:focus{border-color:#99f6e4;background:#fff;outline:none}.status{font-size:12px;color:var(--muted)}
+.controls-grid{display:grid;grid-template-columns:180px 180px 1fr;gap:12px;align-items:end}.field label{margin-bottom:5px}
+.palette{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.course-chip{border:1px solid var(--tag-border);background:var(--tag-bg);color:var(--tag-fg);border-radius:9px;padding:8px 10px;cursor:grab;font-weight:850;font-size:12px;display:inline-flex;align-items:center;gap:7px}.course-chip small{opacity:.72;font-weight:700}.course-chip:active{cursor:grabbing}.palette-note{color:var(--muted);font-size:12px}
+
+.timeline-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-bottom:0;border-radius:12px 12px 0 0;background:#fff;position:sticky;top:0;z-index:20}.timeline-toolbar .timeline-title{font-size:12px;font-weight:900;color:#475569}.timeline-toolbar .timeline-nav{display:flex;gap:6px}.timeline-actions{display:flex;align-items:center;gap:6px}.timeline-actions .timeline-nav{display:flex;gap:6px}.focus-course{height:32px;min-width:175px;border:1px solid var(--line);background:#f8fafc;border-radius:8px;padding:0 9px;font-size:11px;font-weight:800;color:#334155}.focus-course:focus{outline:2px solid #99f6e4;outline-offset:1px}.timeline-toolbar .navbtn{width:34px;height:32px;border:1px solid var(--line);background:#f8fafc;border-radius:8px;font-weight:900;font-size:18px;cursor:pointer;color:#334155}.timeline-toolbar .navbtn:hover{background:#eef2f7}.timeline-wrap{overflow:auto;border:1px solid var(--line);border-radius:0 0 12px 12px;background:#fff;scroll-behavior:smooth}.timeline{min-width:1180px}.timeline-head{display:grid;grid-template-columns:185px repeat(var(--cols),minmax(125px,1fr));position:sticky;top:0;z-index:15;background:#f8fafc;border-bottom:1px solid var(--line)}.timeline-head>div{padding:9px 7px;border-right:1px solid var(--line);text-align:center;font-size:12px;font-weight:900;color:#475569}.timeline-head .lane-label{text-align:left;position:sticky;left:0;background:#f8fafc;z-index:16}.lane{display:grid;grid-template-columns:185px 1fr;border-bottom:1px solid var(--line)}.lane:last-child{border-bottom:0}.lane-label{padding:9px 10px;font-weight:900;background:#fff;position:sticky;left:0;z-index:8;border-right:1px solid var(--line);font-size:13px}.lane-label span{display:block;color:var(--muted);font-size:10px;font-weight:700;margin-top:2px}.track{display:grid;grid-template-columns:repeat(var(--cols),minmax(125px,1fr));grid-auto-rows:52px;gap:0;background:#fff;position:relative;padding:3px 0;align-content:start}.track-cell{border-right:1px solid #edf2f7;min-width:0;grid-row:1 / var(--lane-rows)}.track-cell.drop{background:#f0fdfa}.track-cell::after{content:"";display:block;height:100%}.group-row-label{display:flex;align-items:center;gap:6px;padding:3px 8px;margin:1px 5px;border-radius:7px;background:#f8fafc;border:1px solid var(--line);color:#475569;font-size:10px;line-height:1;z-index:1;pointer-events:none;overflow:hidden}
+.group-row-label{cursor:pointer;pointer-events:auto}.group-row-label.collapsed{opacity:.82}.lane-collapser{cursor:pointer}.group-row-label strong{font-size:10px;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.group-row-label>span:last-child{margin-left:auto;color:var(--muted);font-weight:700;white-space:nowrap}
+.group-dot{width:7px;height:7px;border-radius:50%;background:var(--tag-fg);flex:0 0 auto}
+.block{align-self:center;margin:1px 3px;padding:5px 7px;border:1px solid var(--tag-border);background:var(--tag-bg);color:var(--tag-fg);border-radius:8px;min-width:0;cursor:grab;z-index:2;box-shadow:0 1px 3px #0000000d;position:relative;min-height:38px}.block.dragging{opacity:.4}.block .bname{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}.block .bmeta{font-size:9px;margin-top:2px;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.block .bactions{position:absolute;right:3px;top:3px;display:none;gap:3px}.block:hover .bactions{display:flex}.mini{width:20px;height:20px;padding:0;border-radius:5px;border:1px solid #ffffffaa;background:#fff;color:inherit;font-weight:900;cursor:pointer}.block .qty{font-size:9px;font-weight:900;background:#fff9;border-radius:5px;padding:1px 4px;margin-left:4px}.track.empty{min-height:56px}
+.add-row{grid-column:1 / -1;display:flex;align-items:center;justify-content:center;margin:2px 5px;border:1px dashed #cbd5e1;border-radius:7px;background:#fbfdff;color:#64748b;font-size:10px;font-weight:800;cursor:pointer;z-index:3}
+.add-row:hover{background:#f0fdfa;border-color:#99f6e4;color:#0f766e}.add-row.active{background:#f0fdfa;border-color:#5eead4;color:#0f766e}
+.block.drop-target{outline:2px dashed #0f766e;outline-offset:2px}
+.view-toggle{white-space:nowrap}.view-toggle.active{background:#ecfdf5;border-color:#99f6e4;color:#0f766e}
+.summary-title{font-size:12px;font-weight:900;color:#475569;margin:14px 0 7px}.summary-scroll{overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff}.summary-grid{display:grid;min-width:850px}.summary-grid>div{padding:7px 9px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;text-align:center}.summary-grid .slabel{text-align:left;font-weight:900;background:#f8fafc;position:sticky;left:0;z-index:2}.summary-grid .shead{font-weight:900;background:#f8fafc}.summary-grid .sval{font-weight:900;font-size:11px}.summary-grid .stotal{font-weight:900;background:#f8fafc}.summary{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}.summary .sum{padding:10px 13px;border-right:1px solid var(--line)}.sum:last-child{border-right:0}.sum strong{display:block;font-size:18px}.sum span{font-size:10px;color:var(--muted)}
+@media(max-width:900px){.controls-grid{grid-template-columns:1fr 1fr}.editor-head{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}}
+.pocv-workspace{display:grid;grid-template-columns:190px minmax(0,1fr);gap:10px;align-items:start}
+/* V41 — menu lateral de cursos acompanha o scroll da página.
+   O .card genérico usa overflow:hidden, impedindo position:sticky.
+   Somente o cartão do editor passa a permitir o sticky. */
+.pocv-editor-card{overflow:visible!important}
+.pocv-editor-card .pocv-workspace{overflow:visible!important}
+.pocv-editor-card .palette-side{
+  position:sticky!important;
+  top:12px!important;
+  align-self:start!important;
+  height:max-content;
+  max-height:calc(100vh - 24px);
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.palette-side{border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto;box-shadow:0 3px 12px #00000008}
+.palette-side h3{font-size:10px;margin:0 0 7px;color:#475569;text-transform:uppercase;letter-spacing:.03em}
+.palette-side .palette{display:flex;flex-direction:column;align-items:stretch;gap:4px}
+.palette-side .course-chip{width:100%;box-sizing:border-box;padding:6px 7px;justify-content:flex-start;gap:5px;font-size:11px;line-height:1.15;min-height:32px}
+.palette-side .course-chip .chip-meta{display:none}
+.timeline-area{min-width:0}
+.summary-dock{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+.summary-dock-title{padding:9px 11px;font-size:11px;font-weight:900;color:#475569;background:#f8fafc;border-bottom:1px solid var(--line)}
+.summary-dock-scroll{overflow:auto;scroll-behavior:smooth}
+.summary-dock-grid{display:grid;min-width:1180px;grid-template-columns:185px repeat(var(--cols),minmax(125px,1fr))}
+.summary-cell{min-height:64px;padding:7px 6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);box-sizing:border-box;text-align:center;font-size:9px}
+.summary-cell.label{text-align:left;font-weight:900;background:#f8fafc;position:sticky;left:0;z-index:3}
+.summary-sem{font-weight:900;font-size:10px;color:#334155;margin-bottom:4px}.summary-total{font-size:13px;font-weight:900;margin-bottom:4px}
+.summary-lines{display:grid;gap:2px;text-align:left}.summary-line{display:flex;justify-content:space-between;gap:4px}.summary-line span:last-child{font-weight:900}.summary-line.ok span:last-child{color:#16a34a}.summary-line.bad span:last-child{color:#dc2626}.summary-line.warn span:last-child{color:#b45309}
+.summary-dock-grid .legend{grid-column:1 / -1;padding:7px 10px;font-size:9px;color:var(--muted);border-bottom:0;text-align:left}
+.compact-summary{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:12px}
+@media(max-width:900px){.pocv-workspace{grid-template-columns:1fr}.palette-side{position:static;max-height:none}.controls-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.controls-grid{grid-template-columns:1fr}.compact-summary{grid-template-columns:1fr 1fr}}
+
+@media(max-width:600px){.controls-grid{grid-template-columns:1fr}.summary{grid-template-columns:1fr}}
+
+.offer-type-summary{padding:10px 12px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:12px}
+.offer-type-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.offer-type-head strong{font-size:12px;color:#334155}
+.offer-type-grid{display:block;min-width:1180px}
+.offer-type-table{display:grid;grid-template-columns:185px repeat(var(--type-cols),minmax(125px,1fr));min-width:1180px}
+.ott-cell{padding:6px 7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:10px;text-align:center}
+.ott-head{font-weight:900;background:#f8fafc;color:#475569}
+.ott-label{text-align:left;font-weight:900;background:#f8fafc}
+.ott-label small,.ott-value small{display:block;font-size:8px;color:var(--muted);font-weight:700;margin-top:1px}
+.ott-value strong{font-size:12px}
+.ott-value.ok{background:#f0fdf4;color:#166534}
+.ott-value.bad{background:#fff1f2;color:#be123c}
+.offer-type-card{border:1px solid var(--line);border-radius:9px;padding:8px 9px;background:#f8fafc}
+.offer-type-card.ok{border-color:#86efac;background:#f0fdf4}
+.offer-type-card.bad{border-color:#fca5a5;background:#fff1f2}
+.offer-type-card .ot-label{font-size:10px;font-weight:900;color:#475569}
+.offer-type-card .ot-value{font-size:16px;font-weight:900;margin-top:2px}
+.offer-type-card .ot-target{font-size:9px;color:var(--muted);margin-top:1px}
+.variant-badge{display:inline-flex;align-items:center;padding:2px 5px;border-radius:999px;background:#fff8;border:1px solid var(--tag-border);font-size:9px;font-weight:900}
+.course-chip{flex-wrap:wrap}
+.course-chip .chip-title{font-weight:900}
+.course-chip .chip-meta{width:100%;font-size:9px;opacity:.78;margin-left:18px}
+.block .bvariant{font-size:9px;font-weight:900;opacity:.82}
+.modal-wide{max-width:620px}
+.modal-grid.two{grid-template-columns:1fr 1fr}
+.check-group{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.check-pill{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);padding:7px 9px;border-radius:8px;background:#fff;font-size:11px;font-weight:800;cursor:pointer}
+.check-pill input{accent-color:var(--accent)}
+.edit-note{font-size:11px;color:var(--muted);line-height:1.4}
+@media(max-width:900px){.offer-type-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.offer-type-grid{grid-template-columns:1fr}}
+
+.summary-students{font-size:10px;color:#475569;font-weight:800;margin-bottom:5px}
+.viability{margin-top:7px;border:1px solid #bbf7d0;background:#f0fdf4;color:#166534;border-radius:7px;padding:5px 6px;font-size:9px;font-weight:900;text-align:center}
+.viability.bad{border-color:#fecaca;background:#fff1f2;color:#be123c;cursor:help}
+.viability-help{font-size:10px}
+.new-offer{font-size:9px;font-weight:900;display:inline-block;margin-right:2px}
+
+</style>
+</head>
+<body>
+<header><h1>ACHA — Projeção de Oferta e Carga Docente</h1><p>Planejamento visual de cenários plurianuais de oferta acadêmica.</p></header>
+<nav class="mainnav"></nav>
+<main class="pocv-page">
+<section class="panel">
+  <div class="topbar">
+    <div><label>CENÁRIOS</label><div class="status">O cenário real representa o planejamento atualmente cadastrado. Simulações são independentes.</div></div>
+    <div class="actions"><button class="btn primary" id="newBtn">＋ Novo cenário</button></div>
+  </div>
+  <div class="scenario-strip" id="scenarioStrip" style="margin-top:12px"></div>
+</section>
+
+<section class="card pocv-editor-card" style="margin-top:16px">
+  <div class="head">
+    <div>
+      <input id="scenarioName" class="scenario-name" aria-label="Nome do cenário">
+      <div class="status" id="scenarioMeta"></div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="cloneBtn">⧉ Clonar cenário</button>
+      <button class="btn" id="realBtn">✓ Tornar cenário real</button>
+      <button class="btn danger" id="deleteBtn">Excluir</button>
+      <button class="btn" id="variablesBtn">⚙ Variáveis</button><button class="btn primary" id="saveBtn">Salvar</button>
+    </div>
+  </div>
+  <div style="padding:16px;border-bottom:1px solid var(--line)">
+    <div class="controls-grid">
+      <div class="field"><label>SEMESTRE INICIAL</label><select id="startSem"></select></div>
+      <div class="field"><label>SEMESTRE FINAL</label><select id="endSem"></select></div>
+      <div class="actions" style="justify-content:flex-end">
+        <button class="btn view-toggle" id="viewModeBtn" type="button">▤ Agrupar ofertas</button>
+        <button class="btn secondary" id="syncRealBtn" type="button" style="display:none">↻ Sincronizar cenário real</button>
+        <button class="btn secondary" id="clearBtn">Limpar simulação</button>
+      </div>
+    </div>
+    <div class="help" style="margin-top:10px">Arraste um curso da lateral para o semestre e turno desejados. A matriz vigente, a duração e os períodos são definidos automaticamente. Arraste uma oferta existente para reposicioná-la.</div>
+  </div>
+  <div class="pocv-workspace">
+    <aside class="palette-side">
+      <h3>Cursos para arrastar</h3>
+      <input id="courseSearch" placeholder="⌕ Buscar curso..." style="margin-bottom:8px">
+      <div class="palette" id="palette"></div>
+      <div class="help" style="margin-top:9px">Ao soltar, o sistema escolhe a matriz vigente para o semestre e turno. Clique no grupo para recolher; clique no turno para recolher o turno inteiro.</div>
+    </aside>
+    <div class="timeline-area">
+      <div class="timeline-toolbar">
+        <div class="timeline-title">Linha do tempo · arraste ofertas entre semestres/turnos</div>
+        <div class="timeline-actions">
+          <button class="navbtn" id="expandGroupsBtn" title="Expandir todos os grupos" aria-label="Expandir todos os grupos">⤢</button>
+          <button class="navbtn" id="collapseGroupsBtn" title="Recolher todos os grupos" aria-label="Recolher todos os grupos">⤡</button>
+          <select class="focus-course" id="focusCourse" title="Mostrar somente um curso">
+            <option value="">Todos os cursos</option>
+          </select>
+          <div class="timeline-nav">
+            <button class="navbtn" id="prevSemBtn" title="Semestres anteriores">‹</button>
+            <button class="navbtn" id="nextSemBtn" title="Próximos semestres">›</button>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-wrap" id="timelineWrap"><div class="timeline" id="timeline"></div></div>
+      <div class="summary-dock">
+        <div class="summary-dock-title">Resumo por semestre · alinhado à mesma grade da linha do tempo</div>
+        <div class="summary-dock-scroll" id="summaryDockScroll"><div class="summary-dock-grid" id="semesterSummary"></div></div>
+      </div>
+      <div class="offer-type-summary" id="offerTypeWrap" style="margin-top:12px">
+        <div class="offer-type-head"><strong>Distribuição por tipo de oferta</strong><span class="status">Meta: Técnico &gt; 60% · EJA &gt; 10% · Formação de Professores &gt; 20% · Outras &lt; 20%</span></div>
+        <div class="offer-type-grid" id="offerTypeSummary"></div>
+      </div>
+      <div class="summary compact-summary" id="summary"></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="modal-back" id="modalBack">
+ <div class="modal" id="scenarioModal">
+  <h2 id="modalTitle">Novo cenário</h2>
+  <div class="modal-grid"><div><label>NOME DO CENÁRIO</label><input id="modalName" placeholder="Ex.: Expansão 2028"></div></div>
+  <div class="modal-actions"><button class="btn" id="modalCancel">Cancelar</button><button class="btn primary" id="modalOk">Criar</button></div>
+ </div>
+</div>
+
+<div class="modal-back" id="offerModalBack">
+ <div class="modal modal-wide">
+  <h2>Editar oferta</h2>
+  <div id="offerEditCourse" class="status" style="margin-bottom:14px"></div>
+  <div class="modal-grid two">
+    <div>
+      <label>PERIODICIDADE DA OFERTA</label>
+      <select id="offerPeriodicity">
+        <option value="semestral">Semestral</option>
+        <option value="anual">Anual</option>
+        <option value="unica">Única</option>
+      </select>
+    </div>
+    <div>
+      <label>QUANTIDADE DE TURMAS</label>
+      <input id="offerQuantity" type="number" min="1" step="1">
+    </div>
+    <div>
+      <label>VAGAS POR TURMA</label>
+      <input id="offerVacancies" type="number" min="1" step="1">
+      <div class="edit-note" style="margin-top:5px">Valor específico desta oferta. O padrão só é usado ao criar novas ofertas.</div>
+    </div>
+  </div>
+  <div style="margin-top:14px">
+    <label><input id="offerAlternates" type="checkbox"> Alterna entre turnos</label>
+    <div id="offerTurnsWrap" style="display:none;margin-top:8px">
+      <label>TURNOS DA ALTERNÂNCIA</label>
+      <div class="check-group">
+        <label class="check-pill"><input type="checkbox" value="Matutino" class="offer-turn"> Matutino</label>
+        <label class="check-pill"><input type="checkbox" value="Vespertino" class="offer-turn"> Vespertino</label>
+        <label class="check-pill"><input type="checkbox" value="Noturno" class="offer-turn"> Noturno</label>
+      </div>
+      <div class="edit-note" style="margin-top:6px">O turno escolhido vale para toda a coorte. Se houver alternância, ela se aplica às novas ofertas/coortes sucessivas.</div>
+    </div>
+  </div>
+  <div class="modal-actions"><button class="btn" id="offerCancel">Cancelar</button><button class="btn primary" id="offerOk">Salvar alterações</button></div>
+ </div>
+</div>
+
+<div class="modal-back" id="configModalBack">
+ <div class="modal modal-wide">
+  <h2>Variáveis da POCV</h2>
+  <div class="status" style="margin-bottom:14px">Valores padrão usados quando uma nova oferta é criada.</div>
+  <div class="modal-grid two">
+    <div>
+      <label>VAGAS PADRÃO POR TURMA</label>
+      <input id="cfgDefaultVacancies" type="number" min="1" step="1">
+    </div>
+    <div>
+      <label>VAGAS PADRÃO — ESPECIALIZAÇÃO</label>
+      <input id="cfgSpecializationVacancies" type="number" min="1" step="1">
+    </div>
+    <div>
+      <label>HORAS DE REFERÊNCIA POR DOCENTE (SEMESTRE)</label>
+      <input id="cfgTeacherHours" type="number" min="1" step="1">
+    </div>
+  </div>
+  <div class="edit-note" style="margin-top:10px">A capacidade docente é calculada a partir do quadro cadastrado e do fator de aula de cada docente.</div>
+  <div class="modal-actions"><button class="btn" id="cfgCancel">Cancelar</button><button class="btn primary" id="cfgSave">Salvar variáveis</button></div>
+ </div>
+</div>
+
+<script>
+let DB=null, scenarios=[], current=null, dirty=false, dragPayload=null, saveTimer=null, viewMode='grouped', extraRows={}, POCV_CONFIG={defaultVacancies:40,specializationVacancies:60,teacherHours:20};
+const $=id=>document.getElementById(id);
+const esc=v=>POCV.esc(v), norm=v=>POCV.norm(v);
+const lanes=[['morning','☀️ Matutino'],['afternoon','🌤️ Vespertino'],['night','🌙 Noturno']];
+function semIndex(s){const m=String(s).match(/^(\d{4})\.(1|2)$/);return m?Number(m[1])*2+Number(m[2])-1:NaN}
+function semFromIndex(i){return `${Math.floor(i/2)}.${i%2+1}`}
+function semsBetween(a,b){let x=semIndex(a),y=semIndex(b),out=[];if(!Number.isFinite(x)||!Number.isFinite(y)||y<x)return out;for(;x<=y;x++)out.push(semFromIndex(x));return out}
+function allSemesters(){return Object.keys(DB?.data?.semesters||{}).sort((a,b)=>semIndex(a)-semIndex(b))}
+function matrix(id){return DB?.data?.matrices?.[String(id)]||{}}
+function course(id){return POCV.courseRecord(DB?.data?.courses||[],id)||{}}
+function courseIdFromMatrix(id){return String(course(id)?.course_id||'').trim()}
+function duration(id){const m=matrix(id);const nums=(m.disciplines||[]).flatMap(d=>Object.keys(d.periods||{}).map(Number).filter(Number.isFinite));return Math.max(1,Number(m.duration)||0,...nums,1)}
+function placementDuration(p){return Math.max(1,duration(p?.matrix))}
+function normalizeScenarioPlacements(s){
+  (s?.placements||[]).forEach(p=>{
+    // Nunca confiar no span persistido: a matriz é a fonte de verdade.
+    p.span=placementDuration(p);
+    if(!p.courseId)p.courseId=courseIdFromMatrix(p.matrix);
+    // Uma coorte não pode ser reduzida por um turnSchedule truncado.
+    // O turnSchedule antigo é mantido apenas para compatibilidade/edição,
+    // mas a visualização usa p.turn durante toda a duração da coorte.
+    if(!p.turn || p.turn==='A definir'){
+      const first=Object.values(p.turnSchedule||{})[0];
+      if(first)p.turn=first;
+    }
+  });
+  return s;
+}
+function turnFromMatrix(id,period,seq=1){const t=DB?.turn?.[String(id)]||{};const exact=t[String(period)];if(Array.isArray(exact)&&exact.length)return exact[(seq-1)%exact.length];const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>Math.abs(a-period)-Math.abs(b-period));if(keys.length){const a=t[String(keys[0])];if(a?.length)return a[(seq-1)%a.length]}return 'A definir'}
+function laneOf(t){const s=norm(t);if(s.includes('manh'))return'morning';if(s.includes('tard')||s.includes('vesp'))return'afternoon';if(s.includes('noit'))return'night';return'unknown'}
+function laneTurn(lane){return lane==='morning'?'Matutino':lane==='afternoon'?'Vespertino':'Noturno'}
+function matrixYear(id){
+  const m=matrix(id), c=course(id);
+  const text=String(m.year??m.ano??m.name??c.name??'');
+  const years=[...text.matchAll(/(?:19|20)\d{2}/g)].map(x=>Number(x[0]));
+  return years.length?Math.max(...years):0;
+}
+function matrixSupportsLane(id,lane){
+  const target=laneTurn(lane), t=DB?.turn?.[String(id)]||{};
+  const values=Object.values(t).flatMap(v=>Array.isArray(v)?v:[v]).map(norm);
+  if(!values.length)return false;
+  return values.some(v=>v===norm(target)|| (lane==='afternoon' && (v.includes('tard')||v.includes('vesp'))));
+}
+function courseMatrixOptions(courseKey){
+  const courses=DB?.data?.courses||[], matrices=DB?.data?.matrices||{};
+  return Object.keys(matrices).filter(id=>{
+    const c=course(id);
+    return String(c.course_id||c.course_name||c.name||'').trim()===String(courseKey).trim();
+  });
+}
+function resolveMatrix(courseKey,startSemester,lane){
+  const ids=courseMatrixOptions(courseKey);
+  if(!ids.length)return null;
+  const year=Number(String(startSemester).slice(0,4));
+  const ranked=ids.map(id=>({id,year:matrixYear(id),compatible:matrixSupportsLane(id,lane)}));
+  const eligible=ranked.filter(x=>x.year===0||x.year<=year);
+  const pool=eligible.length?eligible:ranked;
+  const maxYear=Math.max(...pool.map(x=>x.year));
+  const latest=pool.filter(x=>x.year===maxYear);
+  const compatible=latest.filter(x=>x.compatible);
+  const chosen=(compatible.length?compatible:latest).sort((a,b)=>Number(a.id)-Number(b.id))[0];
+  return chosen?Number(chosen.id):null;
+}
+function buildTurnSchedule(mid,startSem,quantity=1,forcedTurn=null,alternates=false,alternatingTurns=[]){
+  // Uma placement representa uma coorte. O turno escolhido no ingresso
+  // permanece durante toda a duração da matriz. A alternância de turnos
+  // pertence às novas coortes sucessivas (ex.: Comércio 2027.1 manhã,
+  // 2028.1 tarde), e nunca deve dividir a mesma coorte em segmentos.
+  const out={}; const dur=duration(mid); const base=semIndex(startSem); const t=DB?.turn?.[String(mid)]||{};
+  let firstTurn=forcedTurn||null;
+  if(!firstTurn){
+    const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+    if(keys.length){const arr=t[String(keys[0])];if(Array.isArray(arr)&&arr.length)firstTurn=arr[(quantity-1)%arr.length];}
+  }
+  firstTurn=firstTurn||'A definir';
+  for(let k=0;k<dur;k++) out[semFromIndex(base+k)]=firstTurn;
+  return out;
+}
+
+function setDirty(){dirty=true;updateStatus();clearTimeout(saveTimer);saveTimer=setTimeout(save,700)}
+function updateStatus(){const el=$('scenarioMeta');if(!current)return;el.textContent=`${current.isReal?'✓ Cenário real · ':'Simulação · '}${current.startSemester} → ${current.endSemester}${dirty?' · alterações não salvas':''}`}
+async function load(){
+  // A POCV depende de dois recursos: cenários e banco acadêmico (matrizes/cursos/semestres/turnos).
+  // Carregamos ambos antes de renderizar para evitar acessar DB.data enquanto DB ainda é null.
+  const [dbRes,scenarioRes,cfgRes]=await Promise.all([
+    fetch('/api/db',{cache:'no-store'}),
+    fetch('/api/pocv/scenarios',{cache:'no-store'}),
+    fetch('/api/pocv/config',{cache:'no-store'})
+  ]);
+  const dbJson=await dbRes.json();
+  const scenarioJson=await scenarioRes.json();
+  if(!dbRes.ok)throw Error(dbJson.error||'Falha ao carregar o banco de dados');
+  if(!scenarioRes.ok)throw Error(scenarioJson.error||'Falha ao carregar cenários');
+  const cfgJson=await cfgRes.json();
+  if(!cfgRes.ok)throw Error(cfgJson.error||'Falha ao carregar variáveis');
+  DB=dbJson;
+  POCV_CONFIG=cfgJson.config||POCV_CONFIG;
+  scenarios=(scenarioJson.scenarios||[]).map(normalizeScenarioPlacements);
+  current=scenarios.find(x=>x.isReal)||scenarios[0]||null;
+  dirty=false;
+  renderAll();
+}
+function renderScenarioStrip(){
+  $('scenarioStrip').innerHTML=scenarios.map(s=>`<div class="scenario-card ${s.id===current?.id?'active':''}" data-id="${esc(s.id)}">
+    <div class="sc-title">${esc(s.name)}</div><div class="sc-meta">${esc(s.startSemester)} → ${esc(s.endSemester)} · ${(s.placements||[]).length} entradas</div>
+    ${s.isReal?'<span class="real-pill">✓ CENÁRIO REAL</span>':''}</div>`).join('');
+  $('scenarioStrip').querySelectorAll('.scenario-card').forEach(el=>el.onclick=()=>{if(el.dataset.id===current.id)return;current=scenarios.find(x=>x.id===el.dataset.id);dirty=false;renderAll()});
+}
+function courseKeyOf(id){const c=course(id);return String(c.course_id||c.course_name||c.name||'').trim()}
+function renderPalette(){
+  const q=norm($('courseSearch')?.value||'');
+  const keys=[...new Set((DB.data.courses||[]).map(c=>String(c.course_id||c.course_name||c.name||'').trim()).filter(Boolean))].sort((a,b)=>norm(a).localeCompare(norm(b),'pt-BR',{numeric:true})).filter(k=>!q||norm(k).includes(q));
+  POCV.setCourses(keys);
+  $('palette').innerHTML=keys.map(key=>{
+    const ids=courseMatrixOptions(key);
+    const sample=ids.map(Number).sort((a,b)=>a-b)[0];
+    const c=course(sample), name=String(c.course_name||c.name||key);
+    const cc=POCV.color(key,'course');
+    const years=ids.map(matrixYear).filter(Boolean).sort((a,b)=>a-b);
+    const durs=[...new Set(ids.map(id=>duration(id)))].sort((a,b)=>a-b);
+    const variants=[...new Map(ids.map(id=>[String(course(id).course_id||key)+'|'+String(course(id).form||'')+'|'+String(course(id).level||''),{form:course(id).form,level:course(id).level}])).values()];
+    const meta=ids.length>1?`${ids.length} matrizes · ${durs.join('/')} p.`:`${duration(sample)} p.`;
+    const badges=variants.map(v=>`<span class="variant-badge">${esc(v.level||'—')} · ${esc(v.form||'—')}</span>`).join(' ');
+    return `<div class="course-chip" draggable="true" data-course="${esc(key)}" style="--tag-bg:${cc.bg};--tag-fg:${cc.fg};--tag-border:${cc.border}">
+      <span>⠿</span><span class="chip-title">${esc(name)}</span>
+      <small>${esc(meta)}</small><div class="chip-meta">${badges}</div>
+    </div>`;
+  }).join('');
+  $('palette').querySelectorAll('.course-chip').forEach(el=>{
+    el.ondragstart=e=>{dragPayload={type:'new',courseKey:el.dataset.course};e.dataTransfer.effectAllowed='copy';};
+  });
+}
+function fillSemSelects(){
+  const sems=allSemesters();if(!sems.length)return;
+  const opts=s=>sems.map(v=>`<option value="${v}" ${v===s?'selected':''}>${v}</option>`).join('');
+  $('startSem').innerHTML=opts(current.startSemester);$('endSem').innerHTML=opts(current.endSemester);
+}
+function placementEnd(p){return semIndex(p.startSemester)+placementDuration(p)-1}
+function placementTurnAt(p,sem){
+  // O turno salvo para uma coorte vale para todo o período de duração da
+  // matriz, salvo quando existe uma alteração explícita em turnSchedule.
+  // Não usar o semestre mais próximo como fallback: isso fazia uma coorte
+  // antiga aparecer em apenas 1–2 semestres quando seu turnSchedule estava
+  // truncado no início da simulação.
+  const ts=p?.turnSchedule;
+  if(ts && typeof ts==='object' && ts[sem]) return ts[sem];
+  return p?.turn||'A definir';
+}
+function placementSegments(p,lane){
+  // UMA COORTE = UMA CAIXA CONTÍNUA.
+  // O turno de ingresso pertence à coorte inteira. A alternância configurada
+  // no curso serve para escolher o turno das NOVAS coortes sucessivas, não
+  // para quebrar a mesma coorte em vários segmentos.
+  const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester));
+  const b=Math.min(placementEnd(p),semIndex(current.endSemester));
+  if(b<a)return [];
+  const fixedLane=laneOf(p.turn||placementTurnAt(p,p.startSemester));
+  if(fixedLane!==lane)return [];
+  return [{p,start:a,end:b}];
+}
+function visiblePlacements(){const a=semIndex(current.startSemester),b=semIndex(current.endSemester);return (current.placements||[]).filter(p=>placementEnd(p)>=a&&semIndex(p.startSemester)<=b)}
+function placementOrder(p){return Number.isFinite(Number(p.order))?Number(p.order):Number.MAX_SAFE_INTEGER}
+function variantKeyOfMatrix(id){
+  const c=course(id);
+  return String(c.course_id||courseKeyOf(id)||c.course_name||c.name||`Matriz ${id}`).trim();
+}
+function variantLabel(id){
+  const c=course(id);
+  const name=String(c.course_name||c.name||courseKeyOf(id)||`Matriz ${id}`).trim();
+  const form=String(c.form||'').trim();
+  const level=String(c.level||'').trim();
+  return {name,form,level,key:variantKeyOfMatrix(id)};
+}
+function groupKeyOfPlacement(p){return variantKeyOfMatrix(p.matrix)}
+function groupedTracks(){
+  const by={};lanes.forEach(([id])=>by[id]={});
+  visiblePlacements().forEach(p=>{
+    lanes.forEach(([lane])=>{
+      const segments=placementSegments(p,lane);
+      if(!segments.length)return;
+      const key=groupKeyOfPlacement(p);
+      if(!by[lane][key])by[lane][key]={items:[],segments:[]};
+      if(!by[lane][key].items.some(x=>x.id===p.id))by[lane][key].items.push(p);
+      by[lane][key].segments.push(...segments);
+    });
+  });
+  const result={};
+  lanes.forEach(([id])=>{
+    const groups=Object.entries(by[id]).map(([key,g])=>{
+      g.items.sort((a,b)=>{
+        const d=semIndex(a.startSemester)-semIndex(b.startSemester);
+        return d||placementOrder(a)-placementOrder(b)||String(matrix(a.matrix).name||'').localeCompare(String(matrix(b.matrix).name||''),'pt-BR',{numeric:true});
+      });
+      g.segments.sort((a,b)=>a.start-b.start||placementOrder(a.p)-placementOrder(b.p));
+      if(viewMode==='separate') return {key,items:g.items,segments:g.segments,rows:g.segments.map(seg=>[seg])};
+      const rows=[];
+      for(const seg of g.segments){
+        let row=0;
+        while(rows[row]?.some(q=>!(q.end<seg.start||q.start>seg.end)))row++;
+        (rows[row]??=[]).push(seg);
+      }
+      return {key,items:g.items,segments:g.segments,rows};
+    }).sort((a,b)=>{
+      const firstA=Math.min(...a.items.map(x=>semIndex(x.startSemester))),firstB=Math.min(...b.items.map(x=>semIndex(x.startSemester)));
+      return firstA-firstB||norm(a.key).localeCompare(norm(b.key),'pt-BR',{numeric:true});
+    });
+    result[id]=groups;
+  });
+  return result;
+}
+
+function addExtraRow(lane,key){const k=`${lane}|${key}`;extraRows[k]=(extraRows[k]||0)+1;renderTimeline()}
+function renderTimeline(){
+  const sems=semsBetween(current.startSemester,current.endSemester);const cols=sems.length;const groups=groupedTracks();
+  const head=`<div class="timeline-head" style="--cols:${cols}"><div class="lane-label">TURNO / SEMESTRE</div>${sems.map(s=>`<div>${s}</div>`).join('')}</div>`;
+  let body=head;
+  lanes.forEach(([id,label])=>{
+    const gs=groups[id]||[];
+    const offers=[...new Set(gs.flatMap(g=>g.items.map(p=>p.id)))].length;
+    // A altura do turno deve acompanhar o estado visual dos grupos.
+    // Grupos recolhidos ocupam somente a própria faixa de título; suas linhas
+    // de ofertas e linhas extras não podem continuar reservando espaço vazio.
+    const totalRows=gs.reduce((n,g)=>{
+      const collapsed=window.pocvCollapsedGroups?.has(`${id}|${g.key}`);
+      return n+(collapsed?1:Math.max(1,g.rows.length)+1+(extraRows[`${id}|${g.key}`]||0));
+    },0)||1;
+    const rowHeight=viewMode==='separate'?42:34;
+    body+=`<div class="lane"><div class="lane-label lane-collapser" data-lane="${id}" title="Clique para recolher/expandir o turno">${label}<span>${offers} oferta${offers===1?'':'s'} · clique para recolher</span></div><div class="track ${gs.length?'':'empty'}" data-lane-track="${id}" style="--cols:${cols};--lane-rows:${Math.max(1,totalRows)};grid-template-rows:repeat(${Math.max(1,totalRows)},${rowHeight}px);min-height:${Math.max(1,totalRows)*rowHeight+4}px">`;
+    sems.forEach((s,i)=>body+=`<div class="track-cell" data-sem="${s}" data-lane="${id}" style="grid-column:${i+1};grid-row:1 / -1"></div>`);
+    let gridRow=1;
+    if(!gs.length)body+=`<div class="add-row" data-add-lane="${id}" data-add-key="__empty__" style="grid-row:${gridRow};">＋ adicionar curso</div>`;
+    gs.forEach(g=>{
+      const gc=POCV.color(g.key,'course');
+      const collapsed=window.pocvCollapsedGroups?.has(`${id}|${g.key}`);
+      body+=`<div class="group-row-label group-collapser ${collapsed?'collapsed':''}" data-group="${esc(g.key)}" data-lane="${id}" style="grid-column:1 / -1;grid-row:${gridRow};--tag-bg:${gc.bg};--tag-fg:${gc.fg};--tag-border:${gc.border}" title="Clique para recolher/expandir este grupo"><span class="group-dot"></span><strong>${esc(g.key)}</strong><span>${g.items.length} oferta${g.items.length===1?'':'s'} · ${collapsed?'expandir':'recolher'}</span></div>`;
+      gridRow++;
+      if(!collapsed){
+        g.rows.forEach(row=>{
+          row.forEach(seg=>{
+            const p=seg.p,start=semIndex(p.startSemester),visStart=seg.start,visEnd=seg.end;
+            const cs=visStart-semIndex(current.startSemester)+1,span=Math.max(1,visEnd-visStart+1);
+            const c=course(p.matrix),v=variantLabel(p.matrix),name=v.name,pc=POCV.color(v.key,'course');
+            const periodStart=Math.max(1,visStart-start+1),periodEnd=periodStart+span-1;
+            const matrixName=matrix(p.matrix).name||name,periodicity=p.periodicity||'unica';
+            const altText=p.alternatesTurns&&Array.isArray(p.alternatingTurns)&&p.alternatingTurns.length?` · alterna: ${p.alternatingTurns.join(' ↔ ')}`:'';
+            const segmentTurn=placementTurnAt(p,semFromIndex(visStart));
+            body+=`<div class="block" draggable="true" data-id="${esc(p.id)}" style="grid-column:${cs} / span ${span};grid-row:${gridRow};--tag-bg:${pc.bg};--tag-fg:${pc.fg};--tag-border:${pc.border}" title="Arraste para mover. Esta caixa é um segmento da mesma coorte."><div class="bname">${start===semIndex(p.startSemester)?'<span class="new-offer" title="Nova turma neste semestre">✦</span> ':''}${esc(name)} <span class="qty">${Number(p.quantity)||1} turma${Number(p.quantity)==1?'':'s'}</span></div><div class="bmeta"><span class="bvariant">${esc(v.level||'—')} · ${esc(v.form||'—')}</span> · ${esc(segmentTurn)} · ${periodStart}º → ${periodEnd}º período · ${esc(periodicity)} · ${placementVacancies(p)} vagas/turma${altText}${matrixName!==name?' · '+esc(matrixName):''}${start<semIndex(current.startSemester)?' · iniciado antes do cenário':''}</div><div class="bactions"><button class="mini edit" title="Editar">✎</button><button class="mini remove" title="Remover">×</button></div></div>`;
+          });
+          gridRow++;
+        });
+        const count=extraRows[`${id}|${g.key}`]||0;
+        for(let n=0;n<count;n++){body+=`<div class="add-row active" data-add-lane="${id}" data-add-key="${esc(g.key)}" style="grid-row:${gridRow};">＋ linha para adicionar curso · arraste para um semestre</div>`;gridRow++;}
+        body+=`<div class="add-row" data-add-lane="${id}" data-add-key="${esc(g.key)}" style="grid-row:${gridRow};">＋ adicionar linha</div>`;gridRow++;
+      }
+    });
+    body+='</div></div>';
+  });
+  $('timeline').innerHTML=body;
+  pocvPopulateFocusCourse();
+  pocvWireViewControls();
+  $('timeline').querySelectorAll('.lane-collapser').forEach(el=>el.onclick=()=>{window.pocvCollapsedLanes??=new Set();const id=el.dataset.lane;window.pocvCollapsedLanes.has(id)?window.pocvCollapsedLanes.delete(id):window.pocvCollapsedLanes.add(id);renderTimeline();});
+  // Recolher turno inteiro: oculta o track mantendo apenas a faixa do turno.
+  window.pocvCollapsedLanes??=new Set();$('timeline').querySelectorAll('.lane').forEach(l=>{const id=l.querySelector('.lane-collapser')?.dataset.lane;if(window.pocvCollapsedLanes.has(id)){const tr=l.querySelector('.track');if(tr)tr.style.display='none';}});
+  $('timeline').querySelectorAll('.group-collapser').forEach(el=>el.onclick=()=>{window.pocvCollapsedGroups??=new Set();const k=`${el.dataset.lane}|${el.dataset.group}`;window.pocvCollapsedGroups.has(k)?window.pocvCollapsedGroups.delete(k):window.pocvCollapsedGroups.add(k);renderTimeline();});
+  $('timeline').querySelectorAll('.track-cell').forEach(cell=>{
+    cell.ondragover=e=>{e.preventDefault();cell.classList.add('drop')};cell.ondragleave=()=>cell.classList.remove('drop');
+    cell.ondrop=e=>{e.preventDefault();cell.classList.remove('drop');if(!dragPayload)return;if(dragPayload.type==='new')addPlacement(dragPayload.courseKey,cell.dataset.sem,cell.dataset.lane);else if(dragPayload.type==='move')movePlacement(dragPayload.id,cell.dataset.sem,cell.dataset.lane);dragPayload=null;};
+  });
+  $('timeline').querySelectorAll('.add-row').forEach(el=>{
+    el.onclick=()=>addExtraRow(el.dataset.addLane,el.dataset.addKey);
+    el.ondragover=e=>{e.preventDefault();el.classList.add('drop')};el.ondragleave=()=>el.classList.remove('drop');
+    el.ondrop=e=>{e.preventDefault();el.classList.remove('drop');if(!dragPayload)return;const rect=el.getBoundingClientRect();const x=Math.max(0,Math.min(rect.width-1,e.clientX-rect.left));const semIndexLocal=Math.min(cols-1,Math.max(0,Math.floor(x/(rect.width/cols))));const sem=sems[semIndexLocal];if(dragPayload.type==='new')addPlacement(dragPayload.courseKey,sem,el.dataset.addLane);else if(dragPayload.type==='move')movePlacement(dragPayload.id,sem,el.dataset.addLane);dragPayload=null;};
+  });
+  $('timeline').querySelectorAll('.block').forEach(b=>{
+    b.ondragstart=e=>{dragPayload={type:'move',id:b.dataset.id};b.classList.add('dragging');e.dataTransfer.effectAllowed='move'};
+    b.ondragend=()=>{b.classList.remove('dragging');$('timeline').querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));dragPayload=null};
+    b.ondragover=e=>{e.preventDefault();if(dragPayload?.type==='move'&&dragPayload.id!==b.dataset.id)b.classList.add('drop-target');e.stopPropagation()};b.ondragleave=()=>b.classList.remove('drop-target');
+    b.ondrop=e=>{e.preventDefault();e.stopPropagation();b.classList.remove('drop-target');if(dragPayload?.type==='move'&&dragPayload.id!==b.dataset.id)reorderPlacement(dragPayload.id,b.dataset.id);dragPayload=null};
+    b.querySelector('.remove').onclick=e=>{e.stopPropagation();removePlacement(b.dataset.id)};b.querySelector('.edit').onclick=e=>{e.stopPropagation();editPlacement(b.dataset.id)};
+  });
+  updateViewModeButton();
+}
+
+
+function defaultVacanciesForPlacement(p){
+  const c=course(p.matrix);
+  const text=`${c?.course_name||c?.name||''} ${c?.type||''} ${c?.form||''}`;
+  return /especializa[cç][aã]o|p[oó]s[- ]?gradua[cç][aã]o/i.test(text)
+    ? Number(POCV_CONFIG.specializationVacancies)||60
+    : Number(POCV_CONFIG.defaultVacancies)||40;
+}
+function placementVacancies(p){
+  return Math.max(1,Number(p.vacancies)||defaultVacanciesForPlacement(p));
+}
+function placementStudents(p){
+  return (Number(p.quantity)||1)*placementVacancies(p);
+}
+
+function offerCategory(c){
+  const type=norm(c?.type), form=norm(c?.form);
+  if(form.includes('eja'))return 'eja';
+  if(type.includes('formacao')&&type.includes('professor'))return 'teachers';
+  if(type.includes('tecnico'))return 'technical';
+  return 'other';
+}
+function renderOfferTypeSummary(){
+  const sems=semsBetween(current.startSemester,current.endSemester), placements=visiblePlacements();
+  const labels=[
+    ['technical','Técnico','> 60%',v=>v>60],
+    ['eja','EJA','> 10%',v=>v>10],
+    ['teachers','Formação de Professores','> 20%',v=>v>20],
+    ['other','Outras','< 20%',v=>v<20]
+  ];
+  const bySem={};
+  sems.forEach(sem=>{
+    const counts={technical:0,eja:0,teachers:0,other:0,total:0};
+    placements.forEach(p=>{
+      const si=semIndex(sem),a=semIndex(p.startSemester),b=placementEnd(p);
+      if(si<a||si>b)return;
+      const q=placementStudents(p),c=course(p.matrix),cat=offerCategory(c);
+      counts[cat]+=q;counts.total+=q;
+    });
+    bySem[sem]=counts;
+  });
+  let html=`<div class="offer-type-table" style="--type-cols:${Math.max(1,sems.length)}">
+    <div class="ott-cell ott-head">TIPO / SEMESTRE</div>
+    ${sems.map(s=>`<div class="ott-cell ott-head">${esc(s)}</div>`).join('')}`;
+  labels.forEach(([key,label,target,ok])=>{
+    html+=`<div class="ott-cell ott-label">${esc(label)}<small>meta ${esc(target)}</small></div>`;
+    sems.forEach(sem=>{
+      const c=bySem[sem],pct=c.total?c[key]/c.total*100:0,good=c.total>0&&ok(pct);
+      html+=`<div class="ott-cell ott-value ${good?'ok':'bad'}"><strong>${pct.toFixed(1)}%</strong><small>${c[key].toLocaleString('pt-BR')}/${c.total.toLocaleString('pt-BR')} alunos</small></div>`;
+    });
+  });
+  html+='</div>';
+  $('offerTypeSummary').innerHTML=html;
+}
+function groupWorkloadForSemester(sem){
+  const out={};
+  const si=semIndex(sem);
+  visiblePlacements().forEach(p=>{
+    const a=semIndex(p.startSemester),b=placementEnd(p);
+    if(si<a||si>b)return;
+    const period=si-a+1,m=matrix(p.matrix);
+    (m.disciplines||[]).forEach(d=>{
+      const ch=d.periods?.[String(period)];
+      const g=String(d.group||'').trim();
+      if(ch==null||!g)return;
+      out[g]=(out[g]||0)+Number(ch||0)*(Number(p.quantity)||1);
+    });
+  });
+  return out;
+}
+function teacherCapacityByGroup(){
+  const out={};
+  (DB?.teachers||[]).forEach(t=>{
+    const g=String(t.group||'').trim();
+    if(!g)return;
+    out[g]=(out[g]||0)+Number(t.classFactor||0)*(Number(POCV_CONFIG.teacherHours)||20);
+  });
+  return out;
+}
+function semesterViability(sem){
+  const required=groupWorkloadForSemester(sem), capacity=teacherCapacityByGroup();
+  const deficits=[];
+  Object.entries(required).forEach(([g,h])=>{
+    const cap=Number(capacity[g]||0),def=h-cap;
+    if(def>0) deficits.push({
+      group:g,hours:def,
+      professors:Math.ceil(def/(Number(POCV_CONFIG.teacherHours)||20))
+    });
+  });
+  deficits.sort((a,b)=>b.hours-a.hours);
+  const professors=deficits.reduce((n,x)=>n+x.professors,0);
+  const totalRequired=Object.values(required).reduce((a,b)=>a+b,0);
+  const totalCapacity=Object.values(capacity).reduce((a,b)=>a+b,0);
+  return {ok:deficits.length===0,deficits,professors,totalRequired,totalCapacity};
+}
+function viabilityMarkup(v){
+  if(v.ok) return `<div class="viability ok" title="A capacidade docente cadastrada atende à carga prevista neste semestre.">● VIÁVEL</div>`;
+  const details=v.deficits.map(d=>`${esc(d.group)}: +${d.professors} prof. (${Math.round(d.hours)} h)`).join(' · ');
+  return `<div class="viability bad" title="${details}">● NECESSITA +${v.professors} PROF. <span class="viability-help">ⓘ</span></div>`;
+}
+function renderSemesterSummary(){
+  const sems=semsBetween(current.startSemester,current.endSemester), placements=visiblePlacements();
+  const counts={};
+  sems.forEach(s=>{counts[s]={morning:0,afternoon:0,night:0,total:0,students:0};});
+  placements.forEach(p=>{
+    sems.forEach(s=>{
+      const si=semIndex(s),a=semIndex(p.startSemester),b=placementEnd(p);
+      if(si<a||si>b)return;
+      const q=Number(p.quantity)||1, lane=laneOf(placementTurnAt(p,s));
+      if(counts[s][lane]!=null)counts[s][lane]+=q;
+      counts[s].total+=q;
+      counts[s].students+=placementStudents(p);
+    });
+  });
+  let html=`<div class="summary-cell label"><strong>SEMESTRE</strong><span style="display:block;color:var(--muted);font-size:9px;margin-top:3px">Turmas · alunos · viabilidade docente</span></div>`;
+  sems.forEach(s=>{
+    const c=counts[s],v=semesterViability(s);
+    html+=`<div class="summary-cell">
+      <div class="summary-sem">${esc(s)}</div>
+      <div class="summary-total">${c.total} turmas</div>
+      <div class="summary-students">${c.students.toLocaleString('pt-BR')} alunos</div>
+      <div class="summary-lines">
+        <div class="summary-line"><span>☀ Matutino</span><span>${c.morning}</span></div>
+        <div class="summary-line"><span>🌤 Vespertino</span><span>${c.afternoon}</span></div>
+        <div class="summary-line"><span>🌙 Noturno</span><span>${c.night}</span></div>
+      </div>
+      ${viabilityMarkup(v)}
+    </div>`;
+  });
+  $('semesterSummary').style.setProperty('--cols',sems.length);$('semesterSummary').innerHTML=html;renderOfferTypeSummary();
+  syncSummaryScroll();
+}
+function syncSummaryScroll(){
+  const a=$('timelineWrap'),b=$('summaryDockScroll'),c=$('offerTypeWrap');
+  if(!a)return;
+  const sync=()=>{if(b)b.scrollLeft=a.scrollLeft;if(c)c.scrollLeft=a.scrollLeft;};
+  sync();
+  if(!a.dataset.summarySync){a.addEventListener('scroll',sync,{passive:true});a.dataset.summarySync='1';}
+}
+
+function reorderPlacement(sourceId,targetId){
+  const items=current.placements||[],source=items.find(p=>p.id===sourceId),target=items.find(p=>p.id===targetId);if(!source||!target)return;
+  const targetLane=laneOf(target.turn);source.turn=laneTurn(targetLane);
+  const laneItems=items.filter(p=>laneOf(p.turn)===targetLane && p.id!==sourceId);
+  const targetIndex=laneItems.findIndex(p=>p.id===targetId);
+  const base=Date.now();
+  laneItems.splice(Math.max(0,targetIndex),0,source);
+  laneItems.forEach((p,i)=>p.order=base+i);
+  setDirty();renderTimeline();renderSemesterSummary();renderSummary();
+}
+function updateViewModeButton(){
+  const b=$('viewModeBtn');if(!b)return;
+  b.textContent=viewMode==='grouped'?'▤ Agrupando ofertas':'▤ Uma oferta por linha';
+  b.classList.toggle('active',viewMode==='separate');
+  b.title=viewMode==='grouped'?'Alternar para uma oferta por linha':'Alternar para agrupamento compacto';
+}
+function realPlacementsForCourse(courseKey){
+  const real=scenarios.find(s=>s&&s.isReal);
+  return (real?.placements||[]).filter(p=>String(p.courseId||courseKeyOf(p.matrix)).trim()===String(courseKey).trim());
+}
+function inferOfferTemplate(courseKey,dropSem,dropLane){
+  const real=realPlacementsForCourse(courseKey);
+  const periodicity=(()=>{
+    const counts={semestral:0,anual:0,unica:0};
+    real.forEach(p=>{const k=p.periodicity||'anual';counts[k]=(counts[k]||0)+1});
+    return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0]||'anual';
+  })();
+  const starts=[...new Set(real.map(p=>semIndex(p.startSemester)).filter(Number.isFinite))].sort((a,b)=>a-b);
+  let interval=periodicity==='semestral'?1:periodicity==='anual'?2:null;
+  if(starts.length>1){
+    const diffs=starts.slice(1).map((v,i)=>v-starts[i]).filter(d=>d>0);
+    if(diffs.length){const freq=diffs.reduce((m,d)=>(m[d]=(m[d]||0)+1,m),{});interval=Number(Object.entries(freq).sort((a,b)=>b[1]-a[1])[0][0])||interval;}
+  }
+  const matching=real.filter(p=>String(p.startSemester)===String(dropSem));
+  const alternates=real.some(p=>p.alternatesTurns) || (real.length>2 && new Set(real.map(p=>p.turn).filter(t=>t&&t!=='A definir')).size>1);
+  const turnSequence=real.filter(p=>p.turn&&p.turn!=='A definir').sort((a,b)=>semIndex(a.startSemester)-semIndex(b.startSemester)).map(p=>p.turn);
+  const droppedTurn=laneTurn(dropLane);
+  let alternatingTurns=[];
+  if(alternates){
+    const others=[...new Set(turnSequence)].filter(t=>t!==droppedTurn&&t!=='A definir');
+    // A nova série sempre começa no turno em que o usuário soltou o curso.
+    // Depois aplica a sequência histórica do curso, sem alterar o turno de
+    // uma coorte já iniciada.
+    alternatingTurns=[droppedTurn,...others];
+    if(alternatingTurns.length<2){
+      const fallback=dropLane==='morning'?'Tarde':dropLane==='afternoon'?'Manhã':'Noite';
+      if(fallback!==droppedTurn)alternatingTurns.push(fallback);
+    }
+  }else alternatingTurns=[droppedTurn];
+  return {periodicity,interval:Math.max(1,interval||2),alternatesTurns:alternates,alternatingTurns};
+}
+function makePlacement(courseKey,sem,lane,opts={}){
+  const mid=resolveMatrix(courseKey,sem,lane);
+  if(mid==null)return null;
+  const turn=laneTurn(lane), now=Date.now()+Math.random();
+  const alternatingTurns=opts.alternatingTurns||[];
+  return {
+    id:`p${Math.round(now)}${Math.random().toString(36).slice(2,5)}`,matrix:Number(mid),courseId:courseKey,startSemester:sem,turn,quantity:opts.quantity||1,
+    vacancies:opts.vacancies||defaultVacanciesForPlacement({matrix:Number(mid)}),startPeriod:1,
+    source:opts.source||'simulation',order:now,periodicity:opts.periodicity||'anual',alternatesTurns:!!opts.alternatesTurns,
+    alternatingTurns,span:duration(mid),turnSchedule:buildTurnSchedule(mid,sem,opts.quantity||1,turn,false,[])
+  };
+}
+function samePlacement(a,b){return String(a.courseId||courseKeyOf(a.matrix))===String(b.courseId||courseKeyOf(b.matrix)) && String(a.startSemester)===String(b.startSemester) && String(a.turn)===String(b.turn);}
+function addPlacement(courseKey,sem,lane){
+  const template=inferOfferTemplate(courseKey,sem,lane);
+  const start=semIndex(sem), end=semIndex(current.endSemester);
+  current.placements=current.placements||[];
+  const added=[];
+
+  // 1) Primeiro recupera as coortes reais iniciadas antes do cenário que ainda
+  //    estão cursando no início dele. Assim a nova simulação não começa com
+  //    uma lacuna artificial (ex.: uma coorte de 2026.1 aparece em 2027.1 no
+  //    3º período).
+  const real=realPlacementsForCourse(courseKey);
+  real.filter(p=>semIndex(p.startSemester)<semIndex(current.startSemester) && placementEnd(p)>=semIndex(current.startSemester))
+    .forEach(r=>{
+      if(current.placements.some(p=>samePlacement(p,r)))return;
+      const cp={...r,id:`p${Date.now()}${Math.random().toString(36).slice(2,7)}`,source:'simulation',order:Date.now()+Math.random(),span:duration(r.matrix),vacancies:placementVacancies(r)};
+      current.placements.push(cp);added.push(cp);
+    });
+
+  // 2) Cria a coorte escolhida e as novas coortes seguintes conforme a
+  //    periodicidade cadastrada para o curso. Anual = +2 semestres;
+  //    semestral = +1. A alternância vale para novas coortes, não para a
+  //    mesma coorte.
+  const cadence=template.periodicity==='unica'?null:template.interval;
+  let n=0;
+  for(let si=start;si<=end;si+=cadence||Number.MAX_SAFE_INTEGER){
+    const targetSem=semFromIndex(si);
+    let targetLane=lane;
+    if(template.alternatesTurns && template.alternatingTurns.length>1){
+      targetLane=laneOf(template.alternatingTurns[n%template.alternatingTurns.length]);
+    }
+    const p=makePlacement(courseKey,targetSem,targetLane,{periodicity:template.periodicity,alternatesTurns:template.alternatesTurns,alternatingTurns:template.alternatingTurns});
+    if(p && !current.placements.some(x=>samePlacement(x,p))){current.placements.push(p);added.push(p);}
+    n++;
+    if(!cadence)break;
+  }
+  if(!added.length){alert(`Não foi possível criar uma oferta para \"${courseKey}\".`);return;}
+  setDirty();renderTimeline();renderSemesterSummary();renderSummary();
+}
+function movePlacement(id,sem,lane){
+  const p=current.placements.find(x=>x.id===id);if(!p)return;
+  const key=p.courseId||courseKeyOf(p.matrix);
+  const mid=resolveMatrix(key,sem,lane);
+  if(mid==null){alert(`Não foi encontrada uma matriz vigente para \"${key}\" no semestre ${sem}.`);return;}
+  p.matrix=Number(mid);p.courseId=key;p.startSemester=sem;p.turn=laneTurn(lane);p.span=duration(mid);p.turnSchedule=buildTurnSchedule(mid,sem,p.quantity||1,p.turn,false,[]);p.source=p.source==='real'?'real':'simulation';p.order=Date.now();
+  setDirty();renderTimeline();renderSemesterSummary();renderSummary();
+}
+function removePlacement(id){current.placements=(current.placements||[]).filter(p=>p.id!==id);setDirty();renderTimeline();renderSemesterSummary();renderSummary()}
+let editingPlacementId=null;
+function editPlacement(id){
+  const p=current.placements.find(x=>x.id===id);if(!p)return;
+  editingPlacementId=id;
+  const v=variantLabel(p.matrix);
+  $('offerEditCourse').textContent=`${v.name} · ${v.level||'Nível não informado'} · ${v.form||'Forma não informada'} · início ${p.startSemester} · ${p.turn}`;
+  $('offerPeriodicity').value=p.periodicity||'unica';
+  $('offerQuantity').value=Math.max(1,Number(p.quantity)||1);
+  $('offerVacancies').value=placementVacancies(p);
+  $('offerAlternates').checked=!!p.alternatesTurns;
+  document.querySelectorAll('.offer-turn').forEach(cb=>cb.checked=(p.alternatingTurns||[]).includes(cb.value));
+  $('offerTurnsWrap').style.display=p.alternatesTurns?'block':'none';
+  $('offerModalBack').classList.add('show');
+}
+$('offerAlternates').onchange=()=>{$('offerTurnsWrap').style.display=$('offerAlternates').checked?'block':'none'};
+$('offerCancel').onclick=()=>{$('offerModalBack').classList.remove('show');editingPlacementId=null};
+$('offerModalBack').onclick=e=>{if(e.target===$('offerModalBack')){$('offerModalBack').classList.remove('show');editingPlacementId=null}};
+$('offerOk').onclick=()=>{
+  const p=current.placements.find(x=>x.id===editingPlacementId);if(!p)return;
+  const alternates=$('offerAlternates').checked;
+  const turns=[...document.querySelectorAll('.offer-turn:checked')].map(x=>x.value);
+  if(alternates&&turns.length<2){alert('Selecione pelo menos dois turnos para alternância.');return;}
+  p.periodicity=$('offerPeriodicity').value;
+  p.quantity=Math.max(1,Number($('offerQuantity').value)||1);
+  p.vacancies=Math.max(1,Number($('offerVacancies').value)||defaultVacanciesForPlacement(p));
+  p.alternatesTurns=alternates;
+  p.alternatingTurns=alternates?turns:[];
+  setDirty();$('offerModalBack').classList.remove('show');editingPlacementId=null;
+  renderTimeline();renderSemesterSummary();renderSummary();
+};
+function renderSummary(){
+  const placements=visiblePlacements(),sems=semsBetween(current.startSemester,current.endSemester);
+  const courses=new Set(placements.map(p=>p.matrix)).size;
+  let blocks=0;placements.forEach(p=>{const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester)),b=Math.min(placementEnd(p),semIndex(current.endSemester));if(b>=a)blocks+=(Number(p.quantity)||1)*(b-a+1)});
+  $('summary').innerHTML=`<div class="sum"><strong>${placements.length}</strong><span>entradas/coortes visíveis</span></div><div class="sum"><strong>${courses}</strong><span>matrizes utilizadas</span></div><div class="sum"><strong>${blocks}</strong><span>turmas-semestre projetadas</span></div><div class="sum"><strong>${sems.length}</strong><span>semestres no cenário</span></div>`;
+}
+async function save(){
+  if(!current||!dirty)return;
+  const r=await fetch('/api/pocv/scenarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current.id,changes:{name:$('scenarioName').value.trim()||'Sem nome',startSemester:$('startSem').value,endSemester:$('endSem').value,placements:current.placements,isReal:current.isReal}})});
+  const j=await r.json();if(!r.ok){alert(j.error||'Não foi possível salvar');return}
+  current=j.scenario;scenarios=scenarios.map(s=>s.id===current.id?current:s);dirty=false;renderAll();
+}
+
+// ===== Controles de visualização POCV =====
+window.pocvCollapsedGroups = window.pocvCollapsedGroups || new Set();
+window.pocvCollapsedLanes = window.pocvCollapsedLanes || new Set();
+
+function pocvPopulateFocusCourse(){
+  const sel=document.getElementById('focusCourse');
+  if(!sel) return;
+  const old=sel.value;
+  const map=new Map();
+  document.querySelectorAll('#timeline .group-row-label[data-group]').forEach(el=>{
+    const id=el.dataset.group;
+    const label=el.querySelector('strong')?.textContent?.trim() || id;
+    if(id && !map.has(id)) map.set(id,label);
+  });
+  sel.innerHTML='<option value="">Todos os cursos</option>';
+  [...map.entries()]
+    .sort((a,b)=>norm(a[1]).localeCompare(norm(b[1]),'pt-BR',{numeric:true}))
+    .forEach(([id,label])=>{
+      const o=document.createElement('option');
+      o.value=id; o.textContent=label; sel.appendChild(o);
+    });
+  if(old && map.has(old)) sel.value=old;
+}
+
+function pocvExpandAllGroups(){
+  window.pocvCollapsedGroups=new Set();
+  renderTimeline();
+}
+function pocvCollapseAllGroups(){
+  window.pocvCollapsedGroups=new Set();
+  document.querySelectorAll('#timeline .group-row-label[data-group]').forEach(el=>{
+    window.pocvCollapsedGroups.add(`${el.dataset.lane}|${el.dataset.group}`);
+  });
+  renderTimeline();
+}
+function pocvFocusCourse(id){
+  if(!id){
+    window.pocvCollapsedGroups=new Set();
+    renderTimeline();
+    return;
+  }
+  window.pocvCollapsedGroups=new Set();
+  document.querySelectorAll('#timeline .group-row-label[data-group]').forEach(el=>{
+    if(el.dataset.group!==id){
+      window.pocvCollapsedGroups.add(`${el.dataset.lane}|${el.dataset.group}`);
+    }
+  });
+  renderTimeline();
+  requestAnimationFrame(()=>{
+    const target=[...document.querySelectorAll('#timeline .group-row-label[data-group]')]
+      .find(el=>el.dataset.group===id);
+    if(target) target.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});
+  });
+}
+function pocvWireViewControls(){
+  const ex=document.getElementById('expandGroupsBtn');
+  const co=document.getElementById('collapseGroupsBtn');
+  const sel=document.getElementById('focusCourse');
+  if(ex) ex.onclick=pocvExpandAllGroups;
+  if(co) co.onclick=pocvCollapseAllGroups;
+  if(sel) sel.onchange=()=>pocvFocusCourse(sel.value);
+  pocvPopulateFocusCourse();
+}
+
+function renderAll(){
+  if(!current)return;viewMode=localStorage.getItem('pocv_view_mode')||'grouped';$('scenarioName').value=current.name;$('startSem').value=current.startSemester;$('endSem').value=current.endSemester;fillSemSelects();renderScenarioStrip();renderPalette();updateStatus();renderTimeline();renderSemesterSummary();renderSummary();
+  $('realBtn').style.display=current.isReal?'none':'inline-flex';$('deleteBtn').disabled=current.isReal;$('syncRealBtn').style.display=current.isReal?'inline-flex':'none';updateViewModeButton();
+}
+
+async function openVariables(){
+  $('cfgDefaultVacancies').value=POCV_CONFIG.defaultVacancies;
+  $('cfgSpecializationVacancies').value=POCV_CONFIG.specializationVacancies;
+  $('cfgTeacherHours').value=POCV_CONFIG.teacherHours;
+  $('configModalBack').classList.add('show');
+}
+$('variablesBtn').onclick=openVariables;
+$('cfgCancel').onclick=()=>$('configModalBack').classList.remove('show');
+$('configModalBack').onclick=e=>{if(e.target===$('configModalBack'))$('configModalBack').classList.remove('show')};
+$('cfgSave').onclick=async()=>{
+  const payload={
+    defaultVacancies:Math.max(1,Number($('cfgDefaultVacancies').value)||40),
+    specializationVacancies:Math.max(1,Number($('cfgSpecializationVacancies').value)||60),
+    teacherHours:Math.max(1,Number($('cfgTeacherHours').value)||20)
+  };
+  const r=await fetch('/api/pocv/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const j=await r.json();
+  if(!r.ok)return alert(j.error||'Não foi possível salvar as variáveis');
+  POCV_CONFIG=j.config||payload;
+  $('configModalBack').classList.remove('show');
+  renderTimeline();renderSemesterSummary();renderSummary();
+};
+
+$('courseSearch').oninput=()=>renderPalette();
+$('viewModeBtn').onclick=()=>{viewMode=viewMode==='grouped'?'separate':'grouped';localStorage.setItem('pocv_view_mode',viewMode);renderTimeline()};
+$('syncRealBtn').onclick=async()=>{if(!current?.isReal)return;if(!confirm('Sincronizar o cenário real com a tabela atual de turmas? Isso substituirá as entradas atuais do cenário real pelos dados cadastrados.'))return;const r=await fetch('/api/pocv/scenarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sync-real',sourceId:current.id})});const j=await r.json();if(!r.ok)return alert(j.error||'Erro ao sincronizar');current=j.scenario;scenarios=scenarios.map(s=>s.id===current.id?current:s);dirty=false;renderAll();};
+$('scenarioName').oninput=()=>setDirty();
+$('startSem').onchange=()=>{if(semIndex($('startSem').value)>semIndex($('endSem').value))$('endSem').value=$('startSem').value;current.startSemester=$('startSem').value;current.endSemester=$('endSem').value;setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
+$('endSem').onchange=()=>{if(semIndex($('endSem').value)<semIndex($('startSem').value))$('startSem').value=$('endSem').value;current.endSemester=$('endSem').value;current.startSemester=$('startSem').value;setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
+$('saveBtn').onclick=save;
+$('clearBtn').onclick=()=>{if(!confirm('Limpar todas as entradas deste cenário?'))return;current.placements=[];setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
+$('cloneBtn').onclick=()=>{openModal('Clonar cenário','',true)};
+$('newBtn').onclick=()=>openModal('Novo cenário','',false);
+$('realBtn').onclick=async()=>{if(!confirm('Tornar este cenário o cenário real? O cenário real atual deixará de ser o oficial.'))return;const r=await fetch('/api/pocv/scenarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current.id,changes:{isReal:true}})});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios=scenarios.map(s=>s.id===j.scenario.id?j.scenario:{...s,isReal:false});current=j.scenario;renderAll()};
+$('deleteBtn').onclick=async()=>{if(current.isReal)return;if(!confirm(`Excluir "${current.name}"?`))return;const r=await fetch('/api/pocv/scenarios?id='+encodeURIComponent(current.id),{method:'DELETE'});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios=scenarios.filter(s=>s.id!==current.id);current=scenarios.find(s=>s.isReal)||scenarios[0];renderAll()};
+function openModal(title,placeholder,isClone){$('modalTitle').textContent=title;$('modalName').value=placeholder||`${current?.name||'Cenário'}${isClone?' — cópia':''}`;$('modalBack').classList.add('show');$('modalName').focus();$('modalOk').onclick=async()=>{const name=$('modalName').value.trim()||'Novo cenário';const payload=isClone?{action:'clone',sourceId:current.id,name}:{name,startSemester:current?.startSemester||'2027.1',endSemester:current?.endSemester||'2033.2'};const r=await fetch('/api/pocv/scenarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios.push(j.scenario);current=j.scenario;dirty=false;$('modalBack').classList.remove('show');renderAll()};}
+$('modalCancel').onclick=()=>$('modalBack').classList.remove('show');$('modalBack').onclick=e=>{if(e.target===$('modalBack'))$('modalBack').classList.remove('show')};
+$('prevSemBtn').onclick=()=>{const w=$('timelineWrap');w.scrollBy({left:-Math.max(420,w.clientWidth*0.72),behavior:'smooth'})};
+$('nextSemBtn').onclick=()=>{const w=$('timelineWrap');w.scrollBy({left:Math.max(420,w.clientWidth*0.72),behavior:'smooth'})};
+load().catch(e=>{console.error(e);alert('Não foi possível carregar a POCV: '+e.message)});
+</script>
+</body></html>

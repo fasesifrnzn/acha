@@ -10,6 +10,7 @@ COPY package.json ./
 COPY server.js ./
 COPY app.js ./
 COPY style.css ./
+COPY acha-logo.svg ./
 COPY *.html ./
 COPY data ./data
 

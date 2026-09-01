@@ -1,84 +1,74 @@
-# POCV — implantação Docker / Portainer
+# ACHA — implantação Docker / Portainer
 
-## Opção recomendada: Stack no Portainer
+## Stack
 
-O projeto já possui:
+O projeto possui:
 
-- `Dockerfile`
-- `docker-compose.yml`
-- `.dockerignore`
-- endpoint `/api/health`
-- volume persistente `pocv_data`
-- variável `DB_FILE=/var/data/db.json`
+- `Dockerfile`;
+- `docker-compose.yml`;
+- `docker-compose.bind.yml`;
+- `.dockerignore`;
+- endpoint `/api/health`;
+- volume persistente para o banco;
+- variável `DB_FILE=/var/data/db.json`.
 
-### Deploy
+### Deploy no Portainer
 
-No Portainer:
-
-1. **Stacks → Add stack**.
-2. Dê um nome, por exemplo `pocv`.
-3. Use **Web editor** e cole o conteúdo do `docker-compose.yml`, ou faça o deploy a partir de um repositório Git que contenha estes arquivos.
-4. Faça o deploy da stack.
-5. Acesse:
-
-`http://IP-DO-SERVIDOR:3000`
+1. Acesse **Stacks → Add stack**.
+2. Use o `docker-compose.yml` do repositório.
+3. Faça o deploy.
+4. Acesse `http://IP-DO-SERVIDOR:3000`.
 
 ### Persistência
 
-O banco não fica dentro do container. Ele fica no volume Docker:
+O banco deve ficar fora do container, em armazenamento persistente:
 
-`pocv_data:/var/data`
+```text
+acha_data:/var/data
+```
 
-Portanto, recriar/atualizar o container não deve apagar os dados.
+O arquivo utilizado pelo servidor é:
 
-O arquivo persistido é:
+```text
+/var/data/db.json
+```
 
-`/var/data/db.json`
+**Não remova o volume durante uma atualização.**
 
 ### Atualização
 
-Ao alterar o código:
-
-1. atualize os arquivos no repositório;
-2. faça o redeploy/rebuild da Stack;
-3. mantenha o volume `pocv_data`.
-
-**Não remova o volume durante a atualização.**
+1. atualize o código no repositório;
+2. faça o rebuild/redeploy da Stack;
+3. preserve o volume de dados.
 
 ### Backup
 
-Antes de atualizações importantes, faça backup do volume `pocv_data` ou copie o `db.json` persistido.
+Antes de atualizações importantes, faça backup do `db.json` persistido.
 
-## Teste de saúde
+### Teste de saúde
 
-O container disponibiliza:
-
-`GET /api/health`
-
-Resposta esperada:
-
-```json
-{"ok":true,"service":"pocv","timestamp":"..."}
+```text
+GET /api/health
 ```
 
-## Porta
+A resposta deve indicar `ok: true` e o serviço `acha`.
 
-Por padrão:
+### Porta
 
-`3000:3000`
+A configuração padrão publica:
 
-Se a porta 3000 já estiver ocupada, altere apenas a porta externa, por exemplo:
+```text
+3000:3000
+```
 
-`8080:3000`
-
-Nesse caso o acesso será:
-
-`http://IP-DO-SERVIDOR:8080`
+Se necessário, altere somente a porta externa, por exemplo `8080:3000`.
 
 ## Bind mount
 
-Também existe `docker-compose.bind.yml`, caso o administrador prefira manter o banco em uma pasta explícita no host:
+`docker-compose.bind.yml` permite manter o banco em uma pasta explícita do host:
 
-`./pocv-data:/var/data`
+```text
+./acha-data:/var/data
+```
 
-Para produção, a opção com volume nomeado é a recomendada inicialmente.
+Para produção, o volume nomeado é a opção preferencial da configuração inicial.

@@ -1,37 +1,361 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Projeção — IFRN ZN</title><link rel="stylesheet" href="style.css"><style>
-.proj-summary td,.proj-summary th{text-align:left}.proj-summary td:nth-child(3),.proj-summary td:nth-child(4),.proj-summary td:nth-child(5),.proj-summary td:nth-child(6){text-align:center}
-th[data-col="group"]{width:22%}th[data-col="type"]{width:18%}th[data-col="total"]{width:13%}th[data-col="index"]{width:13%}th[data-col="semavg"]{width:17%}th[data-col="annual"]{width:17%}
-.semester-box{display:flex;align-items:end}.semester-box select{min-width:150px}
-.ch-cell{position:relative}.ch-bg{position:absolute;left:7px;top:50%;height:12px;transform:translateY(-50%);border-radius:6px;opacity:.24;pointer-events:none}.ch-content{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}.good .ch-bg{background:#16a34a}.warn .ch-bg{background:#f59e0b}.bad .ch-bg{background:#dc2626}.good .status{color:#15803d}.warn .status{color:#d97706}.bad .status{color:#dc2626}.index-cell{cursor:pointer;font-weight:700}.index-cell:hover{background:#f0fdfa}
-#teacherModal{display:none;position:fixed;inset:0;background:#0008;z-index:30;align-items:center;justify-content:center}#teacherModal.open{display:flex}.modalbox{background:#fff;border-radius:14px;width:min(1250px,94vw);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 15px 50px #0005}.modalhead{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modalhead h2{margin:0;font-size:18px}.modalbody{overflow:auto;padding:0}.teacher-table{width:100%;border-collapse:collapse;table-layout:fixed}.teacher-table th,.teacher-table td{padding:8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.teacher-table th{background:#f8fafc;color:#475569;font-size:12px}.teacher-table input,.teacher-table select{width:100%;padding:7px;border:1px solid #cbd5e1;border-radius:8px}.modalfoot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.modalfoot .muted{margin-right:auto;align-self:center;font-size:12px}
-</style><script src="app.js"></script></head><body><header><h1>Oferta Acadêmica — IFRN Campus Natal-Zona Norte</h1><p>Projeção de carga-horária por grupo e semestre</p></header>
-<nav class="mainnav"><a href="index.html">📋 Oferta</a><a href="projecao.html" class="active">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
-<section class="panel"><div class="controls"><div class="semester-box"><div style="width:100%"><label>SEMESTRE</label><select id="semester"></select></div></div><div><label>BUSCA LIVRE</label><input id="search" placeholder="Grupo ou tipo..."></div><div><button id="refresh">Atualizar</button></div></div></section>
-<section class="card"><div class="head"><h2>Previsão de carga-horária</h2><span class="muted">Duplo clique no índice de docentes para editar</span></div><div class="tablewrap"><table class="proj-summary"><thead><tr><th data-col="group"><button class="sort" data-key="group">Grupo ↕</button></th><th data-col="type"><button class="sort" data-key="type">Tipo ↕</button></th><th data-col="total"><button class="sort" data-key="total">CH total ↕</button></th><th data-col="index"><button class="sort" data-key="index">Índice docentes ↕</button></th><th data-col="semavg"><button class="sort" data-key="semavg">Média semestral ↕</button></th><th data-col="annual"><button class="sort" data-key="annual">Média anual ↕</button></th></tr></thead><tbody id="summary"></tbody></table></div></section>
-<section class="panel" style="margin-top:16px"><div class="filtergrid"><div><label>GRUPO</label><select id="fGroup"><option value="">Todos</option></select></div><div><label>TURNO</label><select id="fTurn"><option value="">Todos</option></select></div><div><label>PERÍODO</label><select id="fPeriod"><option value="">Todos</option></select></div><div><label>CURSO</label><select id="fCourse"><option value="">Todos</option></select></div><div><label></label><button class="secondary" id="clear">Limpar filtros</button></div></div></section>
-<section class="card"><div class="head"><h2>Distribuição por grupos</h2><span class="count" id="count"></span></div><div class="tablewrap"><table><thead><tr><th>Disciplina</th><th>Curso</th><th>Modalidade</th><th>CH</th><th>Grupo</th><th>Turno</th><th>Período</th></tr></thead><tbody id="detail"></tbody></table></div><div id="empty" class="empty" style="display:none">Nenhuma oferta encontrada.</div></section>
-</main>
-<div id="teacherModal"><div class="modalbox"><div class="modalhead"><div><h2 id="modalTitle">Docentes</h2><div class="muted" id="modalSub"></div></div><button class="secondary" id="closeModal">Fechar</button></div><div class="modalbody"><table class="teacher-table"><thead><tr><th>Docente</th><th>Vínculo</th><th>Disciplina</th><th>Titulação</th><th>Regime</th><th>Afastamento/restrição</th><th>Gestão</th><th>Índice sala de aula</th></tr></thead><tbody id="teacherBody"></tbody></table></div><div class="modalfoot"><span class="muted">Alterações são gravadas no banco de dados do sistema.</span><button id="saveTeachers">Salvar alterações</button></div></div></div>
-<script>
-async function api(url,opt){const r=await fetch(url,opt);if(!r.ok)throw new Error(await r.text());return r.json()}
-let DB=null,details=[],sortKey='group',sortDir=1,modalGroup='';
-const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));const fmt=v=>Math.round(Number(v||0)).toLocaleString('pt-BR');const fmt1=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACHA — Projeção de carga horária</title>
+<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.0"></script>
+<style>
+.proj-page{max-width:1500px}
+.proj-controls{display:grid;grid-template-columns:150px 150px 150px minmax(170px,1fr) 170px auto;gap:10px;align-items:end}
+.proj-controls .field label{margin-bottom:5px}
+.proj-actions{display:flex;gap:7px;justify-content:flex-end}
+.proj-actions .btn{white-space:nowrap}
+.proj-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.proj-kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;min-width:0}
+.proj-kpi .kpi-top{display:flex;align-items:center;gap:8px;color:#475569;font-size:10px;font-weight:900}
+.proj-kpi .kpi-icon{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#f1f5f9;font-size:15px;flex:0 0 auto}
+.proj-kpi strong{display:block;font-size:18px;color:#0f172a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-kpi span{font-size:9px;color:var(--muted)}
+.proj-table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+.proj-grid{display:grid;min-width:1180px;grid-template-columns:185px repeat(var(--cols),minmax(115px,1fr))}
+.proj-cell{min-width:0;padding:2px 4px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);box-sizing:border-box}
+.proj-head{background:#f8fafc;font-size:10px;font-weight:900;color:#475569;text-align:center;position:sticky;top:0;z-index:4}
+.proj-head:first-child{text-align:left;position:sticky;left:0;z-index:6}
+.proj-label{background:#fff;position:sticky;left:0;z-index:3}
+.proj-label strong{display:block;font-size:9px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-label small{display:none;font-size:7px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-label .teacher-index{display:inline-block;font-size:10px;color:#0f766e;font-weight:950;margin-top:2px;letter-spacing:.1px}
+.proj-sem{text-align:center;background:#fff;font-size:9px}
+.proj-sem .total{font-size:9px;color:#64748b;font-weight:700;line-height:1.05}
+.proj-sem .avg{font-size:11px;font-weight:950;line-height:1.05;margin-top:2px;white-space:nowrap}
+.proj-sem .avg small{font-size:8px;font-weight:800}
+.proj-sem .indicator{display:inline-flex;align-items:center;justify-content:center;gap:3px;margin-top:1px;padding:0 3px;border-radius:999px;font-size:8px;font-weight:900;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-sem.ok .indicator{background:#ecfdf5;color:#047857}
+.proj-sem.warn .indicator{background:#fffbeb;color:#b45309}
+.proj-sem.bad .indicator{background:#fef2f2;color:#b91c1c}
+.proj-sem.low .indicator{background:#fff7ed;color:#c2410c}
+.proj-sem.empty{background:#fbfdff;color:#cbd5e1}
+.proj-sem.empty .avg{color:#cbd5e1}
+.proj-sem .dot{font-size:9px}
+.proj-section{grid-column:1/-1;padding:8px 10px;background:#f8fafc;color:#334155;font-size:10px;font-weight:900;border-bottom:1px solid var(--line)}
+.proj-status-grid{display:grid;min-width:1180px;grid-template-columns:185px repeat(var(--cols),minmax(115px,1fr))}
+.status-cell{padding:7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:9px;text-align:center;box-sizing:border-box}
+.status-label{position:sticky;left:0;background:#f8fafc;z-index:3;text-align:left;font-weight:900}
+.status-cell.sem{font-weight:900}
+.status-cell .saldo{display:block;font-size:11px;margin-top:2px}
+.status-cell.ok{color:#047857;background:#f0fdf4}.status-cell.warn{color:#b45309;background:#fffbeb}.status-cell.bad{color:#b91c1c;background:#fff1f2}.status-cell.low{color:#c2410c;background:#fff7ed}
+.proj-footnote{font-size:10px;color:var(--muted);padding:9px 11px;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;background:#fff}
+.proj-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.proj-title h2{margin:0;font-size:14px}.proj-title .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:9px;color:var(--muted)}
+.legend-item{display:inline-flex;align-items:center;gap:4px}.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.legend-ok{background:#16a34a}.legend-warn{background:#f59e0b}.legend-bad{background:#dc2626}.legend-low{background:#ea580c}
 
-function turn(id,p,seq){let r=DB.turn[String(id)]?.[String(p)];return r?r[(seq-1)%r.length]:'A definir'}
-function teacherData(){return DB.teachers}
-function groupTeachers(g){return teacherData().filter(t=>t.group===g)}
-function idx(g){return groupTeachers(g).reduce((s,t)=>s+Number(t.classFactor||0),0)}
-function rowsFor(s){let rows=[];(DB.data.semesters[s]||[]).forEach(cl=>{const c={name:POCV.courseName(DB.data.courses,cl.matrix)},m=DB.data.matrices[String(cl.matrix)]||{};(m.disciplines||[]).forEach(d=>{const ch=d.periods?.[String(cl.period)];if(ch==null||!d.group)return;const key=`${cl.matrix}|${cl.period}|${cl.seq}|${d.name}|${d.group}`;const ov=DB.offers[s]?.[key]||{};rows.push({key,name:ov.name||d.name,course:ov.course||c.name||m.name||'',mode:ov.mode||c.form||c.type||'',ch:Number(ov.ch??ch),group:ov.group??d.group,turn:ov.turn||turn(cl.matrix,cl.period,cl.seq),period:Number(cl.period),matrix:cl.matrix,seq:cl.seq})})});return rows}
-function status(avg,type){const is20=/20\s*h|parcial/i.test(String(type||''));const min=is20?8:10,max=is20?12:20,warn=max-(max-min)*.1;if(avg<min||avg>max)return['bad','⚠',min,max];if(avg>=warn)return['warn','!',min,max];return['good','✓',min,max]}
-function groupAvg(s,g){const rs=rowsFor(s).filter(r=>r.group===g);const ch=rs.reduce((a,r)=>a+r.ch,0),i=idx(g);return i?ch/i:0}
-function annualAvg(year,g){const a=groupAvg(year+'.1',g),b=groupAvg(year+'.2',g);return (a+b)/2}
-function buildSummary(){const s=$('semester').value,year=s.split('.')[0],groups=[...new Set(rowsFor(s).map(r=>r.group).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));let out=groups.map(g=>{const m=DB.meta[g]||{},rs=rowsFor(s).filter(r=>r.group===g),total=rs.reduce((a,r)=>a+r.ch,0),i=idx(g),avg=i?total/i:0,annual=annualAvg(year,g),st=status(avg,m.type),max=st[3],pct=Math.min(100,Math.max(0,avg/max*100));return{g,type:m.type||'',total,index:i,avg,annual,html:`<tr><td>${esc(g)}</td><td>${esc(m.type||'')}</td><td>${fmt(total)} h/a</td><td class="index-cell" data-group="${esc(g)}">${fmt1(i)}</td><td class="ch-cell ${st[0]}" title="Faixa de referência: ${st[2]}–${st[3]} h/a"><div class="ch-bg" style="width:${pct}%"></div><div class="ch-content"><span class="status">${st[1]}</span>${fmt(avg)} h/a</div></td><td>${fmt(annual)} h/a</td></tr>`}});const q=$('search').value.toLowerCase();out=out.filter(r=>(r.g+' '+r.type).toLowerCase().includes(q));out.sort((a,b)=>{let x=a[sortKey],y=b[sortKey];return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'pt-BR'))*sortDir});$('summary').innerHTML=out.map(x=>x.html).join('')}
-function buildFilters(){details=rowsFor($('semester').value);const fill=(id,vals)=>{const el=$(id),cur=el.value;el.innerHTML='<option value="">Todos</option>';[...new Set(vals)].filter(Boolean).sort((a,b)=>String(a).localeCompare(String(b),'pt-BR')).forEach(v=>el.add(new Option(v,v)));if([...el.options].some(o=>o.value===cur))el.value=cur};fill('fGroup',details.map(r=>r.group));fill('fTurn',details.map(r=>r.turn));fill('fPeriod',details.map(r=>r.period));fill('fCourse',details.map(r=>r.course))}
-function buildDetail(){const q=$('search').value.toLowerCase(),g=$('fGroup').value,t=$('fTurn').value,p=$('fPeriod').value,c=$('fCourse').value;let r=details.filter(x=>(!q||(x.name+' '+x.course+' '+x.group).toLowerCase().includes(q))&&(!g||x.group===g)&&(!t||x.turn===t)&&(!p||String(x.period)===p)&&(!c||x.course===c));$('detail').innerHTML=r.map(x=>`<tr><td>${esc(x.name)}</td><td>${POCV.tag(x.course,'course')}</td><td>${esc(x.mode)}</td><td>${fmt(x.ch)} h/a</td><td>${x.group?POCV.tag(x.group,'group'):'<span class="muted">—</span>'}</td><td>${esc(x.turn)}</td><td>${x.period}º</td></tr>`).join('');$('count').textContent=`${r.length} ofertas`;$('empty').style.display=r.length?'none':'block'}
-function prepareProjectionTags(){const gs=[];Object.values(DB?.data?.matrices||{}).forEach(m=>(m?.disciplines||[]).forEach(d=>{if(d?.group)gs.push(d.group)}));Object.keys(DB?.meta||{}).forEach(g=>gs.push(g));POCV.setGroups(gs)}
-function build(){prepareProjectionTags();buildFilters();buildSummary();buildDetail()}
-function options(vals,current){return vals.map(v=>`<option ${v===current?'selected':''}>${esc(v)}</option>`).join('')}
-function openModal(g){modalGroup=g;$('modalTitle').textContent='Docentes — '+g;$('modalSub').textContent='Índice atual: '+fmt1(idx(g));const ts=groupTeachers(g);$('teacherBody').innerHTML=ts.map(t=>`<tr data-id="${t.id}"><td>${esc(t.name)}</td><td>${esc(t.vinculo)}</td><td>${esc(t.discipline)}</td><td>${esc(t.degree)}</td><td><input class="reg" value="${esc(t.regime)}"></td><td><input class="leave" value="${esc(t.leave)}"></td><td><input class="mgmt" value="${esc(t.management)}"></td><td><input class="factor" type="number" step="0.05" min="0" max="1" value="${Number(t.classFactor||0)}"></td></tr>`).join('');$('teacherModal').classList.add('open')}
-$('semester').addEventListener('change',build);$('search').addEventListener('input',()=>{buildSummary();buildDetail()});['fGroup','fTurn','fPeriod','fCourse'].forEach(id=>$(id).addEventListener('change',buildDetail));$('refresh').onclick=async()=>{DB=await api('/api/db');build()};$('clear').onclick=()=>{['fGroup','fTurn','fPeriod','fCourse'].forEach(id=>$(id).value='');$('search').value='';build()};document.querySelectorAll('.sort').forEach(b=>b.onclick=()=>{sortDir=sortKey===b.dataset.key?-sortDir:1;sortKey=b.dataset.key;buildSummary()});$('summary').addEventListener('dblclick',e=>{const c=e.target.closest('.index-cell');if(c)openModal(c.dataset.group)});$('closeModal').onclick=()=>$('teacherModal').classList.remove('open');$('saveTeachers').onclick=async()=>{for(const tr of document.querySelectorAll('#teacherBody tr')){await api('/api/teacher',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:tr.dataset.id,changes:{regime:tr.querySelector('.reg').value,leave:tr.querySelector('.leave').value,management:tr.querySelector('.mgmt').value,classFactor:Number(tr.querySelector('.factor').value||0)}})});};DB=await api('/api/db');$('modalSub').textContent='Índice atualizado: '+fmt1(idx(modalGroup));buildSummary();};
-(async()=>{DB=await api('/api/db');Object.keys(DB.data.semesters).forEach(s=>$('semester').add(new Option(s,s)));$('semester').value=DB.data.semesters['2027.1']?'2027.1':Object.keys(DB.data.semesters)[0];build()})().catch(e=>alert('Não foi possível carregar o banco de dados: '+e.message));
-</script></body></html>
+.group-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:999px;border:1px solid var(--tag-border);background:var(--tag-bg);color:var(--tag-fg);font-weight:900;cursor:pointer;max-width:100%;vertical-align:middle}
+.group-chip .group-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.group-chip .group-count{font-size:8px;font-weight:950;opacity:.9}
+.proj-sem{cursor:pointer}
+.proj-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.38);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.proj-modal-backdrop.open{display:flex}
+.proj-modal{width:min(760px,94vw);max-height:82vh;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 70px rgba(15,23,42,.28);padding:16px}
+.proj-modal h3{margin:0 0 3px;font-size:15px;color:#0f172a}.proj-modal .modal-sub{font-size:10px;color:var(--muted);margin-bottom:10px}
+.proj-detail-table{width:100%;border-collapse:collapse;font-size:10px}.proj-detail-table th,.proj-detail-table td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:left}.proj-detail-table th{font-size:9px;color:#64748b;background:#f8fafc}.proj-detail-total{margin-top:10px;font-weight:950;text-align:right}
+.proj-teachers{display:flex;flex-direction:column;gap:5px}.proj-teacher-row{display:flex;justify-content:space-between;gap:10px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#f8fafc;font-size:10px}
+
+@media(max-width:1100px){.proj-controls{grid-template-columns:repeat(3,1fr)}.proj-kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.proj-controls{grid-template-columns:1fr 1fr}.proj-kpis{grid-template-columns:1fr 1fr}}
+
+.proj-sem{position:relative;cursor:help}
+.proj-tooltip{position:fixed;z-index:1000;max-width:440px;min-width:260px;padding:9px 11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;box-shadow:0 12px 28px rgba(15,23,42,.16);font-size:10px;line-height:1.4;color:#334155;pointer-events:none;white-space:pre-line;display:none}
+.proj-tooltip strong{color:#0f172a}
+</style>
+</head>
+<body>
+<header><h1>ACHA — Projeção de carga horária</h1><p>Evolução da carga horária docente conforme as ofertas previstas no cenário selecionado.</p></header>
+<nav class="mainnav"></nav>
+<main class="proj-page">
+<section class="panel">
+  <div class="proj-controls">
+    <div class="field"><label>CENÁRIO</label><select id="scenario"></select></div>
+    <div class="field"><label>SEMESTRE INICIAL</label><select id="startSem"></select></div>
+    <div class="field"><label>SEMESTRE FINAL</label><select id="endSem"></select></div>
+    <div class="field"><label>GRUPO DE DOCENTES</label><select id="group"><option value="">Todos os grupos</option></select></div>
+    <div class="field"><label>TIPO</label><select id="type"><option value="">Todos os tipos</option></select></div>
+    <div class="proj-actions"><button class="btn secondary" id="refresh">↻ Atualizar</button></div>
+  </div>
+</section>
+<section class="proj-kpis" id="kpis"></section>
+<section class="card" style="margin-top:12px;padding:12px">
+  <div class="proj-title">
+    <h2>Visão por semestre</h2>
+    <div class="legend"><span class="legend-item"><i class="legend-dot legend-ok"></i> OK</span><span class="legend-item"><i class="legend-dot legend-warn"></i> Limite</span><span class="legend-item"><i class="legend-dot legend-low"></i> Abaixo do mínimo</span><span class="legend-item"><i class="legend-dot legend-bad"></i> Déficit</span></div>
+  </div>
+  <div class="proj-table-wrap"><div class="proj-status-grid" id="semesterStatus"></div></div>
+</section>
+<section class="card" style="margin-top:12px;padding:12px">
+  <div class="proj-title"><h2>Carga horária por grupo e semestre</h2><span class="muted" style="font-size:9px">CH total em h/a · média do grupo em h/a por índice docente</span></div>
+  <div class="proj-table-wrap"><div class="proj-grid" id="projectionGrid"></div></div>
+  <div class="proj-footnote">Todas as tabelas usam a mesma grade de semestres. A célula mostra a CH total em h/a e a média do grupo em h/a por índice docente. A comparação com os limites do PIT é feita em horas-relógio (1 h/a = 45 min). Os limites de aulas são calculados por docente conforme o regime previsto no Art. 21 da Resolução 75/2026-CONSUP/IFRN; ao passar o cursor, o detalhamento apresenta as disciplinas e turmas que compõem a carga.</div>
+</section>
+</main>
+<script>
+let DB=null, SCENARIOS=[], CFG={defaultVacancies:40,specializationVacancies:60};
+const HA_MINUTES=45; // 1 h/a = 45 minutos
+const CLOCK_PER_HA=HA_MINUTES/60; // 0,75 h-relógio por h/a
+const $=id=>document.getElementById(id), esc=v=>POCV.esc(v), norm=v=>POCV.norm(v);
+function semIndex(s){const m=String(s).match(/^(\d{4})\.(1|2)$/);return m?Number(m[1])*2+Number(m[2])-1:NaN}
+function semFromIndex(i){return `${Math.floor(i/2)}.${i%2+1}`}
+function semsBetween(a,b){let x=semIndex(a),y=semIndex(b),o=[];if(!Number.isFinite(x)||!Number.isFinite(y)||y<x)return o;for(;x<=y;x++)o.push(semFromIndex(x));return o}
+function course(id){return POCV.courseRecord(DB?.data?.courses||[],id)||{}}
+function matrix(id){return DB?.data?.matrices?.[String(id)]||{}}
+function duration(id){const m=matrix(id);const nums=(m.disciplines||[]).flatMap(d=>Object.keys(d.periods||{}).map(Number).filter(Number.isFinite));return Math.max(1,Number(m.duration)||0,...nums,1)}
+function placementEnd(p){return semIndex(p.startSemester)+duration(p.matrix)-1}
+function courseKey(p){return String(p.courseId||course(p.matrix)?.course_id||'').trim()}
+function placementTurn(p){return String(p.turn||'A definir')}
+function activePlacement(p,sem){const si=semIndex(sem),a=semIndex(p.startSemester);return Number.isFinite(a)&&si>=a&&si<=placementEnd(p)}
+function groupKey(v){return window.POCV?.groupKey?window.POCV.groupKey(v):String(v??'').trim().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/\\s+/g,' ')}
+function canonicalGroupName(key){
+  const k=groupKey(key);
+  const candidates=[
+    ...(DB?.teachers||[]).map(t=>String(t.group||'').trim()),
+    ...Object.keys(DB?.meta||{}).map(String)
+  ].filter(Boolean);
+  const found=candidates.find(g=>groupKey(g)===k);
+  return found||String(key||'').trim()||'—';
+}
+function groupMeta(key){
+  const k=groupKey(key);
+  const entry=Object.entries(DB?.meta||{}).find(([name])=>groupKey(name)===k);
+  return entry?.[1]||{};
+}
+function groupTagHtml(g){
+  const key=groupKey(g), label=canonicalGroupName(key), teachers=(DB?.teachers||[]).filter(t=>groupKey(t.group)===key);
+  const idx=teachers.reduce((sum,t)=>sum+Number(t.classFactor||0),0);
+  const c=POCV.color?POCV.color(label,'group'):{bg:'#f1f5f9',fg:'#334155',border:'#cbd5e1'};
+  return `<span class=\"group-chip\" data-group=\"${esc(key)}\" style=\"--tag-bg:${c.bg};--tag-fg:${c.fg};--tag-border:${c.border}\" title=\"Clique para ver os docentes do grupo\"><span class=\"group-name\">${esc(label)}</span>${teachers.length?`<span class=\"group-count\">${fmt1(idx)} prof.</span>`:''}</span>`;
+}
+function workloadForSemester(scenario,sem){
+  const out={};
+  (scenario?.placements||[]).forEach(p=>{
+    if(!activePlacement(p,sem))return;
+    const period=semIndex(sem)-semIndex(p.startSemester)+1,m=matrix(p.matrix),q=Number(p.quantity)||1;
+    (m.disciplines||[]).forEach(d=>{
+      const raw=String(d.group||'').trim(),key=groupKey(raw),ch=Number(d.periods?.[String(period)]);
+      if(!key||!Number.isFinite(ch))return;
+      out[key]=(out[key]||0)+ch*q;
+    });
+  });
+  return out;
+}
+function teacherIndex(g){
+  const key=groupKey(g);
+  return (DB?.teachers||[]).filter(t=>groupKey(t.group)===key).reduce((s,t)=>s+Number(t.classFactor||0),0);
+}
+function teacherLimits(t){
+  const regime=String(t.regime||'').toUpperCase();
+  // A Resolução/PIT estabelece limites em horas-relógio de aula.
+  // As matrizes trabalham em h/a; por isso a comparação é feita após
+  // converter h/a -> horas-relógio (1 h/a = 45 min), sem alterar a exibição.
+  const base=/20\s*(HORAS?|H)|^20$/.test(regime)?{min:8,max:12}:{min:10,max:20};
+  const factor=Number(t.classFactor||0);
+  return {min:base.min*factor,max:base.max*factor};
+}
+function haToClock(ha){return Number(ha||0)*CLOCK_PER_HA}
+function clockToHa(h){return Number(h||0)/CLOCK_PER_HA}
+function groupCapacity(g){
+  const key=groupKey(g);
+  const ts=(DB?.teachers||[]).filter(t=>groupKey(t.group)===key);
+  return ts.reduce((o,t)=>{const l=teacherLimits(t);o.min+=l.min;o.max+=l.max;o.index+=Number(t.classFactor||0);o.teachers+=1;return o},{min:0,max:0,index:0,teachers:0});
+}
+function capacityByGroup(){
+  const out={};
+  (DB?.teachers||[]).forEach(t=>{
+    const key=groupKey(t.group);
+    if(key){const l=teacherLimits(t);out[key]=(out[key]||{min:0,max:0,index:0});out[key].min+=l.min;out[key].max+=l.max;out[key].index+=Number(t.classFactor||0);}
+  });
+  return out;
+}
+function limits(g){const c=groupCapacity(g);return {min:c.min,max:c.max,warn:c.max*0.9,idx:c.index};}
+function cellState(g,totalHa){
+  if(!totalHa)return {cls:'empty',label:'—',title:'Sem carga projetada neste semestre.',avg:0};
+  const l=limits(g), totalClock=haToClock(totalHa), avgHa=l.idx?totalHa/l.idx:totalHa;
+  if(l.idx<=0)return {cls:'bad',label:'Déficit',title:`Nenhum docente cadastrado para ${g}. Carga projetada: ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio).`,avg:avgHa};
+  if(totalClock>l.max){
+    const excessClock=totalClock-l.max;
+    // Estimativa conservadora: docente adicional pela maior capacidade individual.
+    const groupTeachers=(DB?.teachers||[]).filter(t=>groupKey(t.group)===groupKey(g));
+    const maxPerTeacher=Math.max(1,...groupTeachers.map(t=>teacherLimits(t).max));
+    const add=Math.max(1,Math.ceil(excessClock/maxPerTeacher));
+    return {cls:'bad',label:`Déficit · +${add}`,title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) acima da capacidade máxima de aulas do grupo (${fmt(clockToHa(l.max))} h/a = ${fmt(l.max)} h-relógio). Necessário acrescentar aproximadamente ${add} docente(s).`,avg:avgHa};
+  }
+  if(totalClock<l.min)return {cls:'low',label:'Abaixo do mínimo',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) abaixo do mínimo agregado de aulas do grupo (${fmt(clockToHa(l.min))} h/a = ${fmt(l.min)} h-relógio).`,avg:avgHa};
+  if(totalClock>=l.warn)return {cls:'warn',label:'Limite',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) próxima do limite máximo agregado de ${fmt(clockToHa(l.max))} h/a (${fmt(l.max)} h-relógio).`,avg:avgHa};
+  return {cls:'ok',label:'OK',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) dentro da faixa agregada de ${fmt(clockToHa(l.min))} a ${fmt(clockToHa(l.max))} h/a.`,avg:avgHa};
+}
+function courseCodeForMatrix(id){
+  const map={1:'4206',2:'4206',3:'0000',4:'0000',5:'4407',6:'4407',7:'4407',8:'4111',9:'4111',10:'4411',11:'4411',12:'4506',13:'4506',14:'4510',15:'4510',16:'4069',17:'4069',18:'4069',19:'4103',20:'4103'};
+  return map[String(id)]||'0000';
+}
+function turnCode(t){const x=String(t||'').toLowerCase();return x.includes('manh')?'M':x.includes('tard')||x.includes('vesp')?'V':x.includes('noit')?'N':'X'}
+function placementClassCodes(p,sem){
+  const period=semIndex(sem)-semIndex(p.startSemester)+1, qty=Math.max(1,Number(p.quantity)||1), code=courseCodeForMatrix(p.matrix), tc=turnCode(p.turn);
+  const base=(p.turmaCodes||p.classCodes||[]);
+  if(Array.isArray(base)&&base.length)return base.map(String);
+  return Array.from({length:qty},(_,i)=>`${period}.${code}.${i+1}${tc}`);
+}
+function workloadDetailsForSemester(scenario,sem,group){
+  const si=semIndex(sem),rows=[];
+  (scenario?.placements||[]).forEach(p=>{
+    if(!activePlacement(p,sem))return;
+    const period=si-semIndex(p.startSemester)+1,m=matrix(p.matrix),q=Math.max(1,Number(p.quantity)||1);
+    const c=course(p.matrix),name=c.course_name||c.name||p.courseId||`Matriz ${p.matrix}`;
+    const codes=placementClassCodes(p,sem);
+    (m.disciplines||[]).forEach(d=>{
+      const g=groupKey(d.group),ch=Number(d.periods?.[String(period)]);
+      if(g!==groupKey(group)||!Number.isFinite(ch)||ch<=0)return;
+      for(let i=0;i<q;i++) rows.push({discipline:String(d.name||d.discipline||d.component||d.title||'Disciplina'),course:String(name),turma:codes[i]||`${period}.${courseCodeForMatrix(p.matrix)}.${i+1}${turnCode(p.turn)}`,ch:Number(ch)});
+    });
+  });
+  return rows;
+}
+function detailTitle(rows,total,sem,g){
+  if(!rows.length)return `Sem carga projetada para ${g} em ${sem}.`;
+  const lines=rows.map(r=>`${r.discipline} — ${r.turma} — ${r.course}: ${fmt(r.ch)} h/a (${fmt(haToClock(r.ch))} h-relógio)`).join('\\n');
+  return `Detalhamento da carga de ${g} em ${sem} (${fmt(total)} h)\\n\\n${lines}`;
+}
+function fmt(n){return Math.round(Number(n)||0).toLocaleString('pt-BR')}
+function fmt1(n){return Number(n||0).toLocaleString('pt-BR',{maximumFractionDigits:1})}
+function scenarioCurrent(){return SCENARIOS.find(s=>s.id===$('scenario').value)||SCENARIOS[0]}
+function fillSelects(){
+  const sc=scenarioCurrent();if(!sc)return;
+  const all=semsBetween(sc.startSemester,sc.endSemester);
+  const fill=(el,vals,cur)=>{el.innerHTML='';vals.forEach(v=>el.add(new Option(v,v)));if(cur&&vals.includes(cur))el.value=cur;};
+  fill($('startSem'),all,$('startSem').value||sc.startSemester);fill($('endSem'),all,$('endSem').value||sc.endSemester);
+  const groupMap=new Map();
+  (DB.teachers||[]).forEach(t=>{const label=String(t.group||'').trim(),key=groupKey(label);if(label&&key&&!groupMap.has(key))groupMap.set(key,canonicalGroupName(key));});
+  Object.keys(DB.meta||{}).forEach(label=>{const key=groupKey(label);if(label&&key&&!groupMap.has(key))groupMap.set(key,canonicalGroupName(key));});
+  const groups=[...groupMap.entries()].sort((a,b)=>a[1].localeCompare(b[1],'pt-BR')).map(([key,label])=>({key,label}));
+  const oldg=$('group').value;$('group').innerHTML='<option value="">Todos os grupos</option>';groups.forEach(g=>$('group').add(new Option(g.label,g.key)));if(groups.some(g=>g.key===groupKey(oldg)))$('group').value=groupKey(oldg);
+  const types=[...new Set(Object.values(DB.meta||{}).map(x=>String(x.type||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));const oldt=$('type').value;$('type').innerHTML='<option value="">Todos os tipos</option>';types.forEach(t=>$('type').add(new Option(t,t)));if(types.includes(oldt))$('type').value=oldt;
+}
+function selectedSems(){let a=$('startSem').value,b=$('endSem').value;if(semIndex(a)>semIndex(b))[a,b]=[b,a];return semsBetween(a,b)}
+function rawWorkloadForSemester(scenario,sem){
+  const si=semIndex(sem),out={groups:{},unclassified:0,unclassifiedRows:[]};
+  (scenario?.placements||[]).forEach(p=>{
+    if(!activePlacement(p,sem))return;
+    const period=si-semIndex(p.startSemester)+1,m=matrix(p.matrix),q=Number(p.quantity)||1;
+    (m.disciplines||[]).forEach(d=>{
+      const ch=Number(d.periods?.[String(period)]);
+      if(!Number.isFinite(ch)||ch<=0)return;
+      const raw=String(d.group||'').trim(),key=groupKey(raw),value=ch*q;
+      if(key)out.groups[key]=(out.groups[key]||0)+value;
+      else {out.unclassified+=value;out.unclassifiedRows.push({name:String(d.name||d.discipline||d.component||'Disciplina'),ch:value,course:course(p.matrix)?.course_name||course(p.matrix)?.name||p.courseId||''});}
+    });
+  });
+  return out;
+}
+function renderStatus(sems,scenario){
+  const cap=capacityByGroup(),rows=sems.map(sem=>{
+    const raw=rawWorkloadForSemester(scenario,sem),req=raw.groups,totalHa=Object.values(req).reduce((a,b)=>a+b,0)+raw.unclassified;
+    const capacityClock=Object.values(cap).reduce((a,b)=>a+b.max,0),minCapacityClock=Object.values(cap).reduce((a,b)=>a+b.min,0),totalClock=haToClock(totalHa),saldoClock=capacityClock-totalClock;
+    let state='ok',label='Viável';
+    if(totalClock>capacityClock)state='bad',label='Déficit';
+    else if(totalClock<minCapacityClock)state='low',label='Abaixo do mínimo';
+    else if(totalClock>=capacityClock*.9)state='warn',label='Limite';
+    return {sem,total:totalHa,totalClock,capacity:clockToHa(capacityClock),minCapacity:clockToHa(minCapacityClock),saldo:clockToHa(saldoClock),state,label,unclassified:raw.unclassified,unclassifiedRows:raw.unclassifiedRows};
+  });
+  $('semesterStatus').style.setProperty('--cols',sems.length);
+  let html=`<div class="status-cell status-label"><strong>SEMESTRE</strong><small style="display:block;color:var(--muted);margin-top:2px">situação · saldo</small></div>`;
+  rows.forEach(r=>html+=`<div class="status-cell sem ${r.state}" title="CH projetada: ${fmt(r.total)} h/a (${fmt(r.totalClock)} h-relógio) · máximo disponível: ${fmt(r.capacity)} h/a · mínimo agregado: ${fmt(r.minCapacity)} h/a · saldo: ${r.saldo>=0?'+':''}${fmt(r.saldo)} h/a${r.unclassified?` · ${fmt(r.unclassified)} h/a sem grupo cadastrado`:''}"><strong>${esc(r.sem)}</strong><span class="saldo">${r.saldo>=0?'+':''}${fmt(r.saldo)} h/a</span><small>${esc(r.label)}${r.unclassified?` · +${fmt(r.unclassified)} h/a não classificada`:''}</small></div>`);
+  $('semesterStatus').innerHTML=html;
+  return rows;
+}
+function renderGrid(sems,scenario){
+  const reqBySem=Object.fromEntries(sems.map(s=>[s,workloadForSemester(scenario,s)]));
+  const groupFilter=$('group').value,typeFilter=$('type').value,groupFilterKey=groupFilter?groupKey(groupFilter):'';
+  const groups=[...new Set(sems.flatMap(s=>Object.keys(reqBySem[s])))]
+    .filter(g=>!groupFilterKey||g===groupFilterKey)
+    .filter(g=>{if(!typeFilter)return true;const label=canonicalGroupName(g);return String(groupMeta(g).type||'')===typeFilter})
+    .sort((a,b)=>canonicalGroupName(a).localeCompare(canonicalGroupName(b),'pt-BR'));
+  $('projectionGrid').style.setProperty('--cols',sems.length);
+  let html=`<div class="proj-cell proj-head">GRUPO</div>${sems.map(s=>`<div class="proj-cell proj-head">${esc(s)}</div>`).join('')}`;
+  groups.forEach(g=>{
+    const idx=teacherIndex(g);
+    html+=`<div class="proj-cell proj-label">${groupTagHtml(g)} <span class="teacher-index">Índice ${fmt1(idx)}</span></div>`;
+    sems.forEach(sem=>{
+      const total=Number(reqBySem[sem][g]||0),st=cellState(g,total),rows=workloadDetailsForSemester(scenario,sem,g);
+      const data=encodeURIComponent(JSON.stringify({g,sem,total,rows}));
+      html+=total
+        ? `<div class="proj-cell proj-sem ${st.cls}" data-detail="${data}"><div class="avg">${fmt(total)} h/a</div><div class="indicator"><span class="dot">${st.cls==='ok'?'●':st.cls==='warn'?'▲':st.cls==='low'?'▼':'●'}</span>${esc(st.label)}</div></div>`
+        : `<div class="proj-cell proj-sem empty" data-detail="${data}"><div class="avg">0 h/a</div><div class="indicator">Sem carga</div></div>`;
+    });
+  });
+  // Cargas sem grupo cadastrado não podem desaparecer do total: exiba-as como linha própria.
+  // Isso mantém a soma da grade consistente com a CH geral (ex.: 868 h/a em 2027.1).
+  const unclassifiedBySem=Object.fromEntries(sems.map(sem=>{
+    const raw=rawWorkloadForSemester(scenario,sem);
+    return [sem,raw];
+  }));
+  const hasUnclassified=sems.some(sem=>Number(unclassifiedBySem[sem]?.unclassified||0)>0);
+  if(hasUnclassified && !groupFilterKey){
+    html+=`<div class="proj-cell proj-label"><span class="group-chip" style="--tag-bg:#fff7ed;--tag-fg:#9a3412;--tag-border:#fed7aa" title="Disciplinas sem grupo cadastrado"><span class="group-name">Não classificado</span></span></div>`;
+    sems.forEach(sem=>{
+      const raw=unclassifiedBySem[sem],total=Number(raw?.unclassified||0);
+      const data=encodeURIComponent(JSON.stringify({g:'__unclassified__',sem,total,rows:(raw?.unclassifiedRows||[]).map(r=>({discipline:r.name,course:r.course,turma:'—',ch:r.ch}))}));
+      html+=total?`<div class="proj-cell proj-sem low" data-detail="${data}"><div class="avg">${fmt(total)} h/a</div><div class="indicator"><span class="dot">▲</span>Sem grupo</div></div>`:`<div class="proj-cell proj-sem empty" data-detail="${data}"><div class="avg">0 h/a</div><div class="indicator">Sem carga</div></div>`;
+    });
+  }
+  if(!groups.length && !hasUnclassified)html+=`<div class="proj-cell proj-label" style="grid-column:1/-1;text-align:center;color:var(--muted)">Nenhum grupo encontrado para os filtros selecionados.</div>`;
+  $('projectionGrid').innerHTML=html;
+  bindProjectionCells();
+}
+function renderKpis(sems,scenario,statusRows){
+  const cap=statusRows.length?statusRows[0].capacity:0,total=sems.reduce((s,sem)=>s+Object.values(workloadForSemester(scenario,sem)).reduce((a,b)=>a+b,0),0),avg=sems.length?total/sems.length:0,viable=statusRows.filter(x=>x.state==='ok').length,def=statusRows.filter(x=>x.state==='bad').length;
+  $('kpis').innerHTML=`<div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">👥</span>Professores disponíveis</div><strong>${fmt1((DB.teachers||[]).reduce((s,t)=>s+Number(t.classFactor||0),0))}</strong><span>índice de docentes equivalentes</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">🗓</span>CH disponível / semestre</div><strong>${fmt(cap)} h/a</strong><span>limite máximo de aulas convertido para h/a</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">📊</span>CH projetada média</div><strong>${fmt(avg)} h/a</strong><span>média dos semestres selecionados</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">⚖</span>Saldo médio</div><strong>${fmt1(statusRows.length?statusRows.reduce((s,x)=>s+x.saldo,0)/statusRows.length:0)} h/a</strong><span>${def?def+' semestre(s) com déficit':'sem déficit de capacidade'}</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">✓</span>Semestres viáveis</div><strong>${viable}</strong><span>de ${sems.length} selecionados</span></div>`;
+}
+
+function openProjModal(title,sub,body){
+  let b=document.getElementById('projModalBackdrop');
+  if(!b){
+    b=document.createElement('div');b.id='projModalBackdrop';b.className='proj-modal-backdrop';
+    b.innerHTML='<div class="proj-modal"><button id="projModalClose" class="btn" style="float:right">Fechar</button><div id="projModalContent"></div></div>';
+    document.body.appendChild(b);
+    b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open')});
+    document.getElementById('projModalClose').onclick=()=>b.classList.remove('open');
+  }
+  document.getElementById('projModalContent').innerHTML=`<h3>${esc(title)}</h3><div class="modal-sub">${esc(sub)}</div>${body}`;
+  b.classList.add('open');
+}
+function bindProjectionCells(){
+  document.querySelectorAll('.proj-sem[data-detail]').forEach(el=>{
+    el.onclick=()=>{
+      let d;try{d=JSON.parse(decodeURIComponent(el.dataset.detail))}catch(_){return}
+      const rows=d.rows||[];
+      const body=rows.length
+        ? `<table class="proj-detail-table"><thead><tr><th>Disciplina</th><th>Turma</th><th>Curso</th><th>CH</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.discipline)}</td><td>${esc(r.turma)}</td><td>${esc(r.course)}</td><td>${fmt(r.ch)} h/a</td></tr>`).join('')}</tbody></table><div class="proj-detail-total">Total: ${fmt(d.total)} h/a</div>`
+        : `<div style="padding:20px;text-align:center;color:var(--muted)">Nenhuma disciplina com carga neste grupo e semestre.</div>`;
+      openProjModal(`${d.g==='__unclassified__'?'Não classificado':canonicalGroupName(d.g)} — ${d.sem}`,'Disciplinas e turmas que compõem a carga',body);
+    };
+  });
+  document.querySelectorAll('.group-chip[data-group]').forEach(el=>{
+    el.onclick=e=>{
+      e.stopPropagation();
+      const g=decodeURIComponent(el.dataset.group),ts=groupTeachers(g);
+      const body=ts.length
+        ? `<div class="proj-teachers">${ts.map(t=>`<div class="proj-teacher-row"><span>${esc(t.name||t.nome||'Docente')}</span><strong>${fmt1(t.classFactor||0)} prof. eq.</strong></div>`).join('')}</div>`
+        : `<div style="padding:20px;text-align:center;color:var(--muted)">Nenhum docente cadastrado neste grupo.</div>`;
+      openProjModal(canonicalGroupName(g),'Docentes vinculados ao grupo',body);
+    };
+  });
+}
+function bindProjectionTooltips(){}
+function render(){const sc=scenarioCurrent();if(!sc)return;const sems=selectedSems();const statusRows=renderStatus(sems,sc);renderGrid(sems,sc);renderKpis(sems,sc,statusRows);bindProjectionTooltips()}
+async function load(){
+  const [dbR,scR,cfgR]=await Promise.all([fetch('/api/db',{cache:'no-store'}),fetch('/api/pocv/scenarios',{cache:'no-store'}),fetch('/api/pocv/config',{cache:'no-store'})]);
+  DB=await dbR.json();const sj=await scR.json();const cj=await cfgR.json();SCENARIOS=sj.scenarios||[];CFG=cj.config||CFG;
+  const old=$('scenario').value;$('scenario').innerHTML='';SCENARIOS.forEach(s=>$('scenario').add(new Option(`${s.name}${s.isReal?' · Real':''}`,s.id)));if(SCENARIOS.some(s=>s.id===old))$('scenario').value=old;else $('scenario').value=(SCENARIOS.find(s=>s.isReal)||SCENARIOS[0])?.id||'';
+  fillSelects();render();
+}
+$('scenario').onchange=()=>{const s=scenarioCurrent();if(s){$('startSem').value=s.startSemester;$('endSem').value=s.endSemester}fillSelects();render()};
+$('startSem').onchange=render;$('endSem').onchange=render;$('group').onchange=render;$('type').onchange=render;$('refresh').onclick=()=>load().catch(e=>alert('Não foi possível atualizar a projeção: '+e.message));
+load().catch(e=>alert('Não foi possível carregar a projeção: '+e.message));
+</script>
+</body></html>

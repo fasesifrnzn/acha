@@ -1,9 +1,9 @@
 services:
-  pocv:
+  acha:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pocv
+    container_name: acha
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -12,7 +12,7 @@ services:
       PORT: 3000
       DB_FILE: /var/data/db.json
     volumes:
-      - pocv_data:/var/data
+      - acha_data:/var/data
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3000/api/health"]
       interval: 30s
@@ -21,5 +21,5 @@ services:
       start_period: 10s
 
 volumes:
-  pocv_data:
-    name: pocv_data
+  acha_data:
+    name: acha_data

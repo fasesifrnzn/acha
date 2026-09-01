@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Variáveis | ACHA</title>
+<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.0"></script>
+<style>
+.wrap{max-width:900px;margin:22px auto;padding:0 18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.head{padding:16px;border-bottom:1px solid var(--line)}
+.body{padding:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.fieldbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:#f8fafc}
+.fieldbox label{display:block;font-size:10px;font-weight:900;color:#52657d;margin-bottom:6px}
+.fieldbox input{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:14px}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>ACHA — Variáveis</h1><p>Parâmetros padrão usados nas projeções de oferta e viabilidade docente.</p></header>
+<nav class="mainnav"></nav>
+<main class="wrap">
+<section class="card">
+<div class="head"><h2 style="margin:0;font-size:17px">Variáveis do sistema</h2><div class="note">Alterações aqui passam a valer para novas ofertas e para o cálculo da viabilidade docente.</div></div>
+<div class="body">
+<div class="grid">
+<div class="fieldbox"><label>VAGAS PADRÃO POR TURMA</label><input id="defaultVacancies" type="number" min="1"></div>
+<div class="fieldbox"><label>VAGAS PADRÃO — ESPECIALIZAÇÃO</label><input id="specializationVacancies" type="number" min="1"></div>
+<div class="fieldbox"><label>HORAS DE REFERÊNCIA POR DOCENTE / SEMESTRE</label><input id="teacherHours" type="number" min="1"></div>
+</div>
+<div class="note">Padrões iniciais: 40 alunos por turma e 60 na especialização. As vagas de uma oferta já existente podem ser alteradas individualmente pelo lápis da oferta.</div>
+<div class="actions"><button id="save" class="primary">Salvar variáveis</button></div>
+<div id="msg" class="note"></div>
+</div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+async function load(){
+ const r=await fetch('/api/pocv/config'); const j=await r.json();
+ if(!r.ok) return $('msg').textContent=j.error||'Erro ao carregar';
+ $('defaultVacancies').value=j.config.defaultVacancies;
+ $('specializationVacancies').value=j.config.specializationVacancies;
+ $('teacherHours').value=j.config.teacherHours;
+}
+$('save').onclick=async()=>{
+ const payload={
+   defaultVacancies:Math.max(1,Number($('defaultVacancies').value)||40),
+   specializationVacancies:Math.max(1,Number($('specializationVacancies').value)||60),
+   teacherHours:Math.max(1,Number($('teacherHours').value)||20)
+ };
+ const r=await fetch('/api/pocv/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ const j=await r.json();
+ $('msg').textContent=r.ok?'Variáveis salvas com sucesso.':(j.error||'Não foi possível salvar');
+};
+load();
+</script>
+</body></html>

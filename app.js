@@ -2,13 +2,17 @@
   const navItems=[
     ['dashboard.html','home','Início'],
     ['index.html','clipboard','Oferta'],
+    ['pocv.html','timeline','Cenários'],
     ['alocacao.html','teacher','Alocação docente'],
-    ['projecao.html','chart','Projeção por turno'],
+    ['projecao-turno.html','chart','Projeção por turno'],
+    ['projecao-semestre.html','chart','Projeção por semestre'],
+    ['projecao-cenario.html','timeline','Projeção por cenário'],
     ['matrizes.html','book','Matrizes'],
     ['turmas.html','users','Turmas'],
     ['docentes.html','person','Docentes'],
     ['grupos.html','tag','Grupos'],
     ['regras.html','gear','Regras'],
+    ['variaveis.html','gear','Variáveis'],
     ['demandas.html','note','Demandas avulsas']
   ];
   const iconSvg={
@@ -21,6 +25,7 @@
     person:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>',
     tag:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11V5a2 2 0 0 1 2-2h6l10 10-6 6L5 9z"/><circle cx="8" cy="7" r="1"/></svg>',
     gear:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.7 3 .7 2a7.8 7.8 0 0 1 3.2 0l.7-2 2.2.9-.7 2a8 8 0 0 1 2.3 2.3l2-.7.9 2.2-2 .7a7.8 7.8 0 0 1 0 3.2l2 .7-.9 2.2-2-.7a8 8 0 0 1-2.3 2.3l.7 2-2.2.9-.7-2a7.8 7.8 0 0 1-3.2 0l-.7 2-2.2-.9.7-2a8 8 0 0 1-2.3-2.3l-2 .7-.9-2.2 2-.7a7.8 7.8 0 0 1 0-3.2l-2-.7.9-2.2 2 .7A8 8 0 0 1 8.2 6l-.7-2z"/><circle cx="12" cy="12" r="2.8"/></svg>',
+    timeline:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/><path d="M7 3v4M12 10v4M17 17v4"/></svg>',
     note:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg>'
   };
   const palette=[
@@ -58,18 +63,33 @@
     return `<span class="pocv-tag ${type==='course'?'course-tag':'group-tag'}" style="--tag-bg:${c.bg};--tag-fg:${c.fg};--tag-border:${c.border}" title="${esc(text)}">${esc(text)}</span>`;
   }
   function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
-  function courseName(coursesSource,matrixId){
+  function courseRecord(coursesSource,matrixId){
     if(Array.isArray(coursesSource)){
-      const found=coursesSource.find(x=>String(x?.matrix)===String(matrixId));
-      return String(found?.name||'').trim();
+      return coursesSource.find(x=>String(x?.matrix)===String(matrixId))||null;
     }
-    const found=coursesSource?.[String(matrixId)];
-    return String(found?.name||'').trim();
+    return coursesSource?.[String(matrixId)]||null;
   }
-  window.POCV={norm,esc,setGroups,setCourses,color,tag,palette:uniquePalette,courseName};
-  function setupSidebar(){
+  function courseName(coursesSource,matrixId){
+    const found=courseRecord(coursesSource,matrixId);
+    return String(found?.course_name||found?.name||'').trim();
+  }
+  function courseId(coursesSource,matrixId){
+    const found=courseRecord(coursesSource,matrixId);
+    return String(found?.course_id||'').trim();
+  }
+  function groupKey(v){
+    // Identidade lógica do grupo: ignora maiúsculas/minúsculas,
+    // acentos e espaços excedentes, sem alterar o nome exibido.
+    return norm(v).replace(/\\s+/g,' ');
+  }
+  window.POCV={norm,groupKey,esc,setGroups,setCourses,color,tag,palette:uniquePalette,courseRecord,courseName,courseId};
+  async function setupSidebar(){
     const old=document.querySelector('.mainnav'); if(!old)return;
-    old.innerHTML='<div class="sidebar-brand"><span class="sidebar-logo">PO</span><span class="sidebar-title">POCV</span><button type="button" class="sidebar-toggle" aria-label="Recolher menu" title="Recolher menu"><span class="toggle-glyph">‹</span></button></div>' + navItems.map(([href,icon,label])=>`<a href="${href}" title="${label}" aria-label="${label}"><span class="nav-icon">${iconSvg[icon]}</span><span class="nav-label">${label}</span></a>`).join('');
+    let session=null;
+    try{const r=await fetch('/api/session',{cache:'no-store'}); if(r.ok)session=await r.json();}catch(e){}
+    const coordinatorOnly=new Set(['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']);
+    const visible=navItems.filter(([href])=>session?.user?.role!=='coordenador_curso' || coordinatorOnly.has(href));
+    old.innerHTML='<div class="sidebar-brand"><span class="sidebar-logo"><img src="acha-logo.svg" alt="ACHA"></span><span class="sidebar-title">ACHA</span><button type="button" class="sidebar-toggle" aria-label="Recolher menu" title="Recolher menu"><span class="toggle-glyph">‹</span></button></div>' + visible.map(([href,icon,label])=>`<a href="${href}" title="${label}" aria-label="${label}"><span class="nav-icon">${iconSvg[icon]}</span><span class="nav-label">${label}</span></a>`).join('') + (session?.user ? `<div class="sidebar-user" title="${esc(session.user.displayName)}"><a href="perfil.html" class="sidebar-profile-link"><span class="sidebar-user-name">${esc(session.user.displayName.split(' ')[0])}</span><small>Meu perfil</small></a><button type="button" class="sidebar-logout" id="pocvLogout">Sair</button></div>` : '');
     old.classList.add('pocv-sidebar');
     const current=location.pathname.split('/').pop()||'dashboard.html'; old.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});
     const toggle=old.querySelector('.sidebar-toggle');
@@ -82,10 +102,19 @@
     };
     applySidebarState(localStorage.getItem('pocv_sidebar_collapsed')==='1');
     toggle.onclick=()=>applySidebarState(!document.body.classList.contains('sidebar-collapsed'));
+    const logout=document.getElementById('pocvLogout');
+    if(logout)logout.onclick=async()=>{try{await fetch('/api/logout',{method:'POST'});}finally{location.href='/login.html';}};
   }
   function setupTags(){
     document.querySelectorAll('[data-pocv-group]').forEach(el=>{el.outerHTML=tag(el.dataset.pocvGroup,'group')});
     document.querySelectorAll('[data-pocv-course]').forEach(el=>{el.outerHTML=tag(el.dataset.pocvCourse,'course')});
   }
-  document.addEventListener('DOMContentLoaded',()=>{setupSidebar(); setTimeout(setupTags,0);});
+  function setupFooter(){
+    if(document.querySelector('.acha-footer')) return;
+    const f=document.createElement('footer');
+    f.className='acha-footer';
+    f.innerHTML='<strong>ACHA</strong><span>Assistente de Carga Horária Acadêmica</span><span class="footer-sep">·</span><span>Sistema desenvolvido e provido pela <strong>Fábrica de Software Escola (FaSEs)</strong> do Campus Natal-Zona Norte do IFRN.</span>';
+    document.body.appendChild(f);
+  }
+  document.addEventListener('DOMContentLoaded',()=>{setupSidebar(); setTimeout(setupTags,0); setupFooter();});
 })();

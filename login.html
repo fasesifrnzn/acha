@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Entrar | ACHA</title>
+<style>
+html,body{min-height:100%;margin:0}
+body.login-page{min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#f8fafc 0%,#eef5f6 100%);padding:0!important;box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:#17202a}
+.login-page *{box-sizing:border-box}
+.login-card{width:min(480px,calc(100vw - 32px));background:#fff;border:1px solid #dbe3ee;border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.14);padding:34px}
+.login-brand{display:flex;align-items:center;gap:14px;margin-bottom:26px}.login-logo{width:52px;height:52px;flex:0 0 52px}.login-logo svg{display:block;width:52px;height:52px}
+.login-brand h1{margin:0;font-size:25px;color:#172033}.login-brand p{margin:3px 0 0;color:#64748b}
+.login-card label{display:block;font-weight:700;color:#334155;font-size:14px;margin:16px 0 7px}
+.login-card input{box-sizing:border-box;width:100%;height:46px;border:1px solid #cbd5e1;border-radius:10px;padding:0 13px;font-size:16px;outline:none}
+.login-card input:focus{border-color:#0f8b87;box-shadow:0 0 0 3px rgba(15,139,135,.12)}
+.login-card button{width:100%;height:46px;margin-top:22px;border:0;border-radius:10px;background:#0f8b87;color:#fff;font-weight:800;font-size:16px;cursor:pointer}
+.login-card button:disabled{opacity:.65}.login-error{min-height:20px;margin-top:12px;color:#b91c1c;font-size:13px}
+.login-hint{margin-top:18px;color:#64748b;font-size:12px;line-height:1.5}.login-user{background:#f8fafc;border-radius:10px;padding:10px 12px;margin-top:16px;font-size:12px;color:#475569}
+.suap-btn{display:flex;align-items:center;justify-content:center;width:100%;height:46px;margin-top:12px;border:1px solid #0f766e;border-radius:10px;background:#fff;color:#0f766e;font-weight:800;font-size:15px;text-decoration:none;box-sizing:border-box}
+.divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:#94a3b8;font-size:11px}.divider:before,.divider:after{content:"";height:1px;background:#e2e8f0;flex:1}
+.status{margin-top:10px;text-align:center;color:#64748b;font-size:12px;min-height:18px}
+@media(max-width:520px){.login-card{padding:24px;border-radius:16px}.login-brand{margin-bottom:22px}.login-brand h1{font-size:23px}.login-brand p{font-size:13px}}
+</style>
+</head>
+<body class="login-page">
+<main class="login-card">
+  <div class="login-brand">
+  <div class="login-logo" aria-hidden="true">
+    <svg viewBox="0 0 48 48" role="img" aria-label="ACHA">
+      <rect width="48" height="48" rx="12" fill="#0f766e"/>
+      <rect x="9" y="9" width="12" height="12" rx="3" fill="#fff"/>
+      <rect x="27" y="9" width="12" height="12" rx="3" fill="#fff"/>
+      <rect x="9" y="27" width="12" height="12" rx="3" fill="#fff"/>
+      <rect x="27" y="27" width="12" height="12" rx="3" fill="#99f6e4"/>
+    </svg>
+  </div>
+  <div><h1>ACHA</h1><p>Assistente de Carga Horária Acadêmica</p></div>
+</div>
+
+  <div id="suapArea">
+    <a href="#" class="suap-btn" id="suapButton">Entrar com SUAP / IFRN</a>
+    <div class="status" id="suapStatus">Preparando autenticação institucional…</div>
+  </div>
+
+  <div class="divider">ou acesso local</div>
+
+  <form id="form">
+    <label for="username">Usuário</label>
+    <input id="username" autocomplete="username" autofocus placeholder="Primeiro nome">
+    <label for="password">Senha</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="Último nome">
+    <button id="submit" type="submit">Entrar</button>
+    <div class="login-error" id="error"></div>
+  </form>
+
+  <div class="login-hint">
+    O acesso institucional usa o OAuth2 JavaScript do SUAP/IFRN.
+    No primeiro acesso local, usuário = primeiro nome e senha = último sobrenome.
+  </div>
+  <div class="login-user" id="logged" style="display:none"></div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const next=params.get('next')||'/dashboard.html';
+const SUAP_BASE='https://suap.ifrn.edu.br';
+const CLIENT_ID='Q5F9WuFPXVdTMVel6lBUdb3Z3kplWk17MiKools4';
+const REDIRECT_URI=location.origin + '/login.html';
+const SCOPE='identificacao email documentos_pessoais';
+
+function setStatus(text,error=false){
+  $('suapStatus').textContent=text;
+  $('suapStatus').style.color=error?'#b91c1c':'#64748b';
+}
+
+function buildSuapLoginUrl(){
+  const q=new URLSearchParams({
+    response_type:'token',
+    grant_type:'implict',
+    client_id:CLIENT_ID,
+    redirect_uri:REDIRECT_URI,
+    scope:SCOPE
+  });
+  return SUAP_BASE+'/o/authorize/?'+q.toString();
+}
+
+function readHash(){
+  const raw=location.hash.replace(/^#/,'');
+  if(!raw)return null;
+  const p=new URLSearchParams(raw);
+  const accessToken=p.get('access_token');
+  if(!accessToken)return null;
+  return {
+    accessToken,
+    expiresIn:Number(p.get('expires_in')||0),
+    scope:p.get('scope')||''
+  };
+}
+
+async function completeSuapLogin(){
+  const token=readHash();
+  if(!token)return false;
+
+  // Remove o token do histórico assim que ele é capturado.
+  history.replaceState(null,document.title,location.pathname+location.search);
+  setStatus('SUAP autenticou. Validando sua conta no ACHA…');
+  $('suapButton').style.pointerEvents='none';
+  $('suapButton').style.opacity='.6';
+
+  try{
+    const r=await fetch('/api/suap/client-login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({accessToken:token.accessToken})
+    });
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok){
+      const extra=d.suap && (d.suap.nome||d.suap.username||d.suap.matricula)
+        ? ` (${[d.suap.nome,d.suap.username,d.suap.matricula].filter(Boolean).join(' · ')})`
+        : '';
+      throw new Error((d.error||'O ACHA não conseguiu validar o usuário no SUAP.')+extra);
+    }
+    setStatus('Login concluído. Abrindo o ACHA…');
+    location.replace(next);
+    return true;
+  }catch(e){
+    setStatus(e.message,true);
+    $('suapButton').style.pointerEvents='';
+    $('suapButton').style.opacity='';
+    return true;
+  }
+}
+
+(async()=>{
+  $('suapButton').href=buildSuapLoginUrl();
+
+  try{
+    const r=await fetch('/api/session',{cache:'no-store'});
+    const d=await r.json();
+    if(d.authenticated){location.replace(next);return;}
+  }catch(e){}
+
+  if(await completeSuapLogin())return;
+
+  try{
+    const r=await fetch('/api/suap/status',{cache:'no-store'});
+    const d=await r.json();
+    if(d.configured){
+      setStatus('SUAP pronto para autenticação.');
+    }else{
+      setStatus('Integração SUAP ainda não configurada.',true);
+    }
+  }catch(e){
+    setStatus('Não foi possível verificar a integração SUAP.',true);
+  }
+})();
+
+$('form').onsubmit=async e=>{
+  e.preventDefault();
+  $('error').textContent='';
+  $('submit').disabled=true;
+  $('submit').textContent='Entrando…';
+  try{
+    const r=await fetch('/api/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:$('username').value,password:$('password').value})
+    });
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||'Não foi possível entrar.');
+    location.replace(next);
+  }catch(err){
+    $('error').textContent=err.message;
+    $('submit').disabled=false;
+    $('submit').textContent='Entrar';
+  }
+};
+</script>
+</body>
+</html>

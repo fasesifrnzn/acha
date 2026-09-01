@@ -18,16 +18,23 @@
   const managementFactors = {'Não se aplica':1,'Coordenação de Curso':.5,'Função Gratificada (FG)':.5,'Direção Acadêmica':.15,'Função Sistêmica':.15,'Direção-Geral':0};
   const leaveFactors = {'Não se aplica':1,'Redução por Saúde 25%':.75,'Redução por Saúde 50%':.5,'Cessão a outro órgão':0,'Afastamento capacitação (100%)':0};
   let teachers = [];
+  let courses = [];
   let editedTeacher = null;
   let modalMode = 'edit';
   let pendingSubstituteForId = null;
   let sortKey = 'name', sortDir = 1;
 
-  const defaultColumnOrder = ['name','discipline','group','degree','vinculo','regime','situation','actions'];
+  const defaultColumnOrder = ['name','matricula','discipline','group','degree','vinculo','regime','situation','actions'];
   let teacherColumnOrder = JSON.parse(localStorage.getItem('docentes_column_order') || 'null');
   if (!Array.isArray(teacherColumnOrder)) teacherColumnOrder = [...defaultColumnOrder];
+  if (!teacherColumnOrder.includes('matricula')) {
+    const nameIndex = teacherColumnOrder.indexOf('name');
+    if (nameIndex >= 0) teacherColumnOrder.splice(nameIndex + 1, 0, 'matricula');
+    else teacherColumnOrder.push('matricula');
+  }
   defaultColumnOrder.forEach(key => { if (!teacherColumnOrder.includes(key)) teacherColumnOrder.push(key); });
   teacherColumnOrder = teacherColumnOrder.filter(key => defaultColumnOrder.includes(key));
+  localStorage.setItem('docentes_column_order', JSON.stringify(teacherColumnOrder));
 
   function optionsFor(field) {
     const values = teachers.map(t => field==='regime' ? normalizeRegime(t[field]) : t[field]);
@@ -79,22 +86,52 @@
     return '';
   }
 
+  function courseOptions(selected='') {
+    const seen=new Set();
+    const rows=[];
+    courses.forEach(c=>{
+      const id=String(c.course_id||c.course_name||c.name||'').trim();
+      const name=String(c.course_name||c.name||'').trim();
+      if(!id || !name || seen.has(id)) return;
+      seen.add(id);
+      rows.push({id,name});
+    });
+    rows.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}));
+    return `<option value="">Selecione o curso</option>` + rows.map(c=>`<option value="${escapeHtml(c.id)}" ${String(c.id)===String(selected)?'selected':''}>${escapeHtml(c.name)}</option>`).join('');
+  }
+
+  function coordinatorCourseField(t) {
+    if ((t?.management||'') !== 'Coordenação de Curso') return '';
+    return `<div class="field coordinator-course-field">
+      <label for="edit-coordinator-course">Curso coordenado <span class="required">*</span></label>
+      <select id="edit-coordinator-course" required>${courseOptions(t?.coordinatorCourseId||'')}</select>
+      <div class="automatic">Selecione o curso que este docente coordena. Essa informação será usada posteriormente para separar os perfis de acesso dos coordenadores.</div>
+    </div>`;
+  }
+
   function associationField(t) {
-    if (t.vinculo === 'Substituto temporário') {
-      return `<div class="field association-field">
+    const management = t?.management || '';
+    let html = '';
+    if (t?.vinculo === 'Substituto temporário') {
+      html += `<div class="field association-field">
         <label for="edit-titular">Docente titular substituído <span class="required">*</span></label>
         <select id="edit-titular" required>${titularOptions(t)}</select>
         <div class="automatic">Obrigatório. Cada substituto temporário pode estar associado a apenas um docente titular, e cada titular pode ter no máximo um substituto.</div>
       </div>`;
+    } else if (t?.vinculo === 'Visitante') {
+      // Visitante não possui associação de substituição.
+    } else if (allowsSubstitute(t)) {
+      html += `<div class="field association-field">
+        <label for="edit-substitute">Professor substituto vinculado</label>
+        <select id="edit-substitute">${substituteOptions(t)}</select>
+        <div class="automatic">A situação atual permite substituição. Selecione um substituto já cadastrado ou cadastre um novo.</div>
+        <button type="button" class="add-substitute" id="addSubstitute">+ Cadastrar novo substituto para este docente</button>
+      </div>`;
     }
-    if (t.vinculo === 'Visitante') return '';
-    if (!allowsSubstitute(t)) return '';
-    return `<div class="field association-field">
-      <label for="edit-substitute">Professor substituto vinculado</label>
-      <select id="edit-substitute">${substituteOptions(t)}</select>
-      <div class="automatic">A situação atual permite substituição. Selecione um substituto já cadastrado ou cadastre um novo.</div>
-      <button type="button" class="add-substitute" id="addSubstitute">+ Cadastrar novo substituto para este docente</button>
-    </div>`;
+    // O curso coordenado é independente da associação de substituição e, portanto,
+    // deve aparecer sempre que a função de gestão for Coordenação de Curso.
+    html += coordinatorCourseField(t);
+    return html;
   }
 
   function disciplineOptions(selected='') {
@@ -105,7 +142,7 @@
   function refreshAssociationVisibility() {
     const container=$('associationDynamic');
     if(!container) return;
-    const current={...editedTeacher, vinculo:$('edit-vinculo')?.value||editedTeacher?.vinculo, leave:$('edit-leave')?.value||editedTeacher?.leave, management:$('edit-management')?.value||editedTeacher?.management};
+    const current={...editedTeacher, vinculo:$('edit-vinculo')?.value||editedTeacher?.vinculo, leave:$('edit-leave')?.value||editedTeacher?.leave, management:$('edit-management')?.value||editedTeacher?.management, coordinatorCourseId:$('edit-coordinator-course')?.value||editedTeacher?.coordinatorCourseId||''};
     container.innerHTML = associationField(current);
     bindAssociationActions();
   }
@@ -117,7 +154,7 @@
     const situation = $('situation').value;
 
     const rows = teachers.filter(t => {
-      const text = [t.name,t.discipline,t.group,t.degree,t.vinculo,t.regime,situationText(t),associationText(t)].join(' ');
+      const text = [t.name,t.matricula,t.discipline,t.group,t.degree,t.vinculo,t.regime,situationText(t),associationText(t)].join(' ');
       const textMatch = !query || normalise(text).includes(query);
       const situationMatch = !situation || (situation === 'restricao' === isRestricted(t));
       return textMatch && (!group || t.group === group) && (!vinculo || t.vinculo === vinculo) && situationMatch;
@@ -137,12 +174,13 @@
       const restrictedClass=isRestricted(t)?'warning':'';
       return `<tr data-id="${t.id}">
         <td data-col="name" class="editable" data-field="name"><span class="teacher">${escapeHtml(t.name)}</span></td>
+        <td data-col="matricula" class="editable" data-field="matricula">${escapeHtml(t.matricula||'—')}</td>
         <td data-col="discipline" class="editable" data-field="discipline">${escapeHtml(t.discipline||'—')}</td>
         <td data-col="group" class="editable" data-field="group"><span class="badge group-tag tag-${tagColorIndex(t.group||'Sem grupo')}">${escapeHtml(t.group||'Sem grupo')}</span></td>
         <td data-col="degree" class="editable" data-field="degree">${escapeHtml(t.degree||'—')}</td>
         <td data-col="vinculo" class="editable" data-field="vinculo">${escapeHtml(t.vinculo||'—')}</td>
         <td data-col="regime" class="editable" data-field="regime">${escapeHtml(t.regime||'—')}<span class="secondary">${Math.round((Number(t.regimePct)||0)*100)}% do regime</span></td>
-        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}</td>
+        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseName?`<span class="secondary">Coordena: ${escapeHtml(t.coordinatorCourseName)}</span>`:''}</td>
         <td data-col="actions" class="actions-cell"><div class="row-actions">
           <button type="button" class="icon-btn edit-teacher" title="Alterar dados" aria-label="Alterar dados">✎</button>
           <button type="button" class="icon-btn delete delete-teacher" title="Excluir" aria-label="Excluir">🗑</button>
@@ -187,9 +225,10 @@
   }
 
   function fieldsFor(t,isNew=false) {
-    const teacher=t||{name:'',discipline:'',group:'',degree:'',vinculo:'Efetivo',regime:'DE',leave:'Não se aplica',management:'Não se aplica'};
+    const teacher=t||{name:'',matricula:'',discipline:'',group:'',degree:'',vinculo:'Efetivo',regime:'DE',leave:'Não se aplica',management:'Não se aplica'};
     return `<div class="edit-grid">
       <div class="field"><label for="edit-name">Nome</label><input id="edit-name" value="${escapeHtml(teacher.name)}"></div>
+      <div class="field"><label for="edit-matricula">Matrícula</label><input id="edit-matricula" value="${escapeHtml(teacher.matricula||'')}" inputmode="numeric"></div>
       <div class="field"><label for="edit-discipline">Disciplina / área</label><select id="edit-discipline">${disciplineOptions(teacher.discipline)}</select></div>
       ${selectField('Grupo','group',teacher.group||'')}
       ${selectField('Titulação','degree',teacher.degree||'')}
@@ -240,7 +279,7 @@
     pendingSubstituteForId=linkToId;
     $('editTitle').textContent='Adicionar docente';
     $('editSubtitle').textContent='Preencha os dados do novo cadastro.';
-    $('editFields').innerHTML=fieldsFor({name:'',discipline:'',group:defaultGroup,degree:'',vinculo:defaultVinculo,regime:'DE',leave:'Não se aplica',management:'Não se aplica',substituteForId:linkToId||null},true);
+    $('editFields').innerHTML=fieldsFor({name:'',matricula:'',discipline:'',group:defaultGroup,degree:'',vinculo:defaultVinculo,regime:'DE',leave:'Não se aplica',management:'Não se aplica',substituteForId:linkToId||null},true);
     $('deleteTeacher').style.display='none';
     $('editMessage').textContent=linkToId ? 'O novo substituto será vinculado automaticamente ao docente selecionado.' : '';
     $('editModal').classList.add('open');
@@ -284,7 +323,14 @@
     $('editMessage').textContent='Salvando…';
     try {
       if(modalMode==='new') {
-        const changes={name:$('edit-name').value.trim(),discipline:$('edit-discipline').value.trim(),group:$('edit-group').value,degree:$('edit-degree').value,vinculo:$('edit-vinculo').value,regime:normalizeRegime($('edit-regime').value),leave:$('edit-leave').value,management:$('edit-management').value};
+        const changes={name:$('edit-name').value.trim(),matricula:$('edit-matricula').value.trim(),discipline:$('edit-discipline').value.trim(),group:$('edit-group').value,degree:$('edit-degree').value,vinculo:$('edit-vinculo').value,regime:normalizeRegime($('edit-regime').value),leave:$('edit-leave').value,management:$('edit-management').value};
+        if(changes.management==='Coordenação de Curso'){
+          const courseId=$('edit-coordinator-course')?.value||'';
+          if(!courseId) throw new Error('Selecione o curso coordenado.');
+          const course=courses.find(c=>String(c.course_id||c.course_name||c.name||'')===String(courseId));
+          changes.coordinatorCourseId=courseId;
+          changes.coordinatorCourseName=String(course?.course_name||course?.name||'').trim();
+        } else { changes.coordinatorCourseId=null; changes.coordinatorCourseName=null; }
         if(!changes.name) throw new Error('Informe o nome do docente.');
         let substituteForId=null;
         if(changes.vinculo==='Substituto temporário') {
@@ -297,11 +343,18 @@
         if(!response.ok) throw new Error((await response.json().catch(()=>({}))).error||'Não foi possível cadastrar o docente.');
         const result=await response.json();
         teachers.push(result.teacher);
-        const fresh=await fetch(`${apiBase}/api/db`);
+        const fresh=await fetch(`${apiBase}/api/db`,{cache:'no-store'});
         if(fresh.ok) teachers=(await fresh.json()).teachers||teachers;
       } else {
         if(!editedTeacher) throw new Error('Nenhum docente selecionado.');
-        const changes={name:$('edit-name').value.trim(),discipline:$('edit-discipline').value.trim(),group:$('edit-group').value,degree:$('edit-degree').value,vinculo:$('edit-vinculo').value,regime:normalizeRegime($('edit-regime').value),leave:$('edit-leave').value,management:$('edit-management').value};
+        const changes={name:$('edit-name').value.trim(),matricula:$('edit-matricula').value.trim(),discipline:$('edit-discipline').value.trim(),group:$('edit-group').value,degree:$('edit-degree').value,vinculo:$('edit-vinculo').value,regime:normalizeRegime($('edit-regime').value),leave:$('edit-leave').value,management:$('edit-management').value};
+        if(changes.management==='Coordenação de Curso'){
+          const courseId=$('edit-coordinator-course')?.value||'';
+          if(!courseId) throw new Error('Selecione o curso coordenado.');
+          const course=courses.find(c=>String(c.course_id||c.course_name||c.name||'')===String(courseId));
+          changes.coordinatorCourseId=courseId;
+          changes.coordinatorCourseName=String(course?.course_name||course?.name||'').trim();
+        } else { changes.coordinatorCourseId=null; changes.coordinatorCourseName=null; }
         if(!changes.name) throw new Error('Informe o nome do docente.');
         if(changes.vinculo==='Substituto temporário'){
           changes.substituteForId=$('edit-titular')?.value || null;
@@ -312,7 +365,7 @@
         const result=await response.json();
         Object.assign(editedTeacher,result.teacher||changes);
         if(changes.vinculo!=='Substituto temporário') await linkAssociation(editedTeacher);
-        const fresh=await fetch(`${apiBase}/api/db`);
+        const fresh=await fetch(`${apiBase}/api/db`,{cache:'no-store'});
         if(fresh.ok) teachers=(await fresh.json()).teachers||teachers;
       }
       fillFilters(); render();
@@ -418,10 +471,11 @@
 
   async function load() {
     try {
-      const response=await fetch(`${apiBase}/api/db`);
+      const response=await fetch(`${apiBase}/api/db`,{cache:'no-store'});
       if(!response.ok) throw new Error('Erro ao carregar docentes.');
       const db=await response.json();
       teachers=Array.isArray(db.teachers)?db.teachers.map(t=>({...t,regime:normalizeRegime(t.regime)})):[];
+      courses=Array.isArray(db.data?.courses)?db.data.courses:[];
       fillFilters();
       render();
     } catch(error) {

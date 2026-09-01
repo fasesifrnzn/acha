@@ -1,0 +1,2 @@
+ACHA 1.0.0 — baseline para retomada do repositório após a v17.
+Estado funcional consolidado até a v76, incluindo integração SUAP, perfis de acesso e correções de interface.
