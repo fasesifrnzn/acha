@@ -114,8 +114,29 @@ const MANAGEMENT_FACTORS={
   'Função Gratificada (FG)':0.5,
   'Direção Acadêmica':0.15,
   'Função Sistêmica':0.15,
-  'Direção-Geral':0
+  'Direção-Geral':0,
+  'Assessor Pedagógico de Área: Ciências da Natureza':1,
+  'Assessor Pedagógico de Área: Linguagens e Humanidades':1
 };
+
+const PEDAGOGICAL_AREA_RESPONSIBILITIES={
+  'Ciências da Natureza':['Biologia','Física','Química'],
+  'Linguagens e Humanidades':['Artes','Educação Física','Espanhol','Filosofia','Geografia','História','Inglês','Português','Sociologia']
+};
+function applyPedagogicalAreaResponsibility(teacher){
+  const m=String(teacher?.management||'');
+  if(m==='Assessor Pedagógico de Área: Ciências da Natureza'){
+    teacher.managementArea='Ciências da Natureza';
+    teacher.distributionGroups=[...PEDAGOGICAL_AREA_RESPONSIBILITIES['Ciências da Natureza']];
+  }else if(m==='Assessor Pedagógico de Área: Linguagens e Humanidades'){
+    teacher.managementArea='Linguagens e Humanidades';
+    teacher.distributionGroups=[...PEDAGOGICAL_AREA_RESPONSIBILITIES['Linguagens e Humanidades']];
+  }else{
+    delete teacher.managementArea;
+    delete teacher.distributionGroups;
+  }
+  return teacher;
+}
 
 const DEFAULT_POCV_CONFIG={
   defaultVacancies:40,
@@ -158,6 +179,7 @@ function canHaveSubstitute(teacher){
     /dire[cç][aã]o/i.test(String(teacher?.management||''));
 }
 function applyTeacherFactor(teacher){
+  applyPedagogicalAreaResponsibility(teacher);
   teacher.regime=normalizeRegime(teacher.regime);
   teacher.regimePct=Number.isFinite(Number(teacher.regimePct))?Number(teacher.regimePct):1;
   teacher.managementPct=MANAGEMENT_FACTORS[teacher.management]??1;
@@ -702,6 +724,14 @@ async function api(req,res){
         const i=scenarios.findIndex(v=>String(v.id)===String(x.id));
         if(i<0)return send(res,404,{error:'Cenário não encontrado'});
         const current=scenarios[i], changes=x.changes||{};
+        // O cenário real é a fonte oficial da oferta. Ele é somente leitura: nenhuma alteração de nome, período, placements ou qualquer outro campo pode ser gravada diretamente.
+        // A única transição permitida é promover uma simulação a real via isReal=true.
+        if(current.isReal){
+          const keys=Object.keys(changes);
+          if(!(keys.length===1 && changes.isReal===true)){
+            return send(res,409,{error:'O cenário real é somente leitura. Crie ou clone um novo cenário para alterar a oferta.'});
+          }
+        }
         const next=Object.assign({},current,changes);
         next.id=current.id;
         next.name=String(next.name||current.name).trim();
@@ -800,6 +830,17 @@ async function api(req,res){
         Array.isArray(current.disciplines)?current.disciplines:[]
       );
       next.name=String(next.name??'').trim();
+      next.campus=String(next.campus??'').trim();
+      next.offerLevel=String(next.offerLevel??next.level??'').trim();
+      next.offerForm=String(next.offerForm??next.form??'').trim();
+      next.offerFormat=String(next.offerFormat??'').trim();
+      next.organization=String(next.organization??'').trim();
+      next.participation=String(next.participation??'').trim();
+      next.externalFunding=String(next.externalFunding??'').trim();
+      next.annualizedWorkloadHours=Math.max(0,Math.round(Number(next.annualizedWorkloadHours)||0));
+      next.verticalization=String(next.verticalization??'').trim();
+      next.academicDirector=String(next.academicDirector??'').trim();
+      next.fcc=String(next.fcc??'').trim();
       next.optionalCatalog=Array.isArray(incoming.optionalCatalog)?incoming.optionalCatalog.map(o=>({
         name:String(o?.name??'').trim(),group:String(o?.group??'').trim(),
         weekly:Number(o?.weekly)||0,clockHours:Number(o?.clockHours)||0,lessonHours:Number(o?.lessonHours)||0

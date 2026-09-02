@@ -133,7 +133,21 @@ function disciplineSelectHtml(selected){
 
 function fillSelect(sel,values){let old=sel.value;sel.innerHTML='<option value="">Todos</option>';[...new Set(values)].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR',{numeric:true})).forEach(v=>{let o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)});if([...sel.options].some(o=>o.value===old))sel.value=old}
 function refreshFilterOptions(rows){fillSelect(filters.course,rows.map(r=>r.course));fillSelect(filters.matrix,rows.map(r=>r.matrix));fillSelect(filters.period,rows.map(r=>r.period));fillSelect(filters.turn,rows.map(r=>r.turn));fillSelect(filters.group,rows.map(r=>r.group))}
-function getFiltered(rows){let q=search.value.toLowerCase().trim();return rows.filter(r=>(!q||Object.values(r).join(' ').toLowerCase().includes(q))&&(!filters.course.value||r.course===filters.course.value)&&(!filters.matrix.value||String(r.matrix)===filters.matrix.value)&&(!filters.period.value||String(r.period)===filters.period.value)&&(!filters.turn.value||r.turn===filters.turn.value)&&(!filters.group.value||r.group===filters.group.value))}
+function getFiltered(rows){
+  const q=search.value.toLowerCase().trim();
+  const problem=new URLSearchParams(location.search).get('problem')||'';
+  return rows.filter(r=>{
+    const pending=!!r.optional && !r.optionalChoice && !(r.optionalChoices||[]).length;
+    const problemOk=problem==='optional' ? pending : problem==='ungrouped' ? !String(r.group||'').trim() : true;
+    return problemOk &&
+      (!q || Object.values(r).join(' ').toLowerCase().includes(q)) &&
+      (!filters.course.value || r.course===filters.course.value) &&
+      (!filters.matrix.value || String(r.matrix)===filters.matrix.value) &&
+      (!filters.period.value || String(r.period)===filters.period.value) &&
+      (!filters.turn.value || r.turn===filters.turn.value) &&
+      (!filters.group.value || r.group===filters.group.value);
+  });
+}
 function compare(a,b){let x=a[sortKey],y=b[sortKey];if(typeof x==='number'&&typeof y==='number')return(x-y)*sortDir;return String(x??'').localeCompare(String(y??''),'pt-BR',{numeric:true,sensitivity:'base'})*sortDir}
 function updateSortLabels(){document.querySelectorAll('.sort').forEach(b=>{let labels={matrix:'Matriz',course:'Curso',period:'Período',turn:'Turno',name:'Disciplina',ch:'CH',group:'Grupo',turma:'Turma'};b.textContent=labels[b.dataset.key]+' '+(b.dataset.key===sortKey?(sortDir===1?'↑':'↓'):'↕')})}
 async function apiSave(semester,key,changes){
@@ -152,7 +166,8 @@ async function apiSave(semester,key,changes){
 function preparePocvTags(){
   const gs=[];const cs=[];Object.values(DB?.data?.matrices||matrix||{}).forEach(m=>{if(m?.name)cs.push(m.name);(m?.disciplines||[]).forEach(d=>{if(d?.group)gs.push(d.group)})});Object.values(DB?.data?.courses||courses||{}).forEach(c=>{if(c?.name)cs.push(c.name)});POCV.setGroups(gs);POCV.setCourses(cs);
 }
-function build(){let base=allRows();preparePocvTags();refreshFilterOptions(base);currentRows=getFiltered(base).sort(compare);tbody.innerHTML=currentRows.map((r,i)=>`<tr data-index="${i}" title="Duplo clique para editar"><td data-col="turma">${esc(r.turma)}</td><td data-col="matrix"><span class="badge">${r.matrix}</span></td><td data-col="course">${POCV.tag(r.course,'course')}</td><td data-col="period">${r.period}º</td><td data-col="turn">${esc(r.turn)}</td><td data-col="name" class="discipline-cell" title="${r.optional?(r.optionalChoice?'Clique para alterar a optativa ofertada':'Clique para escolher a optativa a ser ofertada'):'Duplo clique para alterar a disciplina/área'}">${r.optional?'<span class="badge" style="margin-right:5px">Optativa</span>':''}${esc(r.name)}</td><td data-col="ch">${r.ch}</td><td data-col="group" class="group-cell" title="Clique para alterar o grupo">${r.group?POCV.tag(r.group,'group'):'<span class="muted">—</span>'}</td><td data-col="actions" class="actions-cell"><div class="row-actions"><button type="button" class="icon-btn edit-row" title="Editar" aria-label="Editar">✎</button><button type="button" class="icon-btn delete delete-row" title="Excluir" aria-label="Excluir">🗑</button></div></td></tr>`).join('');$('empty').style.display=currentRows.length?'none':'block';$('nTurmas').textContent=(semesters[semSel.value]||[]).length;$('nOfertas').textContent=currentRows.length;$('ch').textContent=currentRows.reduce((a,r)=>a+Number(r.ch||0),0).toLocaleString('pt-BR');$('nCursos').textContent=new Set(currentRows.map(r=>r.matrix)).size;$('title').textContent='Oferta acadêmica — '+semSel.value;$('filterStatus').textContent=`${currentRows.length} registros exibidos`;updateSortLabels();applyColumnOrder()}
+function build(){let base=allRows();preparePocvTags();refreshFilterOptions(base);currentRows=getFiltered(base).sort(compare);tbody.innerHTML=currentRows.map((r,i)=>`<tr data-index="${i}" title="Duplo clique para editar"><td data-col="turma">${esc(r.turma)}</td><td data-col="matrix"><span class="badge">${r.matrix}</span></td><td data-col="course">${POCV.tag(r.course,'course')}</td><td data-col="period">${r.period}º</td><td data-col="turn">${esc(r.turn)}</td><td data-col="name" class="discipline-cell" title="${r.optional?(r.optionalChoice?'Clique para alterar a optativa ofertada':'Clique para escolher a optativa a ser ofertada'):'Duplo clique para alterar a disciplina/área'}">${r.optional?'<span class="badge" style="margin-right:5px">Optativa</span>':''}${esc(r.name)}</td><td data-col="ch">${Math.round(Number(r.ch)||0)}</td><td data-col="group" class="group-cell" title="Clique para alterar o grupo">${r.group?POCV.tag(r.group,'group'):'<span class="muted">—</span>'}</td><td data-col="actions" class="actions-cell"><div class="row-actions"><button type="button" class="icon-btn edit-row" title="Editar" aria-label="Editar">✎</button><button type="button" class="icon-btn delete delete-row" title="Excluir" aria-label="Excluir">🗑</button></div></td></tr>`).join('');$('empty').style.display=currentRows.length?'none':'block';$('nTurmas').textContent=(semesters[semSel.value]||[]).length;$('nOfertas').textContent=currentRows.length;$('ch').textContent=currentRows.reduce((a,r)=>a+Number(r.ch||0),0).toLocaleString('pt-BR');$('nCursos').textContent=new Set(currentRows.map(r=>r.matrix)).size;$('title').textContent='Oferta acadêmica — '+semSel.value;$('filterStatus').textContent=`${currentRows.length} registros exibidos`;updateSortLabels();applyColumnOrder()}
+function applyUrlFilters(){const p=new URLSearchParams(location.search);const sem=p.get('semester');if(sem&&[...semSel.options].some(o=>o.value===sem))semSel.value=sem;const set=(el,v)=>{if(v&&[...el.options].some(o=>o.value===v))el.value=v};set(filters.group,p.get('group'));set(filters.course,p.get('course'));set(filters.period,p.get('period'));set(filters.turn,p.get('turn'));if(p.get('q'))search.value=p.get('q')}
 semSel.onchange=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');build()};search.oninput=build;Object.values(filters).forEach(s=>s.onchange=build);
 document.querySelectorAll('.sort').forEach(b=>b.onclick=()=>{let k=b.dataset.key;if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1}build()});
 $('clear').onclick=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');build()};
@@ -213,9 +228,9 @@ async function openOptionalModal(row){
   const picker=$('optionalPicker'), addBtn=$('addOptionalChoice'), selectedBox=$('selectedOptionalChoices'), totalEl=$('optionalTotal'), saveBtn=$('saveOptionalChoices');
   const render=()=>{
     const selectedSet=new Set(selected.map(o=>String(o.name)));
-    picker.innerHTML='<option value="">— Selecione uma optativa para adicionar —</option>'+row.optionalCatalog.map((o,i)=>({o,i})).filter(x=>!selectedSet.has(String(x.o.name))).map(x=>`<option value="${x.i}">${esc(x.o.name)}${x.o.weekly?` — ${esc(x.o.weekly)} h/a`:''}</option>`).join('');
+    picker.innerHTML='<option value="">— Selecione uma optativa para adicionar —</option>'+row.optionalCatalog.map((o,i)=>({o,i})).filter(x=>!selectedSet.has(String(x.o.name))).map(x=>`<option value="${x.i}">${esc(x.o.name)}${x.o.weekly?` — ${Math.round(Number(x.o.weekly)||0)} h/a`:''}</option>`).join('');
     addBtn.disabled=!picker.value;
-    selectedBox.innerHTML=selected.length?selected.map((o,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--border,#d7dee8);border-radius:9px;background:#fff"><span><strong>${esc(o.name)}</strong>${o.weekly?` <small class="muted">· ${esc(o.weekly)} h/a</small>`:''}</span><button type="button" class="secondary remove-optional" data-index="${i}" title="Remover">✕</button></div>`).join(''):'<div class="muted" style="padding:10px 0">Nenhuma optativa selecionada — a vaga permanecerá genérica.</div>';
+    selectedBox.innerHTML=selected.length?selected.map((o,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border:1px solid var(--border,#d7dee8);border-radius:9px;background:#fff"><span><strong>${esc(o.name)}</strong>${o.weekly?` <small class="muted">· ${Math.round(Number(o.weekly)||0)} h/a</small>`:''}</span><button type="button" class="secondary remove-optional" data-index="${i}" title="Remover">✕</button></div>`).join(''):'<div class="muted" style="padding:10px 0">Nenhuma optativa selecionada — a vaga permanecerá genérica.</div>';
     const total=selected.reduce((sum,o)=>sum+Number(o.weekly||0),0);
     const falta=Math.max(0,min-total);
     totalEl.textContent=`Selecionado: ${total} h/a${selected.length?(total>=min?' ✓':` — ficará ${falta} h/a como optativa genérica`):' — vaga genérica'}`;
@@ -273,7 +288,7 @@ tbody.addEventListener('click',async e=>{
     if(row._extra){ openDemandEditModal(row); return; }
     editingRow=row;
     const fields=[['turma','Turma'],['course','Curso'],['period','Período'],['turn','Turno'],['name','Disciplina'],['ch','CH'],['group','Grupo']];
-    const optionalField=editingRow.optional && editingRow.optionalCatalog?.length?`<div style="grid-column:1/-1"><label>Optativa a ser ofertada</label><select data-edit="optionalChoice"><option value="">— Nenhuma escolhida / manter vaga genérica —</option>${editingRow.optionalCatalog.map(o=>`<option value="${esc(o.name)}" ${String(o.name)===String(editingRow.optionalChoice||'')?'selected':''}>${esc(o.name)}${o.weekly?' — '+o.weekly+' h/a':''}</option>`).join('')}</select><small class="muted">Escolha uma disciplina do cadastro de optativas desta matriz.</small></div>`:'';
+    const optionalField=editingRow.optional && editingRow.optionalCatalog?.length?`<div style="grid-column:1/-1"><label>Optativa a ser ofertada</label><select data-edit="optionalChoice"><option value="">— Nenhuma escolhida / manter vaga genérica —</option>${editingRow.optionalCatalog.map(o=>`<option value="${esc(o.name)}" ${String(o.name)===String(editingRow.optionalChoice||'')?'selected':''}>${esc(o.name)}${o.weekly?' — '+Math.round(Number(o.weekly)||0)+' h/a':''}</option>`).join('')}</select><small class="muted">Escolha uma disciplina do cadastro de optativas desta matriz.</small></div>`:'';
     $('editFields').innerHTML=optionalField+fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
     $('editModal').style.display='flex';
     const os=$('editFields').querySelector('[data-edit="optionalChoice"]');
@@ -363,6 +378,6 @@ $('saveDemand').onclick=async()=>{
     $('demandModal').style.display='none'; build();
   }catch(e){alert(e.message)}finally{btn.disabled=false}
 };
-async function init(){try{DB=await (await fetch('/api/db')).json();build()}catch(e){console.error(e);build()}}
+async function init(){try{DB=await (await fetch('/api/db')).json();build();applyUrlFilters();build()}catch(e){console.error(e);build()}}
 init();
 </script></body></html>

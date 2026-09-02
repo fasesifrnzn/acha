@@ -160,6 +160,42 @@
             <label for="matrixDuration">Duração (períodos)</label>
             <input id="matrixDuration" type="number" min="1" max="30" placeholder="Ex.: 8">
           </div>
+          <div>
+            <label for="matrixCampus">Campus</label>
+            <input id="matrixCampus" placeholder="Ex.: ZN">
+          </div>
+          <div>
+            <label for="matrixOfferFormat">Formato da oferta</label>
+            <select id="matrixOfferFormat"><option value="">Não informado</option><option>Presencial, totalmente</option><option>Presencial, com percentual EAD</option><option>EAD</option><option>Híbrida</option></select>
+          </div>
+          <div>
+            <label for="matrixOrganization">Organização da oferta</label>
+            <select id="matrixOrganization"><option value="">Não informado</option><option>Individual</option><option>Em parceria</option></select>
+          </div>
+          <div>
+            <label for="matrixParticipation">Tipo de participação</label>
+            <input id="matrixParticipation" placeholder="Ex.: N/A, EAD multicampi...">
+          </div>
+          <div>
+            <label for="matrixFunding">Fomento externo para carga horária docente</label>
+            <select id="matrixFunding"><option value="">Não informado</option><option>Não</option><option>Sim</option></select>
+          </div>
+          <div>
+            <label for="matrixAnnualHours">Carga horária anualizada (horas)</label>
+            <input id="matrixAnnualHours" type="number" min="0" step="1" placeholder="Ex.: 800">
+          </div>
+          <div>
+            <label for="matrixVerticalization">Verticalização da oferta</label>
+            <input id="matrixVerticalization" placeholder="Ex.: Técnico para Graduação">
+          </div>
+          <div>
+            <label for="matrixAcademicDirector">Diretoria Acadêmica responsável</label>
+            <input id="matrixAcademicDirector" placeholder="Ex.: DIAC">
+          </div>
+          <div>
+            <label for="matrixFCC">FCC</label>
+            <select id="matrixFCC"><option value="">Não informado</option><option>Sim</option><option>Não</option></select>
+          </div>
           <div class="wide">
             <label for="matrixName">Nome/identificação da matriz</label>
             <input id="matrixName" placeholder="Ex.: Técnico em Eletrônica — matriz 2024">
@@ -301,6 +337,15 @@ function populateMeta(){
   $('matrixForm').value=m.form??c.form??'';
   $('matrixType').value=m.type??c.type??'';
   $('matrixModality').value=m.modality??'Presencial';
+  $('matrixCampus').value=m.campus??c.campus??'ZN';
+  $('matrixOfferFormat').value=m.offerFormat??c.offerFormat??'';
+  $('matrixOrganization').value=m.organization??c.organization??'';
+  $('matrixParticipation').value=m.participation??c.participation??'';
+  $('matrixFunding').value=m.externalFunding??c.externalFunding??'';
+  $('matrixAnnualHours').value=m.annualizedWorkloadHours??c.annualizedWorkloadHours??'';
+  $('matrixVerticalization').value=m.verticalization??c.verticalization??'';
+  $('matrixAcademicDirector').value=m.academicDirector??c.academicDirector??'DIAC';
+  $('matrixFCC').value=m.fcc??c.fcc??'';
   $('matrixDuration').value=m.duration??state.periods.length;
   $('matrixName').value=m.name??c.name??'';
   $('matrixNotes').value=m.notes??'';
@@ -462,6 +507,17 @@ function readMeta(){
   state.editing.form=$('matrixForm').value;
   state.editing.type=$('matrixType').value;
   state.editing.modality=$('matrixModality').value;
+  state.editing.campus=$('matrixCampus').value.trim();
+  state.editing.offerLevel=$('matrixLevel').value;
+  state.editing.offerForm=$('matrixForm').value;
+  state.editing.offerFormat=$('matrixOfferFormat').value;
+  state.editing.organization=$('matrixOrganization').value;
+  state.editing.participation=$('matrixParticipation').value.trim();
+  state.editing.externalFunding=$('matrixFunding').value;
+  state.editing.annualizedWorkloadHours=Number($('matrixAnnualHours').value)||0;
+  state.editing.verticalization=$('matrixVerticalization').value.trim();
+  state.editing.academicDirector=$('matrixAcademicDirector').value.trim();
+  state.editing.fcc=$('matrixFCC').value;
   state.editing.duration=Number($('matrixDuration').value)||state.periods.length;
   state.editing.name=$('matrixName').value.trim();
   state.editing.notes=$('matrixNotes').value.trim();
@@ -470,7 +526,16 @@ function readMeta(){
     course_name:$('courseName').value,
     level:$('matrixLevel').value,
     form:$('matrixForm').value,
-    type:$('matrixType').value
+    type:$('matrixType').value,
+    campus:$('matrixCampus').value.trim(),
+    offerFormat:$('matrixOfferFormat').value,
+    organization:$('matrixOrganization').value,
+    participation:$('matrixParticipation').value.trim(),
+    externalFunding:$('matrixFunding').value,
+    annualizedWorkloadHours:Number($('matrixAnnualHours').value)||0,
+    verticalization:$('matrixVerticalization').value.trim(),
+    academicDirector:$('matrixAcademicDirector').value.trim(),
+    fcc:$('matrixFCC').value
   };
 }
 async function saveMatrix(silent=false){

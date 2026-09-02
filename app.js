@@ -7,6 +7,7 @@
     ['projecao-turno.html','chart','Projeção por turno'],
     ['projecao-semestre.html','chart','Projeção por semestre'],
     ['projecao-cenario.html','timeline','Projeção por cenário'],
+    ['indicadores.html','chart','Indicadores'],
     ['matrizes.html','book','Matrizes'],
     ['turmas.html','users','Turmas'],
     ['docentes.html','person','Docentes'],

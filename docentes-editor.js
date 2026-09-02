@@ -15,7 +15,7 @@
   const standardDegrees = ['Graduação', 'Especialização', 'Mestrado', 'Doutorado'];
   const situationText = t => [t.leave !== 'Não se aplica' ? t.leave : '', t.management !== 'Não se aplica' ? t.management : ''].filter(Boolean).join(' · ') || 'Disponível';
   const apiBase = location.protocol === 'file:' ? 'http://localhost:3000' : '';
-  const managementFactors = {'Não se aplica':1,'Coordenação de Curso':.5,'Função Gratificada (FG)':.5,'Direção Acadêmica':.15,'Função Sistêmica':.15,'Direção-Geral':0};
+  const managementFactors = {'Não se aplica':1,'Coordenação de Curso':.5,'Função Gratificada (FG)':.5,'Direção Acadêmica':.15,'Função Sistêmica':.15,'Direção-Geral':0,'Assessor Pedagógico de Área: Ciências da Natureza':1,'Assessor Pedagógico de Área: Linguagens e Humanidades':1};
   const leaveFactors = {'Não se aplica':1,'Redução por Saúde 25%':.75,'Redução por Saúde 50%':.5,'Cessão a outro órgão':0,'Afastamento capacitação (100%)':0};
   let teachers = [];
   let courses = [];
@@ -180,7 +180,7 @@
         <td data-col="degree" class="editable" data-field="degree">${escapeHtml(t.degree||'—')}</td>
         <td data-col="vinculo" class="editable" data-field="vinculo">${escapeHtml(t.vinculo||'—')}</td>
         <td data-col="regime" class="editable" data-field="regime">${escapeHtml(t.regime||'—')}<span class="secondary">${Math.round((Number(t.regimePct)||0)*100)}% do regime</span></td>
-        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseName?`<span class="secondary">Coordena: ${escapeHtml(t.coordinatorCourseName)}</span>`:''}</td>
+        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseName?`<span class="secondary">Coordena: ${escapeHtml(t.coordinatorCourseName)}</span>`:''}${t.managementArea?`<span class="secondary">Área de apoio: ${escapeHtml(t.managementArea)}</span>`:''}</td>
         <td data-col="actions" class="actions-cell"><div class="row-actions">
           <button type="button" class="icon-btn edit-teacher" title="Alterar dados" aria-label="Alterar dados">✎</button>
           <button type="button" class="icon-btn delete delete-teacher" title="Excluir" aria-label="Excluir">🗑</button>
@@ -235,7 +235,7 @@
       ${selectField('Vínculo','vinculo',teacher.vinculo||'Efetivo')}
       ${selectField('Regime','regime',normalizeRegime(teacher.regime||'DE'))}
       ${selectField('Afastamento / restrição','leave',teacher.leave||'Não se aplica')}
-      ${selectField('Função de gestão','management',teacher.management||'Não se aplica')}
+      ${selectField('Função / apoio à gestão','management',teacher.management||'Não se aplica')}
       ${isNew ? '<div class="field association-field" id="newAssociation">'+associationField(teacher)+'</div>' : '<div id="associationDynamic" class="association-field">'+associationField(teacher)+'</div>'}
     </div>`;
   }

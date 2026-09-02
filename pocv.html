@@ -45,7 +45,7 @@
 .palette-side .palette{display:flex;flex-direction:column;align-items:stretch;gap:4px}
 .palette-side .course-chip{width:100%;box-sizing:border-box;padding:6px 7px;justify-content:flex-start;gap:5px;font-size:11px;line-height:1.15;min-height:32px}
 .palette-side .course-chip .chip-meta{display:none}
-.timeline-area{min-width:0}
+.timeline-area{min-width:0}.scenario-locked{cursor:not-allowed}.scenario-locked .block{cursor:default}.scenario-locked .bactions{display:none!important}.scenario-locked .add-row{display:none}
 .summary-dock{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
 .summary-dock-title{padding:9px 11px;font-size:11px;font-weight:900;color:#475569;background:#f8fafc;border-bottom:1px solid var(--line)}
 .summary-dock-scroll{overflow:auto;scroll-behavior:smooth}
@@ -99,6 +99,8 @@
 .viability-help{font-size:10px}
 .new-offer{font-size:9px;font-weight:900;display:inline-block;margin-right:2px}
 
+
+.scenario-create-modal{max-width:860px}.section-title-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.section-title-row strong{font-size:11px;color:#475569}.scenario-offer-row{display:grid;grid-template-columns:1.7fr .9fr .9fr .9fr auto;gap:8px;align-items:end;padding:9px;border:1px solid var(--line);border-radius:9px;background:#f8fafc;margin-bottom:7px}.scenario-offer-row label{font-size:9px}.scenario-offer-row .remove-offer-row{height:34px}.existing-offer-row{display:grid;grid-template-columns:1.6fr .8fr auto;gap:8px;align-items:center;padding:8px;border-bottom:1px solid var(--line);font-size:11px}.existing-offer-row:last-child{border-bottom:0}.existing-offer-row .muted{color:var(--muted);font-size:10px}.scenario-existing-offers{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}.scenario-offer-builder{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}@media(max-width:760px){.scenario-offer-row{grid-template-columns:1fr 1fr}.existing-offer-row{grid-template-columns:1fr auto}}
 </style>
 </head>
 <body>
@@ -137,6 +139,10 @@
       </div>
     </div>
     <div class="help" style="margin-top:10px">Arraste um curso da lateral para o semestre e turno desejados. A matriz vigente, a duração e os períodos são definidos automaticamente. Arraste uma oferta existente para reposicioná-la.</div>
+    <details class="scenario-manage" style="margin-top:12px">
+      <summary><strong>Gerenciar cursos ofertados no cenário</strong> <span class="status">listar, excluir a partir de um semestre</span></summary>
+      <div id="scenarioManageOffers" style="margin-top:10px"></div>
+    </details>
   </div>
   <div class="pocv-workspace">
     <aside class="palette-side">
@@ -176,10 +182,27 @@
 </main>
 
 <div class="modal-back" id="modalBack">
- <div class="modal" id="scenarioModal">
+ <div class="modal modal-wide scenario-create-modal">
   <h2 id="modalTitle">Novo cenário</h2>
-  <div class="modal-grid"><div><label>NOME DO CENÁRIO</label><input id="modalName" placeholder="Ex.: Expansão 2028"></div></div>
-  <div class="modal-actions"><button class="btn" id="modalCancel">Cancelar</button><button class="btn primary" id="modalOk">Criar</button></div>
+  <div class="status" style="margin-bottom:14px">Crie uma simulação sem alterar o cenário real. Você pode começar em branco ou clonar um cenário existente.</div>
+  <div class="modal-grid two">
+   <div><label>NOME DO CENÁRIO</label><input id="modalName" placeholder="Ex.: Expansão 2028"></div>
+   <div><label>BASE DO CENÁRIO</label><select id="modalBaseType"><option value="blank">Em branco</option><option value="clone">Clonar cenário existente</option></select></div>
+   <div id="modalSourceWrap" style="display:none"><label>CENÁRIO A CLONAR</label><select id="modalSource"></select></div>
+   <div><label>SEMESTRE INICIAL</label><select id="modalStartSem"></select></div>
+   <div><label>SEMESTRE FINAL</label><select id="modalEndSem"></select></div>
+  </div>
+  <div class="scenario-offer-builder" style="margin-top:16px">
+   <div class="section-title-row"><strong>OFERTAS INICIAIS</strong><button class="btn" type="button" id="addScenarioOfferBtn">＋ Adicionar oferta</button></div>
+   <div id="scenarioOfferRows"></div>
+   <div class="help">Opcional. Informe curso, semestre de início, periodicidade e turno. O ACHA criará as coortes dentro do período do cenário.</div>
+  </div>
+  <div class="scenario-existing-offers" style="margin-top:16px">
+   <div class="section-title-row"><strong>OFERTAS JÁ EXISTENTES</strong></div>
+   <div id="scenarioExistingOffers"></div>
+   <div class="help">Use esta área para retirar uma série de ofertas a partir de determinado semestre, sem apagar as anteriores.</div>
+  </div>
+  <div class="modal-actions"><button class="btn" id="modalCancel">Cancelar</button><button class="btn primary" id="modalOk">Criar cenário</button></div>
  </div>
 </div>
 
@@ -325,7 +348,7 @@ function buildTurnSchedule(mid,startSem,quantity=1,forcedTurn=null,alternates=fa
   return out;
 }
 
-function setDirty(){dirty=true;updateStatus();clearTimeout(saveTimer);saveTimer=setTimeout(save,700)}
+function setDirty(){if(current?.isReal)return;dirty=true;updateStatus();clearTimeout(saveTimer);saveTimer=setTimeout(save,700)}
 function updateStatus(){const el=$('scenarioMeta');if(!current)return;el.textContent=`${current.isReal?'✓ Cenário real · ':'Simulação · '}${current.startSemester} → ${current.endSemester}${dirty?' · alterações não salvas':''}`}
 async function load(){
   // A POCV depende de dois recursos: cenários e banco acadêmico (matrizes/cursos/semestres/turnos).
@@ -345,6 +368,7 @@ async function load(){
   POCV_CONFIG=cfgJson.config||POCV_CONFIG;
   scenarios=(scenarioJson.scenarios||[]).map(normalizeScenarioPlacements);
   current=scenarios.find(x=>x.isReal)||scenarios[0]||null;
+  repairScenarioAlternatingOffers();
   dirty=false;
   renderAll();
 }
@@ -394,18 +418,8 @@ function placementTurnAt(p,sem){
   if(ts && typeof ts==='object' && ts[sem]) return ts[sem];
   return p?.turn||'A definir';
 }
-function placementSegments(p,lane){
-  // UMA COORTE = UMA CAIXA CONTÍNUA.
-  // O turno de ingresso pertence à coorte inteira. A alternância configurada
-  // no curso serve para escolher o turno das NOVAS coortes sucessivas, não
-  // para quebrar a mesma coorte em vários segmentos.
-  const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester));
-  const b=Math.min(placementEnd(p),semIndex(current.endSemester));
-  if(b<a)return [];
-  const fixedLane=laneOf(p.turn||placementTurnAt(p,p.startSemester));
-  if(fixedLane!==lane)return [];
-  return [{p,start:a,end:b}];
-}
+function placementSegments(p,lane){const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester));const b=Math.min(placementEnd(p),semIndex(current.endSemester));if(b<a)return [];const fixedLane=laneOf(p.turn);return fixedLane===lane?[{p,start:a,end:b}]:[];}
+function repairScenarioAlternatingOffers(){if(!current||current.isReal)return;['MSI_INTEGRADO','ARTESANATO'].forEach(key=>{const ps=(current.placements||[]).filter(p=>String(p.courseId||courseKeyOf(p.matrix))===key&&semIndex(p.startSemester)>=semIndex('2028.1')).sort((a,b)=>semIndex(a.startSemester)-semIndex(b.startSemester));ps.forEach((p,i)=>{p.turn=i%2===0?'Vespertino':'Matutino';p.alternatesTurns=true;p.alternatingTurns=['Vespertino','Matutino'];p.span=placementDuration(p);});});}
 function visiblePlacements(){const a=semIndex(current.startSemester),b=semIndex(current.endSemester);return (current.placements||[]).filter(p=>placementEnd(p)>=a&&semIndex(p.startSemester)<=b)}
 function placementOrder(p){return Number.isFinite(Number(p.order))?Number(p.order):Number.MAX_SAFE_INTEGER}
 function variantKeyOfMatrix(id){
@@ -512,21 +526,21 @@ function renderTimeline(){
   $('timeline').querySelectorAll('.group-collapser').forEach(el=>el.onclick=()=>{window.pocvCollapsedGroups??=new Set();const k=`${el.dataset.lane}|${el.dataset.group}`;window.pocvCollapsedGroups.has(k)?window.pocvCollapsedGroups.delete(k):window.pocvCollapsedGroups.add(k);renderTimeline();});
   $('timeline').querySelectorAll('.track-cell').forEach(cell=>{
     cell.ondragover=e=>{e.preventDefault();cell.classList.add('drop')};cell.ondragleave=()=>cell.classList.remove('drop');
-    cell.ondrop=e=>{e.preventDefault();cell.classList.remove('drop');if(!dragPayload)return;if(dragPayload.type==='new')addPlacement(dragPayload.courseKey,cell.dataset.sem,cell.dataset.lane);else if(dragPayload.type==='move')movePlacement(dragPayload.id,cell.dataset.sem,cell.dataset.lane);dragPayload=null;};
+    cell.ondrop=e=>{e.preventDefault();cell.classList.remove('drop');if(current?.isReal){dragPayload=null;return;}if(!dragPayload)return;if(dragPayload.type==='new')addPlacement(dragPayload.courseKey,cell.dataset.sem,cell.dataset.lane);else if(dragPayload.type==='move')movePlacement(dragPayload.id,cell.dataset.sem,cell.dataset.lane);dragPayload=null;};
   });
   $('timeline').querySelectorAll('.add-row').forEach(el=>{
     el.onclick=()=>addExtraRow(el.dataset.addLane,el.dataset.addKey);
     el.ondragover=e=>{e.preventDefault();el.classList.add('drop')};el.ondragleave=()=>el.classList.remove('drop');
-    el.ondrop=e=>{e.preventDefault();el.classList.remove('drop');if(!dragPayload)return;const rect=el.getBoundingClientRect();const x=Math.max(0,Math.min(rect.width-1,e.clientX-rect.left));const semIndexLocal=Math.min(cols-1,Math.max(0,Math.floor(x/(rect.width/cols))));const sem=sems[semIndexLocal];if(dragPayload.type==='new')addPlacement(dragPayload.courseKey,sem,el.dataset.addLane);else if(dragPayload.type==='move')movePlacement(dragPayload.id,sem,el.dataset.addLane);dragPayload=null;};
+    el.ondrop=e=>{e.preventDefault();el.classList.remove('drop');if(current?.isReal){dragPayload=null;return;}if(!dragPayload)return;const rect=el.getBoundingClientRect();const x=Math.max(0,Math.min(rect.width-1,e.clientX-rect.left));const semIndexLocal=Math.min(cols-1,Math.max(0,Math.floor(x/(rect.width/cols))));const sem=sems[semIndexLocal];if(dragPayload.type==='new')addPlacement(dragPayload.courseKey,sem,el.dataset.addLane);else if(dragPayload.type==='move')movePlacement(dragPayload.id,sem,el.dataset.addLane);dragPayload=null;};
   });
   $('timeline').querySelectorAll('.block').forEach(b=>{
     b.ondragstart=e=>{dragPayload={type:'move',id:b.dataset.id};b.classList.add('dragging');e.dataTransfer.effectAllowed='move'};
     b.ondragend=()=>{b.classList.remove('dragging');$('timeline').querySelectorAll('.drop-target').forEach(x=>x.classList.remove('drop-target'));dragPayload=null};
     b.ondragover=e=>{e.preventDefault();if(dragPayload?.type==='move'&&dragPayload.id!==b.dataset.id)b.classList.add('drop-target');e.stopPropagation()};b.ondragleave=()=>b.classList.remove('drop-target');
-    b.ondrop=e=>{e.preventDefault();e.stopPropagation();b.classList.remove('drop-target');if(dragPayload?.type==='move'&&dragPayload.id!==b.dataset.id)reorderPlacement(dragPayload.id,b.dataset.id);dragPayload=null};
+    b.ondrop=e=>{e.preventDefault();e.stopPropagation();b.classList.remove('drop-target');if(current?.isReal){dragPayload=null;return;}if(dragPayload?.type==='move'&&dragPayload.id!==b.dataset.id)reorderPlacement(dragPayload.id,b.dataset.id);dragPayload=null};
     b.querySelector('.remove').onclick=e=>{e.stopPropagation();removePlacement(b.dataset.id)};b.querySelector('.edit').onclick=e=>{e.stopPropagation();editPlacement(b.dataset.id)};
   });
-  updateViewModeButton();
+  updateViewModeButton(); renderScenarioExistingOffersInto($('scenarioManageOffers'));
 }
 
 
@@ -734,6 +748,7 @@ function makePlacement(courseKey,sem,lane,opts={}){
 }
 function samePlacement(a,b){return String(a.courseId||courseKeyOf(a.matrix))===String(b.courseId||courseKeyOf(b.matrix)) && String(a.startSemester)===String(b.startSemester) && String(a.turn)===String(b.turn);}
 function addPlacement(courseKey,sem,lane){
+  if(current?.isReal){alert('O cenário real é somente leitura. Crie um novo cenário para simular alterações.');return;}
   const template=inferOfferTemplate(courseKey,sem,lane);
   const start=semIndex(sem), end=semIndex(current.endSemester);
   current.placements=current.placements||[];
@@ -772,6 +787,7 @@ function addPlacement(courseKey,sem,lane){
   setDirty();renderTimeline();renderSemesterSummary();renderSummary();
 }
 function movePlacement(id,sem,lane){
+  if(current?.isReal){alert('O cenário real é somente leitura. Crie um novo cenário para simular alterações.');return;}
   const p=current.placements.find(x=>x.id===id);if(!p)return;
   const key=p.courseId||courseKeyOf(p.matrix);
   const mid=resolveMatrix(key,sem,lane);
@@ -779,9 +795,10 @@ function movePlacement(id,sem,lane){
   p.matrix=Number(mid);p.courseId=key;p.startSemester=sem;p.turn=laneTurn(lane);p.span=duration(mid);p.turnSchedule=buildTurnSchedule(mid,sem,p.quantity||1,p.turn,false,[]);p.source=p.source==='real'?'real':'simulation';p.order=Date.now();
   setDirty();renderTimeline();renderSemesterSummary();renderSummary();
 }
-function removePlacement(id){current.placements=(current.placements||[]).filter(p=>p.id!==id);setDirty();renderTimeline();renderSemesterSummary();renderSummary()}
+function removePlacement(id){if(current?.isReal){alert('O cenário real é somente leitura. Crie um novo cenário para simular alterações.');return;}current.placements=(current.placements||[]).filter(p=>p.id!==id);setDirty();renderTimeline();renderSemesterSummary();renderSummary()}
 let editingPlacementId=null;
 function editPlacement(id){
+  if(current?.isReal){alert('O cenário real é somente leitura. Crie um novo cenário para simular alterações.');return;}
   const p=current.placements.find(x=>x.id===id);if(!p)return;
   editingPlacementId=id;
   const v=variantLabel(p.matrix);
@@ -817,7 +834,7 @@ function renderSummary(){
   $('summary').innerHTML=`<div class="sum"><strong>${placements.length}</strong><span>entradas/coortes visíveis</span></div><div class="sum"><strong>${courses}</strong><span>matrizes utilizadas</span></div><div class="sum"><strong>${blocks}</strong><span>turmas-semestre projetadas</span></div><div class="sum"><strong>${sems.length}</strong><span>semestres no cenário</span></div>`;
 }
 async function save(){
-  if(!current||!dirty)return;
+  if(!current||!dirty||current.isReal)return;
   const r=await fetch('/api/pocv/scenarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current.id,changes:{name:$('scenarioName').value.trim()||'Sem nome',startSemester:$('startSem').value,endSemester:$('endSem').value,placements:current.placements,isReal:current.isReal}})});
   const j=await r.json();if(!r.ok){alert(j.error||'Não foi possível salvar');return}
   current=j.scenario;scenarios=scenarios.map(s=>s.id===current.id?current:s);dirty=false;renderAll();
@@ -889,7 +906,13 @@ function pocvWireViewControls(){
 
 function renderAll(){
   if(!current)return;viewMode=localStorage.getItem('pocv_view_mode')||'grouped';$('scenarioName').value=current.name;$('startSem').value=current.startSemester;$('endSem').value=current.endSemester;fillSemSelects();renderScenarioStrip();renderPalette();updateStatus();renderTimeline();renderSemesterSummary();renderSummary();
-  $('realBtn').style.display=current.isReal?'none':'inline-flex';$('deleteBtn').disabled=current.isReal;$('syncRealBtn').style.display=current.isReal?'inline-flex':'none';updateViewModeButton();
+  const locked=!!current.isReal;
+  $('scenarioName').readOnly=locked;$('startSem').disabled=locked;$('endSem').disabled=locked;$('saveBtn').disabled=locked;$('clearBtn').disabled=locked;$('variablesBtn').disabled=locked;
+  $('realBtn').style.display=locked?'none':'inline-flex';$('deleteBtn').disabled=locked;$('syncRealBtn').style.display='none';$('syncRealBtn').disabled=true;
+  $('cloneBtn').disabled=false;
+  $('timeline').classList.toggle('scenario-locked',locked);
+  updateViewModeButton();
+  renderScenarioExistingOffersInto($('scenarioManageOffers'));
 }
 
 async function openVariables(){
@@ -918,17 +941,114 @@ $('cfgSave').onclick=async()=>{
 $('courseSearch').oninput=()=>renderPalette();
 $('viewModeBtn').onclick=()=>{viewMode=viewMode==='grouped'?'separate':'grouped';localStorage.setItem('pocv_view_mode',viewMode);renderTimeline()};
 $('syncRealBtn').onclick=async()=>{if(!current?.isReal)return;if(!confirm('Sincronizar o cenário real com a tabela atual de turmas? Isso substituirá as entradas atuais do cenário real pelos dados cadastrados.'))return;const r=await fetch('/api/pocv/scenarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sync-real',sourceId:current.id})});const j=await r.json();if(!r.ok)return alert(j.error||'Erro ao sincronizar');current=j.scenario;scenarios=scenarios.map(s=>s.id===current.id?current:s);dirty=false;renderAll();};
+function populateScenarioModal(){
+  const sems=allSemesters();
+  const opts=(selected)=>sems.map(v=>`<option value="${v}" ${v===selected?'selected':''}>${v}</option>`).join('');
+  const baseStart=current?.startSemester||sems[0]||'2027.1', baseEnd=current?.endSemester||sems[sems.length-1]||baseStart;
+  $('modalStartSem').innerHTML=opts(baseStart); $('modalEndSem').innerHTML=opts(baseEnd);
+  $('modalSource').innerHTML=scenarios.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}${s.isReal?' · cenário real':''}</option>`).join('');
+  $('modalSourceWrap').style.display=$('modalBaseType').value==='clone'?'block':'none';
+  $('scenarioOfferRows').innerHTML='';
+  addScenarioOfferRow();
+  renderScenarioExistingOffers();
+}
+function scenarioCourseOptions(){
+  const seen=new Set();
+  return (DB?.data?.courses||[])
+    .map(c=>({
+      id:String(c.course_id||c.course_name||c.name||'').trim(),
+      label:String(c.course_name||c.name||c.course_id||'').trim()
+    }))
+    .filter(c=>c.id&&!seen.has(c.id)&&(seen.add(c.id),true))
+    .sort((a,b)=>norm(a.label).localeCompare(norm(b.label),'pt-BR',{numeric:true}));
+}
+function addScenarioOfferRow(pref={}){
+  const row=document.createElement('div');row.className='scenario-offer-row';
+  const courses=scenarioCourseOptions();
+  const sems=allSemesters();
+  row.innerHTML=`<div><label>CURSO</label><select class="scenario-offer-course"><option value="">Selecione...</option>${courses.map(c=>`<option value="${esc(c.id)}" ${c.id===pref.course?'selected':''}>${esc(c.label)}</option>`).join('')}</select></div>
+    <div><label>INÍCIO</label><select class="scenario-offer-start">${sems.map(v=>`<option value="${v}" ${v===(pref.start||$('modalStartSem').value)?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div><label>PERIODICIDADE</label><select class="scenario-offer-period"><option value="semestral">Semestral</option><option value="anual" selected>Anual</option><option value="unica">Única</option></select></div>
+    <div><label>TURNO INICIAL</label><select class="scenario-offer-turn"><option>Matutino</option><option>Vespertino</option><option>Noturno</option></select></div>
+    <div class="scenario-offer-alt"><label><input type="checkbox" class="scenario-offer-alternates"> Alternar turno nas novas entradas</label><div class="help">Ex.: tarde → manhã → tarde.</div></div>
+    <button type="button" class="btn danger remove-offer-row" title="Remover">×</button>`;
+  if(pref.period)row.querySelector('.scenario-offer-period').value=pref.period;
+  if(pref.turn)row.querySelector('.scenario-offer-turn').value=pref.turn;
+  if(pref.alternates)row.querySelector('.scenario-offer-alternates').checked=true;
+  row.querySelector('.remove-offer-row').onclick=()=>row.remove();
+  $('scenarioOfferRows').appendChild(row);
+}
+function renderScenarioExistingOffers(){
+  const el=$('scenarioExistingOffers'); if(!el)return;
+  renderScenarioExistingOffersInto(el);
+}
+function renderScenarioExistingOffersInto(el){
+  const groups={};
+  (current?.placements||[]).forEach(p=>{const key=p.courseId||courseKeyOf(p.matrix);if(!key)return;(groups[key]??=[]).push(p)});
+  const entries=Object.entries(groups).sort((a,b)=>norm(a[0]).localeCompare(norm(b[0]),'pt-BR',{numeric:true}));
+  if(!entries.length){el.innerHTML='<div class="help">Nenhuma oferta cadastrada neste cenário.</div>';return;}
+  const sems=semsBetween(current.startSemester,current.endSemester);
+  el.innerHTML=entries.map(([key,ps])=>{
+    const starts=[...new Set(ps.map(p=>p.startSemester))].sort((a,b)=>semIndex(a)-semIndex(b));
+    const label=((DB?.data?.courses||[]).find(c=>String(c.course_id||'')===String(key))?.course_name)||key;
+     return `<div class="existing-offer-row"><div><strong>${esc(label)}</strong><div class="muted">${esc(key)} · Inícios: ${starts.join(', ')||'—'} · ${ps.length} coorte(s)</div></div><div><select class="remove-from-sem" data-course="${esc(key)}">${sems.map(v=>`<option value="${v}">${v}</option>`).join('')}</select></div><button type="button" class="btn danger remove-course-from" data-course="${esc(key)}">Excluir a partir</button></div>`;
+  }).join('');
+  el.querySelectorAll('.remove-course-from').forEach(btn=>btn.onclick=async()=>{
+    if(current.isReal)return alert('O cenário real é somente leitura.');
+    const key=btn.dataset.course, sel=btn.parentElement.querySelector('.remove-from-sem'), from=sel?.value;
+    if(!confirm(`Excluir a oferta de ${key} a partir de ${from}? As ofertas anteriores serão mantidas.`))return;
+    const r=await fetch('/api/pocv/scenarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current.id,changes:{placements:(current.placements||[]).filter(p=>String(p.courseId||courseKeyOf(p.matrix))!==key || semIndex(p.startSemester)<semIndex(from))}})});
+    const j=await r.json();if(!r.ok)return alert(j.error||'Não foi possível excluir');current=j.scenario;scenarios=scenarios.map(x=>x.id===current.id?current:x);dirty=false;renderAll();
+  });
+}
+function scenarioPlacementsFromRows(startSem,endSem){
+  const result=[]; const end=semIndex(endSem);
+  document.querySelectorAll('#scenarioOfferRows .scenario-offer-row').forEach(row=>{
+    const courseKey=row.querySelector('.scenario-offer-course').value, first=row.querySelector('.scenario-offer-start').value, periodicity=row.querySelector('.scenario-offer-period').value, turn=row.querySelector('.scenario-offer-turn').value;
+    const alternates=!!row.querySelector('.scenario-offer-alternates')?.checked;
+    if(!courseKey||!first)return;
+    const cadence=periodicity==='semestral'?1:periodicity==='anual'?2:null; let si=semIndex(first), guard=0, n=0;
+    const sequence=alternates?(turn==='Matutino'?['Matutino','Vespertino']:turn==='Vespertino'?['Vespertino','Matutino']:['Noturno','Vespertino']):[turn];
+    while(Number.isFinite(si)&&si<=end&&guard++<100){
+      const targetTurn=sequence[n%sequence.length], lane=laneOf(targetTurn), mid=resolveMatrix(courseKey,semFromIndex(si),lane);
+      if(mid!=null){const p=makePlacement(courseKey,semFromIndex(si),lane,{periodicity,alternatesTurns:alternates,alternatingTurns:sequence});if(p)result.push(p)}
+      n++;
+      if(cadence==null)break;si+=cadence;
+    }
+  });
+  return result;
+}
 $('scenarioName').oninput=()=>setDirty();
-$('startSem').onchange=()=>{if(semIndex($('startSem').value)>semIndex($('endSem').value))$('endSem').value=$('startSem').value;current.startSemester=$('startSem').value;current.endSemester=$('endSem').value;setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
-$('endSem').onchange=()=>{if(semIndex($('endSem').value)<semIndex($('startSem').value))$('startSem').value=$('endSem').value;current.endSemester=$('endSem').value;current.startSemester=$('startSem').value;setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
+$('startSem').onchange=()=>{if(current?.isReal)return; if(semIndex($('startSem').value)>semIndex($('endSem').value))$('endSem').value=$('startSem').value;current.startSemester=$('startSem').value;current.endSemester=$('endSem').value;setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
+$('endSem').onchange=()=>{if(current?.isReal)return; if(semIndex($('endSem').value)<semIndex($('startSem').value))$('startSem').value=$('endSem').value;current.endSemester=$('endSem').value;current.startSemester=$('startSem').value;setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
 $('saveBtn').onclick=save;
-$('clearBtn').onclick=()=>{if(!confirm('Limpar todas as entradas deste cenário?'))return;current.placements=[];setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
-$('cloneBtn').onclick=()=>{openModal('Clonar cenário','',true)};
-$('newBtn').onclick=()=>openModal('Novo cenário','',false);
-$('realBtn').onclick=async()=>{if(!confirm('Tornar este cenário o cenário real? O cenário real atual deixará de ser o oficial.'))return;const r=await fetch('/api/pocv/scenarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current.id,changes:{isReal:true}})});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios=scenarios.map(s=>s.id===j.scenario.id?j.scenario:{...s,isReal:false});current=j.scenario;renderAll()};
+$('clearBtn').onclick=()=>{if(current?.isReal)return;if(!confirm('Limpar todas as entradas deste cenário?'))return;current.placements=[];setDirty();renderTimeline();renderSemesterSummary();renderSummary()};
+$('cloneBtn').onclick=()=>openScenarioModal(true);
+$('newBtn').onclick=()=>openScenarioModal(false);
+$('realBtn').onclick=async()=>{if(current?.isReal)return;if(!confirm('Tornar este cenário o cenário real? O cenário real atual deixará de ser o oficial.'))return;const r=await fetch('/api/pocv/scenarios',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current.id,changes:{isReal:true}})});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios=scenarios.map(s=>s.id===j.scenario.id?j.scenario:{...s,isReal:false});current=j.scenario;renderAll()};
 $('deleteBtn').onclick=async()=>{if(current.isReal)return;if(!confirm(`Excluir "${current.name}"?`))return;const r=await fetch('/api/pocv/scenarios?id='+encodeURIComponent(current.id),{method:'DELETE'});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios=scenarios.filter(s=>s.id!==current.id);current=scenarios.find(s=>s.isReal)||scenarios[0];renderAll()};
-function openModal(title,placeholder,isClone){$('modalTitle').textContent=title;$('modalName').value=placeholder||`${current?.name||'Cenário'}${isClone?' — cópia':''}`;$('modalBack').classList.add('show');$('modalName').focus();$('modalOk').onclick=async()=>{const name=$('modalName').value.trim()||'Novo cenário';const payload=isClone?{action:'clone',sourceId:current.id,name}:{name,startSemester:current?.startSemester||'2027.1',endSemester:current?.endSemester||'2033.2'};const r=await fetch('/api/pocv/scenarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const j=await r.json();if(!r.ok)return alert(j.error||'Erro');scenarios.push(j.scenario);current=j.scenario;dirty=false;$('modalBack').classList.remove('show');renderAll()};}
+function openScenarioModal(isClone=false){
+  $('modalTitle').textContent=isClone?'Clonar cenário':'Novo cenário'; $('modalOk').textContent=isClone?'Criar cópia':'Criar cenário'; $('modalBaseType').value=isClone?'clone':'blank'; $('modalBaseType').disabled=isClone; $('modalBack').classList.add('show'); populateScenarioModal(); $('modalName').value=isClone?`${current?.name||'Cenário'} — cópia`:''; $('modalName').focus();
+}
+$('modalBaseType').onchange=()=>{$('modalSourceWrap').style.display=$('modalBaseType').value==='clone'?'block':'none'};
+$('addScenarioOfferBtn').onclick=()=>addScenarioOfferRow();
 $('modalCancel').onclick=()=>$('modalBack').classList.remove('show');$('modalBack').onclick=e=>{if(e.target===$('modalBack'))$('modalBack').classList.remove('show')};
+$('modalOk').onclick=async()=>{
+  const name=$('modalName').value.trim()||'Novo cenário', startSemester=$('modalStartSem').value, endSemester=$('modalEndSem').value;
+  if(semIndex(endSemester)<semIndex(startSemester))return alert('O semestre final deve ser igual ou posterior ao inicial.');
+  const base=$('modalBaseType').value;
+  let placements=[];
+  if(base==='clone'){
+    const source=scenarios.find(s=>String(s.id)===$('modalSource').value); if(!source)return alert('Selecione o cenário a clonar.');
+    placements=JSON.parse(JSON.stringify(source.placements||[]));
+    // Clonagem respeita o novo intervalo, mas não altera o cenário de origem.
+    placements=placements.filter(p=>placementEnd(p)>=semIndex(startSemester)&&semIndex(p.startSemester)<=semIndex(endSemester)).map((p,i)=>({...p,id:`draft-${Date.now()}-${i}`,source:'simulation'}));
+  }
+  const added=scenarioPlacementsFromRows(startSemester,endSemester); placements.push(...added);
+  const payload={name,startSemester,endSemester,placements};
+  const r=await fetch('/api/pocv/scenarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const j=await r.json();if(!r.ok)return alert(j.error||'Erro ao criar cenário');scenarios.push(j.scenario);current=j.scenario;dirty=false;$('modalBack').classList.remove('show');renderAll();
+};
 $('prevSemBtn').onclick=()=>{const w=$('timelineWrap');w.scrollBy({left:-Math.max(420,w.clientWidth*0.72),behavior:'smooth'})};
 $('nextSemBtn').onclick=()=>{const w=$('timelineWrap');w.scrollBy({left:Math.max(420,w.clientWidth*0.72),behavior:'smooth'})};
 load().catch(e=>{console.error(e);alert('Não foi possível carregar a POCV: '+e.message)});

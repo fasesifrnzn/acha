@@ -44,3 +44,10 @@ A autenticação e a autorização são responsabilidades distintas:
 ## Execução
 
 O acesso deve ocorrer pelo servidor HTTP. Abrir os arquivos diretamente via `file://` não é suportado.
+
+
+## POCV: cenários e modais
+
+O cenário Real é somente leitura. Alterações de oferta devem ocorrer em cenários de simulação criados em branco ou clonados. Os fluxos de criação de cenário, edição de oferta e configuração das variáveis são apresentados como modais sobre a página de Cenários. A persistência permanece no `data/db.json` por meio das rotas `/api/pocv/scenarios` e `/api/pocv/config`.
+
+As responsabilidades pedagógicas de área são dados de configuração em `pedagogicalAreaResponsibilities` e `groupDistributionResponsibility`, permitindo alterar áreas e grupos sem codificar essa relação na interface.

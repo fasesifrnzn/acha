@@ -24,3 +24,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -q -O - http://127.0.0.1:3000/api/health >/dev/null || exit 1
 
 CMD ["node", "server.js"]
+
+# As redes Docker são associadas ao container no runtime.
+# O docker-compose.yml conecta o container principal às redes
+# externas database_network e proxy_network.

@@ -440,7 +440,7 @@ function renderGrid(sems,scenario){
    const total=row.values[sem],st=cellState(g,total);
    if(total){
     html+=`<div class="proj-cell proj-sem ${st.cls}" data-group="${esc(g)}" data-sem="${esc(sem)}" title="${esc(st.title)} — clique para ver as disciplinas">
-      <div class="avg">${fmt1(st.avg)} <small>h/a</small></div>
+      <div class="avg">${fmt(st.avg)} <small>h/a</small></div>
       <span class="indicator" aria-label="${esc(st.label)}" title="${esc(st.label)}"></span>
     </div>`;
    }else{
@@ -461,7 +461,7 @@ function renderGrid(sems,scenario){
 }
 function renderKpis(sems,scenario,statusRows){
   const cap=statusRows.length?statusRows[0].capacity:0,total=sems.reduce((s,sem)=>s+Object.values(workloadForSemester(scenario,sem)).reduce((a,b)=>a+b,0),0),avg=sems.length?total/sems.length:0,viable=statusRows.filter(x=>x.state==='ok').length,def=statusRows.filter(x=>x.state==='bad').length;
-  $('kpis').innerHTML=`<div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">👥</span>Professores disponíveis</div><strong>${fmt1((DB.teachers||[]).reduce((s,t)=>s+Number(t.classFactor||0),0))}</strong><span>índice de docentes equivalentes</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">🗓</span>CH disponível / semestre</div><strong>${fmt(cap)} h/a</strong><span>limite máximo de aulas convertido para h/a</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">📊</span>CH projetada média</div><strong>${fmt(avg)} h/a</strong><span>média dos semestres selecionados</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">⚖</span>Saldo médio</div><strong>${fmt1(statusRows.length?statusRows.reduce((s,x)=>s+x.saldo,0)/statusRows.length:0)} h/a</strong><span>${def?def+' semestre(s) com déficit':'sem déficit de capacidade'}</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">✓</span>Semestres viáveis</div><strong>${viable}</strong><span>de ${sems.length} selecionados</span></div>`;
+  $('kpis').innerHTML=`<div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">👥</span>Professores disponíveis</div><strong>${fmt1((DB.teachers||[]).reduce((s,t)=>s+Number(t.classFactor||0),0))}</strong><span>índice de docentes equivalentes</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">🗓</span>CH disponível / semestre</div><strong>${fmt(cap)} h/a</strong><span>limite máximo de aulas convertido para h/a</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">📊</span>CH projetada média</div><strong>${fmt(avg)} h/a</strong><span>média dos semestres selecionados</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">⚖</span>Saldo médio</div><strong>${fmt(statusRows.length?statusRows.reduce((s,x)=>s+x.saldo,0)/statusRows.length:0)} h/a</strong><span>${def?def+' semestre(s) com déficit':'sem déficit de capacidade'}</span></div><div class="proj-kpi"><div class="kpi-top"><span class="kpi-icon">✓</span>Semestres viáveis</div><strong>${viable}</strong><span>de ${sems.length} selecionados</span></div>`;
 }
 
 function bindProjectionTooltips(){

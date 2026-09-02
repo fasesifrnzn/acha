@@ -4,7 +4,9 @@ Aplicação web do IFRN Campus Natal-Zona Norte para apoiar o planejamento da of
 
 ## Estado desta versão
 
-Esta é a primeira versão organizada para retomada do repositório após a última versão historicamente commitada (v17). O código incorpora o desenvolvimento realizado posteriormente, atualmente identificado como v76, mas o projeto passa a adotar **ACHA** como nome oficial.
+**Versão: 1.0.6**
+
+Esta é a versão organizada para retomada do repositório após a última versão historicamente commitada (v17). O desenvolvimento posterior foi consolidado no projeto **ACHA**, atualmente na linha 1.0.x.
 
 Principais recursos consolidados:
 
@@ -22,7 +24,10 @@ Principais recursos consolidados:
 - autenticação institucional via SUAP/IFRN;
 - vínculo do usuário institucional por matrícula;
 - identificação do curso do coordenador;
-- foto do usuário obtida do SUAP no perfil.
+- foto do usuário obtida do SUAP no perfil;
+- dashboard gerencial com distribuição por grupo, média e meta;
+- funções de apoio à gestão para assessoria pedagógica de área, sem redução de sala de aula;
+- responsáveis pela distribuição registrados por área/grupo.
 
 ## Perfis de acesso
 
@@ -32,7 +37,7 @@ O ACHA possui três níveis institucionais principais:
 - **Diretoria Acadêmica** — acesso integral;
 - **Coordenador de Curso** — acesso às funcionalidades acadêmicas permitidas, com filtragem pelo curso vinculado.
 
-A autenticação do SUAP confirma a identidade institucional. A autorização dentro do ACHA continua sendo determinada pelo cadastro local de usuários e seus vínculos.
+A autenticação do SUAP confirma a identidade institucional. A autorização dentro do ACHA continua sendo determinada pelo cadastro local de usuários e seus vínculos. As assessorias pedagógicas são funções de apoio à gestão e, nesta versão, não reduzem o índice de sala de aula do docente.
 
 ## Estrutura principal
 
@@ -149,3 +154,49 @@ Resposta esperada:
 O histórico de experimentação das versões intermediárias não faz parte do código de produção. Alterações relevantes consolidadas nesta retomada estão resumidas em `CHANGELOG.md`.
 
 Backups, arquivos `.bak`, registros de testes, dumps temporários e credenciais locais não devem ser versionados.
+
+
+## Alterações desta versão — 1.0.3
+
+- inclusão da matriz de **Técnico em Manutenção e Suporte em Informática — Integrado**;
+- inclusão da matriz de **Técnico em Artesanato — Subsequente**;
+- classificação de **Matemática** na área de Ciências da Natureza;
+- assessoria de Ciências da Natureza vinculada a Neto e aos grupos Biologia, Física, Química e Matemática;
+- manutenção da assessoria de Linguagens e Humanidades vinculada a Luiz Henrique;
+- criação do cenário **Simulação — Manutenção Integrado + Artesanato 2028**, clonado do cenário real;
+- retirada, na simulação, das novas entradas de Manutenção diurno a partir de 2028;
+- novas entradas anuais de Manutenção Integrado a partir de 2028, iniciando no turno vespertino e alternando anualmente;
+- novas entradas anuais de Artesanato Subsequente a partir de 2028, sempre no turno oposto à nova entrada de Manutenção;
+- cenário real protegido contra edição;
+- formulários de criação de cenário, edição de oferta e variáveis da POCV apresentados em modais sobre a tela;
+- seleção de cursos na criação de cenário com nome amigável, preservando o identificador interno.
+
+
+### Indicadores
+A página `indicadores.html` reproduz a estrutura da aba **Indicadores** da planilha de referência usando os dados disponíveis em cada cenário da POCV. O detalhamento do plano de oferta é alimentado diretamente pelos metadados cadastrados nas matrizes e pelas ofertas/coortes do cenário, incluindo vagas por semestre e turno.
+
+As matrizes possuem campos específicos para: **Campus, Nível da oferta, Forma da oferta, Formato da oferta, Organização da oferta, Tipo de participação, Fomento externo para carga horária docente, Nome do curso, Carga horária anualizada (horas), Verticalização da oferta, Diretoria Acadêmica responsável e FCC**.
+
+A carga horária anualizada é uma medida em **horas de relógio**, não em h/a. Indicadores que dependam de bases institucionais externas permanecem identificados como não disponíveis quando o banco do ACHA não possui os dados necessários.
+
+### Docker — Redes externas
+
+A aplicação principal é conectada, via `docker-compose.yml`, às redes Docker externas:
+
+- `database_network`
+- `proxy_network`
+
+As redes devem existir previamente no host Docker. Para conferir/criar:
+
+```bash
+docker network ls
+docker network create database_network
+docker network create proxy_network
+```
+
+Depois:
+
+```bash
+docker compose up -d --build
+```
+
