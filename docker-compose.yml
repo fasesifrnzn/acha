@@ -13,6 +13,9 @@ services:
       DB_FILE: /var/data/db.json
     volumes:
       - acha_data:/var/data
+    networks:
+      - database_network
+      - proxy_network
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3000/api/health"]
       interval: 30s
@@ -21,9 +24,6 @@ services:
       start_period: 10s
 
 volumes:
-    networks:
-      - database_network
-      - proxy_network
   acha_data:
     name: acha_data
 
