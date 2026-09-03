@@ -1,3 +1,42 @@
+# ACHA v1.0.19 — Identificação da FaSEs na tela de login
+
+- Adicionada à tela inicial de login a identificação institucional de que o sistema é desenvolvido pela **FaSEs — Fábrica de Software Escola**, do Campus Natal-Zona Norte do IFRN.
+- Mantido o layout e a identidade visual existentes.
+
+# 1.0.18 — Indicadores: metas e legibilidade
+
+- Metas dos indicadores atualizadas: Técnico ≥ 60%, PROEJA ≥ 10%, Formação de Professores ≥ 20% e Outras Ofertas < 20%.
+- Indicadores passam a exibir status visual por ano (verde, amarelo e vermelho).
+- Incluído percentual de Outras Ofertas com detalhamento clicável das ofertas consideradas.
+- Primeira coluna das tabelas ampliada para melhorar a leitura dos nomes das formas de oferta.
+- Mantida a regra de MEq = vagas de entrada × (carga horária anualizada / 800).
+
+## 1.0.16 — Indicadores calculados em todos os anos do cenário
+
+- Criada uma função única de cálculo anual dos indicadores.
+- A mesma fórmula é executada independentemente para cada ano do período do cenário selecionado.
+- A continuidade de uma oferta em outro semestre não é contada como nova entrada.
+- A troca de cenário recalcula todo o período do cenário escolhido.
+- Mantidas as regras de MEq = vagas de entrada × CH anualizada / 800.
+
+## Indicadores — refatoração dos cálculos
+
+- Página de Indicadores refeita a partir das regras definidas na conversa.
+- MEq = vagas de entrada × (CH anualizada / 800).
+- Cálculo anual por coorte de entrada, sem duplicar continuidade semestral.
+- Técnico, PROEJA e Formação de professores calculados em MEq.
+- Vagas noturnas calculadas em vagas físicas.
+- Percentuais clicáveis mostram as ofertas consideradas no numerador.
+- Metas exibidas também como faixa/quantidade de MEq necessária.
+- Mantido o cenário de Manutenção Subsequente + Artesanato.
+- PROEJA tratado como recorte da oferta; não é somado novamente ao total geral.
+
+## 1.0.15 — Atualização dos indicadores
+
+- Formalizada a regra de matrícula equivalente: vagas × CH anualizada / 800.
+- Separadas vagas de entrada e matrícula equivalente.
+- Mantido o cenário de Artesanato subsequente sem nova entrada de Manutenção Integrado.
+
 ## 1.0.13 — Preparação para commit
 
 ### Docker
@@ -109,3 +148,8 @@ As informações históricas relevantes foram consolidadas neste arquivo e na do
 - Indicadores: classificação de PROEJA/EJA ampliada para reconhecer formas EJA e PROEJA nos dados das matrizes.
 - Indicadores: percentuais legais/institucionais agora são clicáveis e exibem, em modal, as ofertas consideradas no cálculo por semestre.
 - Mantido o cálculo sobre as ofertas/coortes ativas do cenário selecionado.
+
+## v1.0.17
+- Corrigida a apresentação dos indicadores anuais: todos os anos do cenário permanecem visíveis e calculados.
+- Corrigida a cor dos percentuais sem faixa de meta cadastrada, que estavam sendo renderizados em branco.
+- Tabelas anuais passam a usar layout fixo responsivo para exibir todas as colunas no desktop e rolagem horizontal apenas quando necessária.

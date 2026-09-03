@@ -1,207 +1,460 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA | Indicadores</title>
-<link rel="stylesheet" href="/style.css?v=1.0.4"><script src="/app.js?v=1.0.4"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.18">
+<script src="/app.js?v=1.0.18"></script>
 <style>
 .ind-page{max-width:1500px}
 .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
 .page-head h1{margin:0;font-size:22px}.page-head p{margin:5px 0 0;color:var(--muted)}
-.filters{display:grid;grid-template-columns:1.5fr 180px 180px auto;gap:10px;align-items:end}
+.filters{display:grid;grid-template-columns:1.6fr 180px auto;gap:10px;align-items:end}
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
 .kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 2px 8px #00000008}
-.kpi .label{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase}.kpi strong{display:block;font-size:25px;margin-top:3px}.kpi small{color:var(--muted)}
+.kpi .label{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase}
+.kpi strong{display:block;font-size:25px;margin-top:3px}.kpi small{color:var(--muted)}
 .ind-section{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 8px #00000008}
 .ind-title{background:#155e75;color:#fff;padding:10px 14px;font-weight:900;letter-spacing:.15px;display:flex;justify-content:space-between;gap:10px;align-items:center}
 .ind-title span{font-size:11px;font-weight:700;opacity:.9}
-.ind-wrap{overflow:auto}.ind-table{width:100%;min-width:880px;border-collapse:collapse;table-layout:auto}
-.ind-table th,.ind-table td{padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;font-size:12px}
+.ind-wrap{overflow-x:auto;overflow-y:hidden}.ind-table{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}.ind-table th:first-child,.ind-table td:first-child{width:340px;min-width:340px}.ind-table th:not(:first-child),.ind-table td:not(:first-child){width:auto}
+.ind-table th,.ind-table td{padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;text-align:right;font-size:12px}
 .ind-table th:first-child,.ind-table td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:1}
 .ind-table th{background:#f1f5f9;color:#475569;font-size:11px;text-transform:uppercase}
 .ind-table tr.total td{font-weight:900;background:#f8fafc}
 .ind-table tr.subtotal td{font-weight:800;background:#f8fafc}
 .ind-table .meta-head{font-size:10px;color:var(--muted);font-weight:700;text-transform:none}
-.offer-table{min-width:1500px}.offer-table th.sem-head{text-align:center;background:#dbeafe;color:#1e3a5f}.offer-table th.turn-head{font-size:10px;text-align:center}.offer-table td.center{text-align:center}.offer-table td.wrap{white-space:normal;min-width:150px}.offer-table td.course-cell{font-weight:800;color:#0f172a}.offer-table tr.matrix-total td{font-weight:900;background:#f8fafc}
-.pct{font-weight:850}.pct.good{color:#047857}.pct.warn{color:#b45309}.pct.bad{color:#b91c1c}
+.pct{font-weight:850;color:#334155}.pct.neutral{color:#334155}.pct.good{color:#047857}.pct.warn{color:#b45309}.pct.bad{color:#b91c1c}
+.pct-btn{border:0;background:none;padding:0;cursor:pointer;font:inherit}.pct-btn:hover{text-decoration:underline}
 .meta-pill{display:inline-flex;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:900}
 .meta-pill.ok{background:#dcfce7;color:#166534}.meta-pill.warn{background:#fef3c7;color:#92400e}.meta-pill.bad{background:#fee2e2;color:#991b1b}
-.note{padding:10px 14px;color:var(--muted);font-size:11px;line-height:1.5;border-top:1px solid var(--line)}
-.indicators-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.missing{padding:14px;color:var(--muted)}
-.pct-btn{border:0;background:none;padding:0;cursor:pointer;font:inherit}.pct-btn:hover{text-decoration:underline}.modal-backdrop{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999}.modal-card{background:#fff;border-radius:16px;box-shadow:0 18px 60px #0004;width:min(900px,96vw);max-height:90vh;overflow:hidden}.indicator-modal .modal-body{max-height:70vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);background:#f8fafc}.modal-head strong{display:block}.modal-head small{display:block;color:var(--muted);margin-top:3px}.modal-close{border:0;background:none;font-size:26px;cursor:pointer;color:#475569}.indicator-modal .ind-table{min-width:650px}.indicator-modal .ind-table th:first-child,.indicator-modal .ind-table td:first-child{position:static}.@media(max-width:1000px){.filters{grid-template-columns:1fr 1fr}.kpi-grid{grid-template-columns:1fr 1fr}.indicators-grid{grid-template-columns:1fr}}
+.note{padding:10px 14px;color:var(--muted);font-size:11px;line-height:1.55;border-top:1px solid var(--line)}
+.indicators-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.ind-table .status-cell{font-weight:900}.legend{display:flex;gap:8px;flex-wrap:wrap;padding:8px 14px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+.modal-backdrop{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999}
+.modal-card{background:#fff;border-radius:16px;box-shadow:0 18px 60px #0004;width:min(980px,96vw);max-height:90vh;overflow:hidden}
+.modal-body{max-height:72vh;overflow:auto}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line);background:#f8fafc}
+.modal-head strong{display:block}.modal-head small{display:block;color:var(--muted);margin-top:3px}
+.modal-close{border:0;background:none;font-size:26px;cursor:pointer;color:#475569}
+.modal-card .ind-table{min-width:720px}.modal-card .ind-table th:first-child,.modal-card .ind-table td:first-child{position:static}
+.status{display:inline-flex;align-items:center;gap:6px;font-weight:800}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:#94a3b8}
+@media(max-width:1000px){.filters{grid-template-columns:1fr 1fr}.kpi-grid{grid-template-columns:1fr 1fr}.indicators-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.filters{grid-template-columns:1fr}.kpi-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header class="page-head">
-  <div><h1>Indicadores</h1><p>Indicadores de oferta e planejamento derivados do cenário selecionado.</p></div>
+  <div><h1>Indicadores</h1><p>Indicadores calculados ano a ano para todo o período do cenário selecionado, diretamente das entradas e das matrizes cadastradas.</p></div>
 </header>
 <nav class="mainnav"></nav>
+
 <main class="ind-page">
 <section class="panel">
   <div class="filters">
     <div><label>CENÁRIO</label><select id="scenario"></select></div>
-    <div><label>SEMESTRE INICIAL</label><select id="start"></select></div>
-    <div><label>SEMESTRE FINAL</label><select id="end"></select></div>
+    <div><label>ANO DE REFERÊNCIA</label><select id="focusYear"></select></div>
     <button id="refresh">Atualizar</button>
   </div>
 </section>
+
 <div id="content"></div>
 </main>
+
 <script>
 (function(){
-let DB=null,SCENARIOS=[],current=null;
+let DB=null, SCENARIOS=[], current=null;
+
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-const norm=v=>String(v??'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();
-function si(s){const [y,p]=String(s).split('.').map(Number);return y*2+(p-1)}
-function sem(i){return `${Math.floor(i/2)}.${i%2+1}`}
-function between(a,b){let x=si(a),y=si(b),r=[];if(x>y)[x,y]=[y,x];for(let i=x;i<=y;i++)r.push(sem(i));return r}
-function course(mid){return DB?.data?.courses?.find(c=>String(c.matrix)===String(mid))||{}}
-function matrix(mid){return DB?.data?.matrices?.[String(mid)]||{}}
-function placementActive(p,s){
- const x=si(s),a=si(p.startSemester),span=Number(p.span)||Object.keys(matrix(p.matrix).disciplines||{}).length;
- return x>=a && x<a+span;
+const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+
+function matrix(mid){ return DB?.data?.matrices?.[String(mid)] || {}; }
+function course(mid){ return (DB?.data?.courses||[]).find(c=>String(c.matrix)===String(mid)) || {}; }
+
+function si(s){
+  const [y,p]=String(s).split('.').map(Number);
+  return y*2+(p-1);
 }
-function placementsAt(s){return (current?.placements||[]).filter(p=>placementActive(p,s))}
-function typeOf(p){const c=course(p.matrix);return String(c.type||'')}
-function formOf(p){return norm(course(p.matrix).form||'')}
-function levelOf(p){return norm(course(p.matrix).level||'')}
-function isProeja(p){const c=course(p.matrix); const f=formOf(p); const n=norm(c.name||c.course_name||''); return f.includes('proeja') || f.includes('eja') || n.includes('proeja') || n.includes('eja')}
-function isTech(p){return typeOf(p)==='Técnico'}
-function isTeacherFormation(p){return typeOf(p)==='Formação de Professores'}
-function isGrad(p){return levelOf(p).includes('graduacao')||levelOf(p).includes('pos-graduacao')}
-function isNight(p){return norm(p.turn).includes('noite')}
-function vagas(p){return Math.max(1,Number(p.quantity)||1)*Math.max(0,Number(p.vacancies)||0)}
-function startsAt(p,s){return String(p.startSemester)===String(s)}
-function newCohorts(s){return placementsAt(s).filter(p=>startsAt(p,s))}
-function sum(arr,fn){return arr.reduce((a,x)=>a+Number(fn(x)||0),0)}
-function fmt(n,d=0){return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d})}
-function pct(n,d){return d?100*n/d:0}
-function pctHtml(v,target,mode='min',key='',sem=''){
- const ok=mode==='min'?v>=target:v<=target, near=mode==='min'?v>=target*.9:v<=target*1.1;
- return `<button type="button" class="pct ${ok?'good':near?'warn':'bad'} pct-btn" data-ind="${esc(key)}" data-sem="${esc(sem)}">${fmt(v,1)}%</button>`;
+function yearsForScenario(sc){
+  const a=Number(String(sc.startSemester).split('.')[0]);
+  const b=Number(String(sc.endSemester).split('.')[0]);
+  const out=[];
+  for(let y=a;y<=b;y++) out.push(y);
+  return out;
 }
-function indicatorOffers(s,key){
- return placementsAt(s).filter(p=>{
-   const tech=isTech(p), pro=isProeja(p), teacher=isTeacherFormation(p), night=isNight(p), grad=isGrad(p);
-   if(key==='tech') return tech;
-   if(key==='proeja') return pro;
-   if(key==='form') return teacher;
-   if(key==='night') return night;
-   if(key==='nightGrad') return night && grad;
-   return false;
- });
+function startsInYear(p,y){ return String(p.startSemester).startsWith(String(y)+'.'); }
+function placementsAtYear(y){
+  return (current?.placements||[]).filter(p=>startsInYear(p,y));
 }
-function showIndicatorOffers(key,s){
- const labels={tech:'% Técnico',proeja:'% PROEJA / EJA',form:'% Formação de professores',night:'% Vagas noturnas',nightGrad:'% Vagas noturnas em graduação'};
- const items=indicatorOffers(s,key), total=sum(items,vagas);
- const modal=document.createElement('div'); modal.className='modal-backdrop';
- modal.innerHTML=`<div class="modal-card indicator-modal"><div class="modal-head"><div><strong>${esc(labels[key]||'Indicador')}</strong><small>${esc(s)} · ${items.length} ofertas · ${fmt(total)} vagas</small></div><button type="button" class="modal-close">×</button></div><div class="modal-body"><table class="ind-table"><thead><tr><th>CURSO / MATRIZ</th><th>FORMA</th><th>TURNO</th><th>VAGAS</th></tr></thead><tbody>${items.length?items.map(p=>{const c=course(p.matrix);return `<tr><td style="text-align:left">${esc(c.name||c.course_name||'—')}</td><td>${esc(c.form||'—')}</td><td>${esc(placementTurnAt(p,s)||'—')}</td><td>${fmt(vagas(p))}</td></tr>`}).join(''):`<tr><td colspan="4" style="text-align:center">Nenhuma oferta considerada.</td></tr>`}</tbody></table></div></div>`;
- document.body.appendChild(modal); modal.querySelector('.modal-close').onclick=()=>modal.remove(); modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});
+function qty(p){ return Math.max(1,Number(p.quantity)||1); }
+function vagas(p){ return qty(p)*Math.max(0,Number(p.vacancies)||0); }
+
+function meta(p){
+  const m=matrix(p.matrix), c=course(p.matrix);
+  return {
+    name:c.course_name || c.name || m.name || '—',
+    form:m.offerForm || c.form || '—',
+    type:c.type || '',
+    level:c.level || m.offerLevel || '',
+    ch:Number(m.annualizedWorkloadHours ?? c.annualizedWorkloadHours) || 0
+  };
 }
-function targetPill(v,target,mode='min'){
- const ok=mode==='min'?v>=target:v<=target;
- return `<span class="meta-pill ${ok?'ok':'bad'}">${ok?'Meta atingida':'Abaixo da meta'}</span>`;
+function meq(p){ return vagas(p)*meta(p).ch/800; }
+
+function offerForm(p){ return norm(meta(p).form); }
+function isTechnical(p){ return meta(p).type==='Técnico'; }
+function isTeacher(p){ return meta(p).type==='Formação de Professores'; }
+function isOther(p){ return meta(p).type==='Outras Ofertas'; }
+function isProeja(p){ return offerForm(p).includes('eja') || offerForm(p).includes('proeja'); }
+function isNight(p){ return norm(p.turn).includes('noite') || norm(p.turn).includes('noturno'); }
+function isGraduation(p){ return norm(meta(p).level).includes('graduacao') || norm(meta(p).level).includes('pós-graduação') || norm(meta(p).level).includes('pos-graduacao'); }
+
+function techCategory(p){
+  const f=offerForm(p);
+  if(!isTechnical(p)) return null;
+  if(f==='técnico integrado "regular"' || f==='tecnico integrado "regular"' || f==='integrado') return 'technicalIntegratedRegular';
+  if(f.includes('técnico integrado eja') || f.includes('tecnico integrado eja')) return 'technicalIntegratedEja';
+  if(f.includes('técnico concomitante eja') || f.includes('tecnico concomitante eja')) return 'technicalConcurrentEja';
+  if(f.includes('técnico subsequente') || f.includes('tecnico subsequente')) return 'technicalSub';
+  if(f.includes('técnico concomitante') || f.includes('tecnico concomitante')) return 'technicalConcurrentRegular';
+  return null;
 }
-function row(label,vals,cls=''){return `<tr class="${cls}"><td>${esc(label)}</td>${vals.map(v=>`<td>${v}</td>`).join('')}</tr>`}
-function metricsFor(s){
- const ps=placementsAt(s), ns=newCohorts(s), total=sum(ps,vagas);
- const tech=sum(ps,p=>isTech(p)?vagas(p):0), pro=sum(ps,p=>isProeja(p)?vagas(p):0), form=sum(ps,p=>isTeacherFormation(p)?vagas(p):0);
- const night=sum(ps,p=>isNight(p)?vagas(p):0), nightGrad=sum(ps,p=>isNight(p)&&isGrad(p)?vagas(p):0);
- const technicalIntegrated=sum(ps,p=>isTech(p)&&formOf(p).includes('integrado')&&!isProeja(p)?vagas(p):0);
- const technicalIntegratedEja=sum(ps,p=>isTech(p)&&formOf(p).includes('integrado eja')?vagas(p):0);
- const technicalSub=sum(ps,p=>isTech(p)&&formOf(p).includes('subsequente')&&!isProeja(p)?vagas(p):0);
- const concurrentEja=sum(ps,p=>isProeja(p)&&formOf(p).includes('concomitante')?vagas(p):0);
- const otherTech=sum(ps,p=>isTech(p)&&!formOf(p).includes('integrado')&&!formOf(p).includes('subsequente')&&!isProeja(p)?vagas(p):0);
- const lic=sum(ps,p=>isTeacherFormation(p)&&levelOf(p).includes('graduacao')?vagas(p):0);
- const pos=sum(ps,p=>isTeacherFormation(p)&&levelOf(p).includes('pos-graduacao')?vagas(p):0);
- const groups=new Set(ps.map(p=>String(p.courseId||course(p.matrix).course_id||'')));
- return {total,tech,pro,form,night,nightGrad,technicalIntegrated,technicalIntegratedEja,technicalSub,concurrentEja,otherTech,lic,pos,newCohorts:ns.length,activeCohorts:ps.length,courses:groups.size};
+function proCategory(p){
+  const f=offerForm(p);
+  if(f.includes('técnico integrado eja') || f.includes('tecnico integrado eja')) return 'technicalIntegratedEja';
+  if(f.includes('técnico concomitante eja') || f.includes('tecnico concomitante eja')) return 'technicalConcurrentEja';
+  if(f.includes('fic integrado a eja médio') || f.includes('fic integrado eja médio') || f.includes('fic integrado a eja medio') || f.includes('fic integrado eja medio')) return 'ficIntegratedEjaMedio';
+  if(f.includes('fic concomitante a eja fundamental') || f.includes('fic concomitante eja fundamental')) return 'ficConcurrentEjaFundamental';
+  if(f.includes('fic concomitante a eja médio') || f.includes('fic concomitante eja medio')) return 'ficConcurrentEjaMedio';
+  return null;
 }
-function header(sems){return sems.map(s=>`<th>${esc(s)}</th>`).join('')}
-function turnKey(v){const t=norm(v);if(t.includes('manha')||t.includes('matut'))return 'manha';if(t.includes('tarde')||t.includes('vespert'))return 'tarde';if(t.includes('noite')||t.includes('noturn'))return 'noite';return 'outro'}
-function matrixMeta(mid){
- const m=matrix(mid),c=course(mid);
- return {campus:m.campus??c.campus??'ZN',level:m.offerLevel??m.level??c.level??'',form:m.offerForm??m.form??c.form??'',format:m.offerFormat??c.offerFormat??m.modality??'Presencial',organization:m.organization??c.organization??'Individual',participation:m.participation??c.participation??'N/A',funding:m.externalFunding??c.externalFunding??'Não',course:c.course_name??c.name??m.name??'—',annual:Number(m.annualizedWorkloadHours??c.annualizedWorkloadHours)||0,verticalization:m.verticalization??c.verticalization??'',director:m.academicDirector??c.academicDirector??'DIAC',fcc:m.fcc??c.fcc??''};
+
+function calcularIndicadoresAno(ano){
+  // Regra: somente entradas cuja coorte começa no ano letivo.
+  // Continuidade em 2º semestre não gera nova entrada.
+  const entradas=(current?.placements||[]).filter(p=>startsInYear(p,ano));
+
+  const totalVagas=entradas.reduce((s,p)=>s+vagas(p),0);
+  const totalMEq=entradas.reduce((s,p)=>s+meq(p),0);
+
+  const techCats={
+    technicalIntegratedRegular:0,
+    technicalIntegratedEja:0,
+    technicalConcurrentEja:0,
+    technicalSub:0,
+    technicalConcurrentRegular:0
+  };
+  const proCats={
+    technicalIntegratedEja:0,
+    technicalConcurrentEja:0,
+    ficIntegratedEjaMedio:0,
+    ficConcurrentEjaFundamental:0,
+    ficConcurrentEjaMedio:0
+  };
+
+  entradas.forEach(p=>{
+    const tc=techCategory(p);
+    if(tc) techCats[tc]+=meq(p);
+
+    const pc=proCategory(p);
+    if(pc) proCats[pc]+=meq(p);
+  });
+
+  const tech=Object.values(techCats).reduce((s,v)=>s+v,0);
+  const pro=Object.values(proCats).reduce((s,v)=>s+v,0);
+  const teacher=entradas.filter(isTeacher).reduce((s,p)=>s+meq(p),0);
+  const other=entradas.filter(isOther).reduce((s,p)=>s+meq(p),0);
+
+  const nightVagas=entradas.filter(isNight).reduce((s,p)=>s+vagas(p),0);
+  const gradVagas=entradas.filter(isGraduation).reduce((s,p)=>s+vagas(p),0);
+  const nightGradVagas=entradas.filter(p=>isGraduation(p)&&isNight(p)).reduce((s,p)=>s+vagas(p),0);
+
+  return {
+    ano,
+    entries:entradas,
+    totalVagas,totalMEq,
+    tech,pro,teacher,
+    nightVagas,gradVagas,nightGradVagas,
+    techCats,proCats,
+    percentuais:{
+      tecnico:pct(tech,totalMEq),
+      proeja:pct(pro,totalMEq),
+      formacaoProfessores:pct(teacher,totalMEq),
+      outras:pct(other,totalMEq),
+      vagasNoturnas:pct(nightVagas,totalVagas),
+      vagasNoturnasGraduacao:pct(nightGradVagas,gradVagas)
+    }
+  };
 }
-function placementTurnAt(p,s){return p?.turnSchedule?.[s]||p?.turn||''}
-function vacanciesByTurn(mid,s){
- const out={manha:0,tarde:0,noite:0,outro:0};
- placementsAt(s).filter(p=>String(p.matrix)===String(mid)).forEach(p=>{out[turnKey(placementTurnAt(p,s))]+=vagas(p)});
- return out;
+
+// Compatibilidade com os pontos da página que já chamavam annual().
+function annual(ano){ return calcularIndicadoresAno(ano); }
+
+function calcularIndicadoresCenario(cenario){
+  const anterior=current;
+  current=cenario;
+  const anos=yearsForScenario(cenario);
+  const resultado=anos.map(ano=>calcularIndicadoresAno(ano));
+  current=anterior;
+  return resultado;
 }
-function offerMatrixRows(sems){
- const mids=[...new Set(sems.flatMap(s=>placementsAt(s).map(p=>String(p.matrix))))];
- return mids.map(mid=>{
-   const meta=matrixMeta(mid), bySem=Object.fromEntries(sems.map(s=>[s,vacanciesByTurn(mid,s)]));
-   const total=sems.reduce((a,s)=>a+Object.values(bySem[s]).reduce((x,y)=>x+y,0),0);
-   return {mid,meta,bySem,total};
- }).sort((a,b)=>norm(a.meta.course).localeCompare(norm(b.meta.course),'pt-BR',{numeric:true})||Number(a.mid)-Number(b.mid));
+
+const metas={
+  tech:[0.60,1],
+  pro:[0.10,1],
+  teacher:[0.20,1],
+  other:[0,0.20],
+  nightGrad:[0.333,0.333]
+};
+function metaBand(y,key){ return metas[key] || null; }
+function statusPct(value, band, key){
+  if(key==='other') {
+    if(value < 0.18) return 'good';
+    if(value < 0.20) return 'warn';
+    return 'bad';
+  }
+  if(!band) return 'neutral';
+  if(value>=band[0]) return 'good';
+  if(value>=band[0]*0.95) return 'warn';
+  return 'bad';
 }
+function fmt(n,d=0){ return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function pct(n,d){ return d ? 100*n/d : 0; }
+function bandText(band){
+  if(!band) return '—';
+  const a=band[0]*100,b=band[1]*100;
+  return Math.abs(a-b)<0.001 ? fmt(a,1)+'%' : fmt(a,1)+'–'+fmt(b,1)+'%';
+}
+function metaMeq(total,band){
+  if(!band) return '—';
+  if(band[1]>=0.999) return '≥ '+fmt(total*band[0],1);
+  const a=total*band[0],b=total*band[1];
+  return Math.abs(a-b)<0.001 ? fmt(a,1) : fmt(a,1)+'–'+fmt(b,1);
+}
+function pctButton(value,band,key,year){
+  const st=statusPct(value,band,key);
+  return `<button class="pct-btn pct ${st}" data-key="${esc(key)}" data-year="${year}">${fmt(value,2)}%</button>`;
+}
+
+function consideredOffers(y,key){
+  const e=placementsAtYear(y);
+  return e.filter(p=>{
+    if(key==='tech') return isTechnical(p);
+    if(key==='pro') return !!proCategory(p);
+    if(key==='teacher') return isTeacher(p);
+    if(key==='other') return isOther(p);
+    if(key==='night') return isNight(p);
+    if(key==='nightGrad') return isGraduation(p)&&isNight(p);
+    return false;
+  });
+}
+function showModal(key,y){
+  const labels={
+    tech:'% Técnico',
+    pro:'% PROEJA',
+    teacher:'% Formação de professores',
+    other:'% Outras ofertas',
+    night:'% Vagas noturnas',
+    nightGrad:'% Vagas noturnas em graduação'
+  };
+  const items=consideredOffers(y,key);
+  const denominator=annual(y).totalMEq;
+  const totalV=annual(y).totalVagas;
+  const isMEq=['tech','pro','teacher'].includes(key);
+  const numerator=isMEq ? items.reduce((a,p)=>a+meq(p),0) : items.reduce((a,p)=>a+vagas(p),0);
+  const den=isMEq ? denominator : totalV;
+
+  const modal=document.createElement('div');
+  modal.className='modal-backdrop';
+  modal.innerHTML=`
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <strong>${esc(labels[key])} — ${y}</strong>
+          <small>${items.length} oferta(s) considerada(s) · numerador ${isMEq?fmt(numerator,1)+' MEq':fmt(numerator)+' vagas'} · denominador ${isMEq?fmt(den,1)+' MEq':fmt(den)+' vagas'}</small>
+        </div>
+        <button class="modal-close" type="button">×</button>
+      </div>
+      <div class="modal-body">
+        <table class="ind-table">
+          <thead><tr><th>CURSO / MATRIZ</th><th>FORMA</th><th>ENTRADA</th><th>TURNO</th><th>VAGAS</th><th>CH ANUAL</th><th>MEq</th></tr></thead>
+          <tbody>
+          ${items.length ? items.map(p=>{
+            const m=meta(p);
+            return `<tr>
+              <td style="text-align:left;font-weight:800">${esc(m.name)}</td>
+              <td>${esc(m.form)}</td>
+              <td>${esc(p.startSemester)}</td>
+              <td>${esc(p.turn||'A definir')}</td>
+              <td>${fmt(vagas(p))}</td>
+              <td>${fmt(m.ch)}</td>
+              <td>${fmt(meq(p),1)}</td>
+            </tr>`;
+          }).join('') : `<tr><td colspan="7" style="text-align:center">Nenhuma oferta considerada.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.querySelector('.modal-close').onclick=()=>modal.remove();
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove()});
+}
+
 function render(){
- current=SCENARIOS.find(x=>x.id===$('scenario').value)||SCENARIOS[0]; if(!current)return;
- const all=between(current.startSemester,current.endSemester);
- if(!all.includes($('start').value))$('start').value=all[0];
- if(!all.includes($('end').value))$('end').value=all[all.length-1];
- let a=$('start').value,b=$('end').value;if(si(a)>si(b))[a,b]=[b,a];
- const sems=between(a,b), M=Object.fromEntries(sems.map(s=>[s,metricsFor(s)]));
- const totalAvg=sum(sems,s=>M[s].total)/Math.max(1,sems.length);
- const avgTech=sum(sems,s=>pct(M[s].tech,M[s].total))/Math.max(1,sems.length);
- const avgPro=sum(sems,s=>pct(M[s].pro,M[s].total))/Math.max(1,sems.length);
- const avgForm=sum(sems,s=>pct(M[s].form,M[s].total))/Math.max(1,sems.length);
- const deficit=sems.filter(s=>M[s].total===0).length;
- let html=`<div class="kpi-grid">
- <div class="kpi"><div class="label">Vagas projetadas / semestre</div><strong>${fmt(totalAvg)}</strong><small>média no intervalo</small></div>
- <div class="kpi"><div class="label">% Técnico</div><strong>${fmt(avgTech,1)}%</strong><small>meta ≥ 60%</small></div>
- <div class="kpi"><div class="label">% PROEJA</div><strong>${fmt(avgPro,1)}%</strong><small>meta ≥ 10%</small></div>
- <div class="kpi"><div class="label">% Formação de professores</div><strong>${fmt(avgForm,1)}%</strong><small>meta ≥ 20%</small></div>
- </div>`;
+  current=SCENARIOS.find(s=>String(s.id)==String($('scenario').value))||SCENARIOS[0];
+  if(!current) return;
 
- html+=`<section class="ind-section"><div class="ind-title"><span> PERCENTUAIS LEGAIS / INSTITUCIONAIS</span><span>Referência de metas configuradas na tabela Indicadores</span></div><div class="ind-wrap"><table class="ind-table"><thead><tr><th>INDICADOR</th>${header(sems)}<th>META</th></tr></thead><tbody>`;
- html+=row('% Técnico',sems.map(s=>pctHtml(pct(M[s].tech,M[s].total),60,'min','tech',s)), 'subtotal')+row('% PROEJA',sems.map(s=>pctHtml(pct(M[s].pro,M[s].total),10,'min','proeja',s)), 'subtotal')+row('% Formação de professores',sems.map(s=>pctHtml(pct(M[s].form,M[s].total),20,'min','form',s)), 'subtotal')+row('% Vagas noturnas',sems.map(s=>pctHtml(pct(M[s].night,M[s].total),33.3,'min','night',s)), 'subtotal')+row('% Vagas noturnas em graduação',sems.map(s=>pctHtml(pct(M[s].nightGrad,M[s].total),0,'min','nightGrad',s)), 'subtotal');
- html+=`<tr><td>Meta</td>${sems.map(()=>`<td><span class="meta-head">60% · 10% · 20% · 33,3%</span></td>`).join('')}<td><span class="meta-head">conforme indicador</span></td></tr></tbody></table></div><div class="note">Os percentuais são calculados sobre as vagas das coortes ativas no cenário em cada semestre. As metas reproduzem a estrutura apresentada na aba “Indicadores”; o banco do ACHA não contém, nesta versão, os dados externos necessários para reconstruir eventuais bases institucionais históricas.</div></section>`;
+  // A mesma fórmula é executada independentemente para TODOS os anos do cenário selecionado.
+  const years=yearsForScenario(current);
+  const calculos=calcularIndicadoresCenario(current);
+  const all=calculos.map(r=>[r.ano,r]);
+  const focus=Number($('focusYear').value)||years[0];
+  const f=calculos.find(r=>r.ano===focus)||calculos[0];
 
- html+=`<div class="indicators-grid"><section class="ind-section"><div class="ind-title">VAGAS EQUIVALENTES — CURSOS TÉCNICOS</div><div class="ind-wrap"><table class="ind-table"><thead><tr><th>MODALIDADE</th>${header(sems)}</tr></thead><tbody>`;
- const techRows=[['Técnico integrado regular','technicalIntegrated'],['Técnico integrado EJA','technicalIntegratedEja'],['Técnico concomitante EJA','concurrentEja'],['Técnico subsequente regular','technicalSub'],['Técnico concomitante regular','otherTech']];
- techRows.forEach(([l,k])=>html+=row(l,sems.map(s=>fmt(M[s][k])),''));
- html+=row('TOTAL TÉCNICO',sems.map(s=>fmt(M[s].tech)),'total')+`</tbody></table></div></section>`;
+  const techPct=pct(f.tech,f.totalMEq);
+  const proPct=pct(f.pro,f.totalMEq);
+  const teacherPct=pct(f.teacher,f.totalMEq);
+  const otherPct=pct(f.other,f.totalMEq);
+  const nightPct=pct(f.nightVagas,f.totalVagas);
+  const nightGradPct=pct(f.nightGradVagas,f.gradVagas);
 
- html+=`<section class="ind-section"><div class="ind-title">VAGAS EQUIVALENTES — PROEJA</div><div class="ind-wrap"><table class="ind-table"><thead><tr><th>MODALIDADE</th>${header(sems)}</tr></thead><tbody>`;
- html+=row('PROEJA — total',sems.map(s=>fmt(M[s].pro)),'total');
- html+=`</tbody></table></div><div class="note">O detalhamento em FIC, EJA médio, EJA fundamental e demais categorias só é apresentado quando a modalidade está identificável nos dados cadastrais do cenário.</div></section></div>`;
+  let html=`<div class="kpi-grid">
+    <div class="kpi"><div class="label">MEq total — ${focus}</div><strong>${fmt(f.totalMEq,1)}</strong><small>entradas do ano letivo</small></div>
+    <div class="kpi"><div class="label">% Técnico</div><strong class="pct ${statusPct(techPct,metaBand(f.ano,'tech'),'tech')}">${fmt(techPct,2)}%</strong><small>${fmt(f.tech,1)} MEq</small></div>
+    <div class="kpi"><div class="label">% PROEJA</div><strong class="pct ${statusPct(proPct,metaBand(f.ano,'pro'),'pro')}">${fmt(proPct,2)}%</strong><small>${fmt(f.pro,1)} MEq</small></div>
+    <div class="kpi"><div class="label">% Formação de professores</div><strong class="pct ${statusPct(teacherPct,metaBand(f.ano,'teacher'),'teacher')}">${fmt(teacherPct,2)}%</strong><small>${fmt(f.teacher,1)} MEq</small></div>
+  </div>`;
 
- html+=`<div class="indicators-grid"><section class="ind-section"><div class="ind-title">VAGAS EQUIVALENTES — FORMAÇÃO DE PROFESSORES</div><div class="ind-wrap"><table class="ind-table"><thead><tr><th>FORMAÇÃO</th>${header(sems)}</tr></thead><tbody>`;
- html+=row('Licenciatura / graduação',sems.map(s=>fmt(M[s].lic)))+row('Pós-graduação',sems.map(s=>fmt(M[s].pos)))+row('TOTAL FORMAÇÃO DE PROFESSORES',sems.map(s=>fmt(M[s].form)),'total');
- html+=`</tbody></table></div></section>`;
- html+=`<section class="ind-section"><div class="ind-title">INDICADORES ACADÊMICOS</div><div class="ind-wrap"><table class="ind-table"><thead><tr><th>INDICADOR</th>${header(sems)}</tr></thead><tbody>`;
- html+=row('Índice de verticalização',sems.map(()=>`<span class="meta-head">N/D</span>`))+row('Vagas equivalentes com verticalização',sems.map(()=>`<span class="meta-head">N/D</span>`))+row('Qtde. de turmas ingressantes',sems.map(s=>fmt(M[s].newCohorts)),'total');
- html+=`</tbody></table></div><div class="note">Índice de verticalização e vagas equivalentes com verticalização não são inferidos: esta versão do banco não contém a base institucional necessária para reproduzir a fórmula da planilha sem inventar dados.</div></section></div>`;
+  html+=`<section class="ind-section">
+    <div class="ind-title"><span>INDICADORES — DISTRIBUIÇÃO DA OFERTA</span><span>Valores calculados para as entradas de cada ano do cenário</span></div>
+    <div class="ind-wrap"><table class="ind-table">
+      <thead><tr><th>INDICADOR</th>${years.map(y=>`<th>${y}</th>`).join('')}</tr></thead>
+      <tbody>
+        <tr class="subtotal"><td>% Técnico</td>${all.map(([y,m])=>`<td>${pctButton(pct(m.tech,m.totalMEq),metaBand(y,'tech'),'tech',y)}</td>`).join('')}</tr>
+        <tr><td>Meta (MEq)</td>${all.map(([y,m])=>`<td>${metaMeq(m.totalMEq,metaBand(y,'tech'))}</td>`).join('')}</tr>
+        <tr class="subtotal"><td>% PROEJA</td>${all.map(([y,m])=>`<td>${pctButton(pct(m.pro,m.totalMEq),metaBand(y,'pro'),'pro',y)}</td>`).join('')}</tr>
+        <tr><td>Meta (MEq)</td>${all.map(([y,m])=>`<td>${metaMeq(m.totalMEq,metaBand(y,'pro'))}</td>`).join('')}</tr>
+        <tr class="subtotal"><td>% Formação de professores</td>${all.map(([y,m])=>`<td>${pctButton(pct(m.teacher,m.totalMEq),metaBand(y,'teacher'),'teacher',y)}</td>`).join('')}</tr>
+        <tr><td>Meta (MEq)</td>${all.map(([y,m])=>`<td>${metaMeq(m.totalMEq,metaBand(y,'teacher'))}</td>`).join('')}</tr>
+        <tr class="subtotal"><td>% Outras ofertas</td>${all.map(([y,m])=>`<td>${pctButton(pct(m.other,m.totalMEq),metaBand(y,'other'),'other',y)}</td>`).join('')}</tr>
+        <tr><td>Meta</td>${all.map(([y])=>`<td>&lt; 20%</td>`).join('')}</tr>
+        <tr class="subtotal"><td>% Vagas noturnas</td>${all.map(([y,m])=>`<td><button class="pct-btn pct neutral" data-key="night" data-year="${y}">${fmt(pct(m.nightVagas,m.totalVagas),2)}%</button></td>`).join('')}</tr>
+        <tr class="subtotal"><td>% Vagas noturnas em graduação</td>${all.map(([y,m])=>`<td><button class="pct-btn pct ${statusPct(pct(m.nightGradVagas,m.gradVagas),metaBand(y,'nightGrad'),'nightGrad')}" data-key="nightGrad" data-year="${y}">${fmt(pct(m.nightGradVagas,m.gradVagas),2)}%</button></td>`).join('')}</tr>
+        <tr><td>Meta</td>${all.map(([y])=>`<td>${y>=2028?'33,3%':'33,3%'}</td>`).join('')}</tr>
+      </tbody>
+    </table></div>
+    <div class="note">
+      <strong>Regra aplicada em todos os anos:</strong> MEq = vagas de entrada × (carga horária anualizada ÷ 800). 
+      As ofertas são contabilizadas somente na coorte que inicia no ano; a continuidade em outro semestre não gera nova entrada.
+      Os percentuais de Técnico, PROEJA, Formação de professores e Outras ofertas usam MEq. Os percentuais de vagas noturnas usam vagas físicas.
+      <strong>Clique em qualquer percentual</strong> para ver exatamente quais ofertas entraram no numerador.
+    </div>
+    <div class="legend"><span class="meta-pill ok">VERDE = atende à meta</span><span class="meta-pill warn">AMARELO = próximo do limite</span><span class="meta-pill bad">VERMELHO = não atende</span><span>% Técnico ≥ 60% · % PROEJA ≥ 10% · % Formação de professores ≥ 20% · % Outras ofertas &lt; 20%</span></div>
+  </section>`;
 
- html+=`<section class="ind-section"><div class="ind-title">RESUMO ANUAL / SEMESTRAL DO CENÁRIO</div><div class="ind-wrap"><table class="ind-table"><thead><tr><th>INDICADOR</th>${header(sems)}</tr></thead><tbody>`;
- html+=row('Total de vagas ativas',sems.map(s=>fmt(M[s].total)),'total')+row('Vagas noturnas',sems.map(s=>fmt(M[s].night)))+row('Vagas noturnas em graduação',sems.map(s=>fmt(M[s].nightGrad)))+row('Coortes ingressantes',sems.map(s=>fmt(M[s].newCohorts)))+row('Cursos/matrizes em oferta',sems.map(s=>fmt(M[s].courses)));
- html+=`</tbody></table></div></section>`;
- $('content').innerHTML=html;
+  html+=`<div class="indicators-grid">
+    <section class="ind-section">
+      <div class="ind-title">VAGAS EQUIVALENTES — CURSOS TÉCNICOS</div>
+      <div class="ind-wrap"><table class="ind-table">
+        <thead><tr><th>FORMA DE OFERTA</th>${years.map(y=>`<th>${y}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><td>Técnico integrado "regular"</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalIntegratedRegular,1)}</td>`).join('')}</tr>
+          <tr><td>Técnico integrado EJA</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalIntegratedEja,1)}</td>`).join('')}</tr>
+          <tr><td>Técnico concomitante EJA</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalConcurrentEja,1)}</td>`).join('')}</tr>
+          <tr><td>Técnico subsequente</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalSub,1)}</td>`).join('')}</tr>
+          <tr><td>Técnico concomitante "regular"</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalConcurrentRegular,1)}</td>`).join('')}</tr>
+          <tr class="total"><td>TOTAL TÉCNICO</td>${all.map(([y,m])=>`<td>${fmt(m.tech,1)}</td>`).join('')}</tr>
+        </tbody>
+      </table></div>
+      <div class="note">Cada linha é calculada pela fórmula de MEq. Como os técnicos têm 800 h anualizadas nas matrizes atuais, cada 40 vagas equivalem a 40 MEq.</div>
+    </section>
+
+    <section class="ind-section">
+      <div class="ind-title">VAGAS EQUIVALENTES — PROEJA</div>
+      <div class="ind-wrap"><table class="ind-table">
+        <thead><tr><th>FORMA DE OFERTA</th>${years.map(y=>`<th>${y}</th>`).join('')}</tr></thead>
+        <tbody>
+          <tr><td>Técnico integrado EJA</td>${all.map(([y,m])=>`<td>${fmt(m.proCats.technicalIntegratedEja,1)}</td>`).join('')}</tr>
+          <tr><td>Técnico concomitante EJA</td>${all.map(([y,m])=>`<td>${fmt(m.proCats.technicalConcurrentEja,1)}</td>`).join('')}</tr>
+          <tr><td>FIC integrado a EJA médio</td>${all.map(([y,m])=>`<td>${fmt(m.proCats.ficIntegratedEjaMedio,1)}</td>`).join('')}</tr>
+          <tr><td>FIC concomitante a EJA fundamental</td>${all.map(([y,m])=>`<td>${fmt(m.proCats.ficConcurrentEjaFundamental,1)}</td>`).join('')}</tr>
+          <tr><td>FIC concomitante a EJA médio</td>${all.map(([y,m])=>`<td>${fmt(m.proCats.ficConcurrentEjaMedio,1)}</td>`).join('')}</tr>
+          <tr class="total"><td>TOTAL PROEJA</td>${all.map(([y,m])=>`<td>${fmt(m.pro,1)}</td>`).join('')}</tr>
+        </tbody>
+      </table></div>
+      <div class="note">A mesma oferta EJA pode aparecer na tabela de Técnicos e na tabela de PROEJA porque PROEJA é um recorte da oferta técnica. Não se soma as duas tabelas para formar o total geral.</div>
+    </section>
+  </div>`;
+
+  html+=`<section class="ind-section">
+    <div class="ind-title"><span>RESUMO DAS ENTRADAS POR ANO LETIVO</span><span>${esc(current.name)}</span></div>
+    <div class="ind-wrap"><table class="ind-table">
+      <thead><tr><th>INDICADOR</th>${years.map(y=>`<th>${y}</th>`).join('')}</tr></thead>
+      <tbody>
+        <tr class="total"><td>Vagas físicas de entrada</td>${all.map(([y,m])=>`<td>${fmt(m.totalVagas)}</td>`).join('')}</tr>
+        <tr><td>Matrículas equivalentes totais</td>${all.map(([y,m])=>`<td>${fmt(m.totalMEq,1)}</td>`).join('')}</tr>
+        <tr><td>Vagas noturnas</td>${all.map(([y,m])=>`<td>${fmt(m.nightVagas)}</td>`).join('')}</tr>
+        <tr><td>Vagas de graduação</td>${all.map(([y,m])=>`<td>${fmt(m.gradVagas)}</td>`).join('')}</tr>
+        <tr><td>Vagas noturnas de graduação</td>${all.map(([y,m])=>`<td>${fmt(m.nightGradVagas)}</td>`).join('')}</tr>
+      </tbody>
+    </table></div>
+  </section>`;
+
+  html+=`<section class="ind-section">
+    <div class="ind-title">FORMAÇÃO DE PROFESSORES — MATRÍCULAS EQUIVALENTES</div>
+    <div class="ind-wrap"><table class="ind-table">
+      <thead><tr><th>TIPO</th>${years.map(y=>`<th>${y}</th>`).join('')}</tr></thead>
+      <tbody>
+        <tr><td>Graduação / Licenciatura</td>${all.map(([y,m])=>`<td>${fmt(m.entries.filter(p=>isTeacher(p)&&norm(meta(p).level).includes('graduacao')).reduce((a,p)=>a+meq(p),0),1)}</td>`).join('')}</tr>
+        <tr><td>Pós-graduação</td>${all.map(([y,m])=>`<td>${fmt(m.entries.filter(p=>isTeacher(p)&&norm(meta(p).level).includes('pos-graduacao')).reduce((a,p)=>a+meq(p),0),1)}</td>`).join('')}</tr>
+        <tr class="total"><td>TOTAL FORMAÇÃO DE PROFESSORES</td>${all.map(([y,m])=>`<td>${fmt(m.teacher,1)}</td>`).join('')}</tr>
+      </tbody>
+    </table></div>
+  </section>`;
+
+  $('content').innerHTML=html;
 }
-function fillScenario(){
- $('scenario').innerHTML=SCENARIOS.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}${s.isReal?' · cenário real':''}</option>`).join('');
- current=SCENARIOS[0]; $('scenario').value=current.id; fillSems();
-}
-function fillSems(){
- current=SCENARIOS.find(x=>x.id===$('scenario').value)||SCENARIOS[0]; const ss=between(current.startSemester,current.endSemester);
- const oldA=$('start').value,oldB=$('end').value;
- $('start').innerHTML=ss.map(s=>`<option>${s}</option>`).join('');$('end').innerHTML=ss.map(s=>`<option>${s}</option>`).join('');
- $('start').value=ss.includes(oldA)?oldA:ss[0];$('end').value=ss.includes(oldB)?oldB:ss[ss.length-1];
+
+function fill(){
+  $('scenario').innerHTML=SCENARIOS.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}${s.isReal?' · cenário real':''}</option>`).join('');
+  current=SCENARIOS[0];
+  $('scenario').value=current.id;
+  const years=yearsForScenario(current);
+  $('focusYear').innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  $('focusYear').value=years[0];
+  render();
 }
 async function load(){
- const [a,b]=await Promise.all([fetch('/api/db',{cache:'no-store'}),fetch('/api/pocv/scenarios',{cache:'no-store'})]);
- const db=await a.json(),sc=await b.json();if(!a.ok)throw Error(db.error||'Falha no banco');if(!b.ok)throw Error(sc.error||'Falha nos cenários');
- DB=db;SCENARIOS=sc.scenarios||[];fillScenario();render();
+  const [a,b]=await Promise.all([
+    fetch('/api/db',{cache:'no-store'}),
+    fetch('/api/pocv/scenarios',{cache:'no-store'})
+  ]);
+  const db=await a.json(), sc=await b.json();
+  if(!a.ok) throw Error(db.error||'Falha ao carregar banco');
+  if(!b.ok) throw Error(sc.error||'Falha ao carregar cenários');
+  DB=db; SCENARIOS=sc.scenarios||[];
+  fill();
 }
-$('scenario').onchange=()=>{fillSems();render()};$('start').onchange=render;$('end').onchange=render;$('refresh').onclick=render;
-document.addEventListener('click',e=>{const b=e.target.closest('.pct-btn');if(b)showIndicatorOffers(b.dataset.ind,b.dataset.sem)});
-load().catch(e=>{console.error(e);$('content').innerHTML=`<section class="panel missing">Não foi possível carregar os indicadores: ${esc(e.message)}</section>`});
+$('scenario').onchange=()=>{
+  current=SCENARIOS.find(s=>String(s.id)===String($('scenario').value))||SCENARIOS[0];
+  const years=yearsForScenario(current);
+  const old=$('focusYear').value;
+  $('focusYear').innerHTML=years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  $('focusYear').value=years.includes(Number(old))?old:years[0];
+  render();
+};
+$('focusYear').onchange=render;
+$('refresh').onclick=render;
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.pct-btn');
+  if(b) showModal(b.dataset.key,Number(b.dataset.year));
+});
+load().catch(e=>{
+  console.error(e);
+  $('content').innerHTML=`<section class="panel" style="padding:16px;color:#b91c1c">Não foi possível carregar os indicadores: ${esc(e.message)}</section>`;
+});
 })();
 </script>
-</body></html>
+</body>
+</html>
