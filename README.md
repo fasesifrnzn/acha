@@ -135,6 +135,18 @@ Em produção, use armazenamento persistente para `/var/data` e defina `DB_FILE=
 
 Consulte `README-Docker.md` para o procedimento de implantação e atualização.
 
+
+## Versionamento dos dados — 1.0.20
+
+Nesta versão, o `data/db.json` é tratado como **dado versionado do projeto**.
+
+- `data/db.json` permanece dentro do repositório Git e é copiado para a imagem Docker.
+- O servidor utiliza `/app/data/db.json` no ambiente Docker.
+- O volume `acha_data` foi removido do `docker-compose.yml` para evitar que um volume antigo sobrescreva os dados presentes no commit.
+- Assim, um novo deploy da imagem reproduz os dados que estão no commit.
+- Esta configuração é **temporária**, até a migração definitiva do ACHA para MySQL.
+- Durante esta fase, alterações feitas pela aplicação devem ser incorporadas ao `data/db.json` antes de um novo deploy, se quiserem preservá-las no Git.
+
 ## Saúde da aplicação
 
 O servidor disponibiliza:

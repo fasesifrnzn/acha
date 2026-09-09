@@ -170,12 +170,14 @@ const LEAVE_FACTORS={
   'Redução por Saúde 25%':0.75,
   'Redução por Saúde 50%':0.5,
   'Cessão a outro órgão':0,
-  'Afastamento capacitação (100%)':0
+  'Afastamento capacitação (100%)':0,
+  'Capacitação parcial – 50%':0.5
 };
 function normalizeRegime(value){const v=String(value??'').trim();if(!v)return '';if(/^40(?:h|\s*horas?)$/i.test(v))return '40';if(/^20(?:h|\s*horas?)$/i.test(v))return '20';return v}
 function canHaveSubstitute(teacher){
-  return /capacita[cç][aã]o/i.test(String(teacher?.leave||'')) ||
-    /cess[aã]o/i.test(String(teacher?.leave||'')) ||
+  const leave=String(teacher?.leave||'');
+  return (/capacita[cç][aã]o/i.test(leave) && !/parcial/i.test(leave)) ||
+    /cess[aã]o/i.test(leave) ||
     /dire[cç][aã]o/i.test(String(teacher?.management||''));
 }
 function applyTeacherFactor(teacher){

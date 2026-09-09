@@ -104,7 +104,11 @@ function meq(p){ return vagas(p)*meta(p).ch/800; }
 
 function offerForm(p){ return norm(meta(p).form); }
 function isTechnical(p){ return meta(p).type==='Técnico'; }
-function isTeacher(p){ return meta(p).type==='Formação de Professores'; }
+function isTeacher(p){
+  const m=meta(p);
+  // Licenciaturas são formação de professores mesmo quando o cadastro histórico da matriz não traz o tipo preenchido.
+  return m.type==='Formação de Professores' || (norm(m.level).includes('graduacao') && norm(m.form).includes('licenciatura'));
+}
 function isOther(p){ return meta(p).type==='Outras Ofertas'; }
 function isProeja(p){ return offerForm(p).includes('eja') || offerForm(p).includes('proeja'); }
 function isNight(p){ return norm(p.turn).includes('noite') || norm(p.turn).includes('noturno'); }
@@ -127,6 +131,7 @@ function proCategory(p){
   if(f.includes('fic integrado a eja médio') || f.includes('fic integrado eja médio') || f.includes('fic integrado a eja medio') || f.includes('fic integrado eja medio')) return 'ficIntegratedEjaMedio';
   if(f.includes('fic concomitante a eja fundamental') || f.includes('fic concomitante eja fundamental')) return 'ficConcurrentEjaFundamental';
   if(f.includes('fic concomitante a eja médio') || f.includes('fic concomitante eja medio')) return 'ficConcurrentEjaMedio';
+  if(f.includes('fic') && f.includes('eja') && norm(meta(p).level).includes('fundamental')) return 'ficConcurrentEjaFundamental';
   return null;
 }
 
@@ -143,7 +148,8 @@ function calcularIndicadoresAno(ano){
     technicalIntegratedEja:0,
     technicalConcurrentEja:0,
     technicalSub:0,
-    technicalConcurrentRegular:0
+    technicalConcurrentRegular:0,
+    technicalFicEjaFundamental:0
   };
   const proCats={
     technicalIntegratedEja:0,
@@ -161,6 +167,10 @@ function calcularIndicadoresAno(ano){
     if(pc) proCats[pc]+=meq(p);
   });
 
+  entradas.forEach(p=>{
+    if(isTechnical(p) && offerForm(p).includes('fic') && offerForm(p).includes('eja') && norm(meta(p).level).includes('fundamental')) techCats.technicalFicEjaFundamental+=meq(p);
+  });
+
   const tech=Object.values(techCats).reduce((s,v)=>s+v,0);
   const pro=Object.values(proCats).reduce((s,v)=>s+v,0);
   const teacher=entradas.filter(isTeacher).reduce((s,p)=>s+meq(p),0);
@@ -174,7 +184,7 @@ function calcularIndicadoresAno(ano){
     ano,
     entries:entradas,
     totalVagas,totalMEq,
-    tech,pro,teacher,
+    tech,pro,teacher,other,
     nightVagas,gradVagas,nightGradVagas,
     techCats,proCats,
     percentuais:{
@@ -209,14 +219,17 @@ const metas={
 };
 function metaBand(y,key){ return metas[key] || null; }
 function statusPct(value, band, key){
+  // Os valores recebidos por esta função estão em pontos percentuais (ex.: 17,5 = 17,5%).
+  // As metas internas são armazenadas como frações (ex.: 0,20 = 20%).
+  const fraction=Number(value||0)/100;
   if(key==='other') {
-    if(value < 0.18) return 'good';
-    if(value < 0.20) return 'warn';
+    // Meta: Outras ofertas deve ser estritamente menor que 20%.
+    if(fraction < 0.20) return 'good';
     return 'bad';
   }
   if(!band) return 'neutral';
-  if(value>=band[0]) return 'good';
-  if(value>=band[0]*0.95) return 'warn';
+  if(fraction>=band[0]) return 'good';
+  if(fraction>=band[0]*0.95) return 'warn';
   return 'bad';
 }
 function fmt(n,d=0){ return Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d}); }
@@ -364,6 +377,7 @@ function render(){
           <tr><td>Técnico concomitante EJA</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalConcurrentEja,1)}</td>`).join('')}</tr>
           <tr><td>Técnico subsequente</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalSub,1)}</td>`).join('')}</tr>
           <tr><td>Técnico concomitante "regular"</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalConcurrentRegular,1)}</td>`).join('')}</tr>
+          <tr><td>FIC PROEJA — EJA fundamental</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalFicEjaFundamental,1)}</td>`).join('')}</tr>
           <tr class="total"><td>TOTAL TÉCNICO</td>${all.map(([y,m])=>`<td>${fmt(m.tech,1)}</td>`).join('')}</tr>
         </tbody>
       </table></div>

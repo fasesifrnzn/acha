@@ -10,13 +10,13 @@
   };
   const unique = (items, key) => [...new Set(items.map(key).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR',{sensitivity:'base'}));
   const normalizeRegime = value => { const v=String(value||'').trim(); if(!v) return ''; if(/^40(?:h|\s*horas?)$/i.test(v)) return '40'; if(/^20(?:h|\s*horas?)$/i.test(v)) return '20'; return v; };
-  const allowsSubstitute = t => /capacita[cç][aã]o/i.test(String(t?.leave||'')) || /cess[aã]o/i.test(String(t?.leave||'')) || /dire[cç][aã]o/i.test(String(t?.management||''));
+  const allowsSubstitute = t => /capacita[cç][aã]o/i.test(String(t?.leave||'')) && !/parcial/i.test(String(t?.leave||'')) || /cess[aã]o/i.test(String(t?.leave||'')) || /dire[cç][aã]o/i.test(String(t?.management||''));
   const isRestricted = t => allowsSubstitute(t);
   const standardDegrees = ['Graduação', 'Especialização', 'Mestrado', 'Doutorado'];
   const situationText = t => [t.leave !== 'Não se aplica' ? t.leave : '', t.management !== 'Não se aplica' ? t.management : ''].filter(Boolean).join(' · ') || 'Disponível';
   const apiBase = location.protocol === 'file:' ? 'http://localhost:3000' : '';
   const managementFactors = {'Não se aplica':1,'Coordenação de Curso':.5,'Função Gratificada (FG)':.5,'Direção Acadêmica':.15,'Função Sistêmica':.15,'Direção-Geral':0,'Assessor Pedagógico de Área: Ciências da Natureza':1,'Assessor Pedagógico de Área: Linguagens e Humanidades':1};
-  const leaveFactors = {'Não se aplica':1,'Redução por Saúde 25%':.75,'Redução por Saúde 50%':.5,'Cessão a outro órgão':0,'Afastamento capacitação (100%)':0};
+  const leaveFactors = {'Não se aplica':1,'Redução por Saúde 25%':.75,'Redução por Saúde 50%':.5,'Cessão a outro órgão':0,'Afastamento capacitação (100%)':0,'Capacitação parcial – 50%':0.5};
   let teachers = [];
   let courses = [];
   let editedTeacher = null;

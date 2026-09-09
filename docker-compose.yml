@@ -10,9 +10,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DB_FILE: /var/data/db.json
-    volumes:
-      - acha_data:/var/data
+      DB_FILE: /app/data/db.json
     networks:
       - database_network
       - proxy_network
@@ -23,9 +21,6 @@ services:
       retries: 3
       start_period: 10s
 
-volumes:
-  acha_data:
-    name: acha_data
 
 networks:
   database_network:

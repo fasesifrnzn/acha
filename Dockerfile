@@ -4,7 +4,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
-ENV DB_FILE=/var/data/db.json
+ENV DB_FILE=/app/data/db.json
 
 COPY package.json ./
 COPY server.js ./
@@ -15,8 +15,9 @@ COPY *.html ./
 COPY data ./data
 
 # A aplicação não possui dependências externas neste estágio.
-# O volume /var/data será usado para persistir o banco JSON.
-RUN mkdir -p /var/data
+# O banco JSON faz parte do código versionado em /app/data/db.json.
+# Nesta fase, o Git é a fonte de verdade dos dados até a migração para MySQL.
+RUN mkdir -p /app/data
 
 EXPOSE 3000
 
