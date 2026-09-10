@@ -191,11 +191,49 @@ function applyTeacherFactor(teacher){
 }
 function readDB(){ensureDB();const db=JSON.parse(fs.readFileSync(DB_FILE,'utf8'));(db.teachers||[]).forEach(applyTeacherFactor);return db}
 
-const ROLE_PERMISSIONS={
-  diretor_geral:'all',
-  diretoria_academica:'all',
-  coordenador_curso:['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']
+const PAGE_CATALOG=[
+  ['dashboard.html','Início'],['index.html','Oferta'],['pocv.html','Cenários'],['alocacao.html','Alocação'],['projecao-cenario.html','Projeção'],['indicadores.html','Indicadores'],['matrizes.html','Matrizes'],['turmas.html','Turmas'],['docentes.html','Docentes'],['grupos.html','Grupos'],['regras.html','Regras'],['variaveis.html','Variáveis'],['demandas.html','Demandas avulsas'],['backup.html','Backup'],['perfil.html','Meu perfil'],['acessos.html','Gerenciamento de acesso']
+];
+const PAGE_IDS=new Set(PAGE_CATALOG.map(([p])=>p));
+const PERMISSION_LEVELS=new Set(['none','view','edit']);
+const ACCESS_DEFAULTS={
+  diretor_geral:{label:'Diretor Geral',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'edit'])),semesterFrom:'2024.1',semesterTo:'2034.2',features:{'oferta.previsao':true}},
+  diretoria_academica:{label:'Diretoria Acadêmica',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'edit'])),semesterFrom:'2024.1',semesterTo:'2034.2',features:{'oferta.previsao':true}},
+  coordenador_curso:{label:'Coordenador de Curso',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'none'])),semesterFrom:'2026.1',semesterTo:'2030.2',features:{'oferta.previsao':false}}
 };
+ACCESS_DEFAULTS.coordenador_curso.pages['dashboard.html']='edit';
+ACCESS_DEFAULTS.coordenador_curso.pages['index.html']='edit';
+ACCESS_DEFAULTS.coordenador_curso.pages['alocacao.html']='edit';
+ACCESS_DEFAULTS.coordenador_curso.pages['matrizes.html']='edit';
+ACCESS_DEFAULTS.coordenador_curso.pages['turmas.html']='edit';
+function accessConfig(db){
+  const src=db?.accessControl?.profiles||{};
+  const out={version:1,profiles:{}};
+  for(const [role,base] of Object.entries(ACCESS_DEFAULTS)){
+    const cur=src[role]||{};
+    const pages={...base.pages,...(cur.pages||{})};
+    for(const p of PAGE_IDS) if(!PERMISSION_LEVELS.has(pages[p])) pages[p]=base.pages[p]||'none';
+    out.profiles[role]={label:String(cur.label||base.label),pages,semesterFrom:String(cur.semesterFrom||base.semesterFrom),semesterTo:String(cur.semesterTo||base.semesterTo),features:{...base.features,...(cur.features||{})}};
+  }
+  return out;
+}
+function roleAccess(db,user){return accessConfig(db).profiles[user?.role]||null;}
+function pagePermission(db,user,page){
+  const a=roleAccess(db,user); if(!a)return 'none';
+  return a.pages?.[page]||'none';
+}
+function hasPageAccess(user,page,db){
+  if(!user)return false;
+  return pagePermission(db,user,page)!=='none';
+}
+function hasPageEdit(user,page,db){return !!user && pagePermission(db,user,page)==='edit';}
+function semesterInAccessRange(db,user,semester){
+  const a=roleAccess(db,user); if(!a)return false;
+  const idx=semesterIndex(semester), from=semesterIndex(a.semesterFrom), to=semesterIndex(a.semesterTo);
+  if(idx==null)return false; return (from==null||idx>=from)&&(to==null||idx<=to);
+}
+function featureAccess(db,user,key){const a=roleAccess(db,user);return !!(a?.features?.[key]);}
+const ROLE_PERMISSIONS={diretor_geral:'all',diretoria_academica:'all',coordenador_curso:['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']};
 const COORDINATOR_PAGES=new Set(ROLE_PERMISSIONS.coordenador_curso);
 const sessions=new Map();
 const suapStates=new Map();
@@ -250,11 +288,6 @@ function requireAuth(req,res,db){
   if(!user){send(res,401,{error:'Autenticação necessária'});return null}
   return user;
 }
-function hasPageAccess(user,page){
-  if(!user)return false;
-  if(user.role==='diretor_geral'||user.role==='diretoria_academica')return true;
-  return COORDINATOR_PAGES.has(page);
-}
 function coordinatorMatrixIds(db,user){
   const teacher=(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId));
   const courseId=String(teacher?.coordinatorCourseId||'').trim();
@@ -302,6 +335,18 @@ function filterDbForUser(db,user){
   out.authUsers=[user];
   out.authUser={id:user.id,teacherId:user.teacherId,displayName:user.displayName,role:user.role,coordinatorCourseId:(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId))?.coordinatorCourseId||''};
   return out;
+}
+
+function filterDbByAccessWindow(db,user){
+  if(!user || user.role!=='coordenador_curso') return db;
+  const out=db;
+  for(const key of Object.keys(out.data?.semesters||{})) if(!semesterInAccessRange(db,user,key)) delete out.data.semesters[key];
+  for(const key of Object.keys(out.offers||{})) if(!semesterInAccessRange(db,user,key)) delete out.offers[key];
+  for(const key of Object.keys(out.extraOffers||{})) if(!semesterInAccessRange(db,user,key)) delete out.extraOffers[key];
+  return out;
+}
+function filterDbForUserWithAccess(db,user){
+  return filterDbByAccessWindow(filterDbForUser(db,user),user);
 }
 
 function writeDB(db){
@@ -532,14 +577,14 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.43'
+      'X-ACHA-Version':'1.0.48'
     });
     return res.end(payload);
   }
 
   if(p==='/api/profile' && req.method==='GET'){
     const db=readDB();ensureAuthUsers(db);const user=requireAuth(req,res,db);if(!user)return;
-    return send(res,200,{ok:true,user:authUserPayload(db,user)});
+    return send(res,200,{ok:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
   }
   if(p==='/api/profile' && req.method==='PUT'){
     try{
@@ -552,7 +597,7 @@ async function api(req,res){
         if(next.length<6)return send(res,400,{error:'A nova senha deve ter pelo menos 6 caracteres.'});
         changes.passwordHash=hashPassword(next);
       }
-      Object.assign(user,changes);writeDB(db);return send(res,200,{ok:true,user:authUserPayload(db,user)});
+      Object.assign(user,changes);writeDB(db);return send(res,200,{ok:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
     }catch(e){return send(res,400,{error:e.message||'Não foi possível salvar o perfil.'});}
   }
   if(p==='/api/suap/status' && req.method==='GET'){
@@ -675,7 +720,7 @@ async function api(req,res){
       const sessionToken=crypto.randomBytes(32).toString('hex');
       sessions.set(sessionToken,{userId:user.id,expires:Date.now()+8*60*60*1000});
       res.setHeader('Set-Cookie',`pocv_session=${encodeURIComponent(sessionToken)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
-      return send(res,200,{ok:true,user:authUserPayload(db,user)});
+      return send(res,200,{ok:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
     }catch(e){
       return send(res,502,{error:`Falha ao validar o login SUAP: ${e.message}`});
     }
@@ -697,7 +742,7 @@ async function api(req,res){
       sessions.set(token,{userId:user.id,expires:Date.now()+8*60*60*1000});
       res.setHeader('Set-Cookie',`pocv_session=${encodeURIComponent(token)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
       const teacher=(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId));
-      return send(res,200,{ok:true,user:authUserPayload(db,user)});
+      return send(res,200,{ok:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
     }catch(e){return send(res,500,{error:e.message})}
   }
   if(p==='/api/logout' && req.method==='POST'){
@@ -710,7 +755,7 @@ async function api(req,res){
     const db=readDB(); ensureAuthUsers(db); const user=userFromRequest(req,db);
     if(!user)return send(res,200,{authenticated:false});
     const teacher=(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId));
-    return send(res,200,{authenticated:true,user:authUserPayload(db,user)});
+    return send(res,200,{authenticated:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
   }
 
 
@@ -718,7 +763,37 @@ async function api(req,res){
   const authUser=requireAuth(req,res,dbForAuth);
   if(!authUser)return;
 
-  // Apenas Diretor Geral e Diretoria Acadêmica podem acessar as áreas administrativas.
+  if(p==='/api/access' && req.method==='GET'){
+    if(authUser.role!=='diretor_geral'&&authUser.role!=='diretoria_academica')return send(res,403,{error:'Acesso restrito à Direção.'});
+    const db=readDB(); return send(res,200,{ok:true,catalog:PAGE_CATALOG,levels:[['none','Sem acesso'],['view','Visualização'],['edit','Edição']],access:accessConfig(db)});
+  }
+  if(p==='/api/access' && req.method==='PUT'){
+    if(authUser.role!=='diretor_geral'&&authUser.role!=='diretoria_academica')return send(res,403,{error:'Acesso restrito à Direção.'});
+    try{
+      const x=await body(req),db=readDB();
+      if(!x.role||!ACCESS_DEFAULTS[x.role])return send(res,400,{error:'Perfil inválido.'});
+      const base=ACCESS_DEFAULTS[x.role], pages={...base.pages,...(x.pages||{})};
+      for(const [page] of PAGE_CATALOG) if(!PERMISSION_LEVELS.has(pages[page]))pages[page]='none';
+      const from=String(x.semesterFrom||base.semesterFrom),to=String(x.semesterTo||base.semesterTo);
+      if(semesterIndex(from)==null||semesterIndex(to)==null||semesterIndex(from)>semesterIndex(to))return send(res,400,{error:'Intervalo de semestres inválido.'});
+      db.accessControl=db.accessControl||{version:1,profiles:{}}; db.accessControl.version=1;
+      db.accessControl.profiles[x.role]={label:base.label,pages,semesterFrom:from,semesterTo:to,features:{...base.features,...(x.features||{})}};
+      writeDB(db); return send(res,200,{ok:true,access:accessConfig(db)});
+    }catch(e){return send(res,500,{error:e.message})}
+  }
+
+  // Autorização por página/recurso: leitura exige view/edit; mutações exigem edit.
+  const apiPageMap={
+    '/api/pocv':'pocv.html','/api/pocv/config':'pocv.html','/api/teacher':'docentes.html','/api/teacher-link':'docentes.html','/api/matrix':'matrizes.html','/api/matrices':'matrizes.html','/api/offer':'index.html','/api/extra-offer':'index.html','/api/demand':'demandas.html','/api/group':'grupos.html','/api/variable':'variaveis.html','/api/rule':'regras.html','/api/turma':'turmas.html','/api/backup':'backup.html','/api/profile':'perfil.html','/api/access':'acessos.html'
+  };
+  const apiPage=Object.keys(apiPageMap).sort((a,b)=>b.length-a.length).find(k=>p===k||p.startsWith(k+'/'));
+  if(apiPage){
+    const page=apiPageMap[apiPage], perm=pagePermission(dbForAuth,authUser,page);
+    if(perm==='none')return send(res,403,{error:'Você não possui permissão para acessar esta área.'});
+    if(req.method!=='GET' && req.method!=='HEAD' && perm!=='edit')return send(res,403,{error:'Seu perfil possui apenas permissão de visualização nesta área.'});
+  }
+
+  // Apenas Diretor Geral e Diretoria Acadêmica podem acessar as áreas administrativas. e Diretoria Acadêmica podem acessar as áreas administrativas.
   if(authUser.role==='coordenador_curso' && p.startsWith('/api/pocv'))return send(res,403,{error:'Acesso restrito à direção.'});
   if(authUser.role==='coordenador_curso' && p==='/api/pocv/config')return send(res,403,{error:'Acesso restrito à direção.'});
 
@@ -837,7 +912,7 @@ async function api(req,res){
     }catch(e){return send(res,500,{error:e.message})}
   }
 
-  if(req.method==='GET'&&p==='/api/db'){const db=readDB(),user=requireAuth(req,res,db);if(!user)return;if(normalizeOfferTurns(db))writeDB(db);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');return send(res,200,filterDbForUser(db,user));}
+  if(req.method==='GET'&&p==='/api/db'){const db=readDB(),user=requireAuth(req,res,db);if(!user)return;if(normalizeOfferTurns(db))writeDB(db);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');return send(res,200,filterDbForUserWithAccess(db,user));}
   // Editor de matrizes curriculares
   if((req.method==='GET'||req.method==='PUT'||req.method==='POST') && (p==='/api/matrix' || p==='/api/matrices')){
     try{
@@ -1194,7 +1269,7 @@ const server=http.createServer(async(req,res)=>{
   // Força atualização da página de Docentes após deploy. O navegador/proxy não deve
   // reaproveitar uma cópia antiga dessa tela, que depende do editor embutido.
   if(pathname==='/docentes.html' && !url.parse(req.url,true).query.v){
-    res.writeHead(302,{'Location':'/docentes.html?v=1.0.43','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
+    res.writeHead(302,{'Location':'/docentes.html?v=1.0.48','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
     return res.end();
   }
   // Arquivos estáticos (CSS/JS/imagens) não são páginas protegidas.
@@ -1208,7 +1283,7 @@ const server=http.createServer(async(req,res)=>{
     const db=readDB();ensureAuthUsers(db);const user=userFromRequest(req,db);
     if(!user){res.writeHead(302,{Location:'/login.html?next='+encodeURIComponent(pathname)});return res.end();}
     const page=pathname.slice(1);
-    if(!hasPageAccess(user,page)){res.writeHead(302,{Location:'/dashboard.html'});return res.end();}
+    if(!hasPageAccess(user,page,db)){res.writeHead(302,{Location:'/dashboard.html'});return res.end();}
   }
   const file=path.normalize(path.join(ROOT,pathname));
   if(!file.startsWith(ROOT))return send(res,403,{error:'Forbidden'});
@@ -1220,7 +1295,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.43'
+      'X-ACHA-Version':'1.0.48'
     });
     fs.createReadStream(file).pipe(res)
   })

@@ -13,7 +13,9 @@
     ['regras.html','gear','Regras'],
     ['variaveis.html','gear','Variáveis'],
     ['demandas.html','note','Demandas avulsas'],
-    ['backup.html','download','Backup']
+    ['backup.html','download','Backup'],
+    ['perfil.html','person','Meu perfil'],
+    ['acessos.html','gear','Acessos']
   ];
   const iconSvg={
     home:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 3l9 7.8v9.2a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
@@ -117,7 +119,7 @@
     let session=null;
     try{const r=await fetch('/api/session',{cache:'no-store'}); if(r.ok)session=await r.json();}catch(e){}
     const coordinatorOnly=new Set(['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']);
-    const visible=navItems.filter(([href])=>session?.user?.role!=='coordenador_curso' || coordinatorOnly.has(href));
+    const visible=navItems.filter(([href])=>{ if(!session?.user)return false; if(href==='acessos.html')return session.user.role==='diretor_geral'||session.user.role==='diretoria_academica'; const access=session.access?.pages?.[href]; if(access!==undefined)return access!=='none'; return session.user.role!=='coordenador_curso'||coordinatorOnly.has(href); });
     old.innerHTML='<div class="sidebar-brand"><span class="sidebar-logo"><img src="acha-logo.svg" alt="ACHA"></span><span class="sidebar-title">ACHA</span><button type="button" class="sidebar-toggle" aria-label="Recolher menu" title="Recolher menu"><span class="toggle-glyph">‹</span></button></div>' + visible.map(([href,icon,label])=>`<a href="${href}" title="${label}" aria-label="${label}"><span class="nav-icon">${iconSvg[icon]}</span><span class="nav-label">${label}</span></a>`).join('') + (session?.user ? `<div class="sidebar-user" title="${esc(session.user.displayName)}"><a href="perfil.html" class="sidebar-profile-link"><span class="sidebar-user-name">${esc(session.user.displayName.split(' ')[0])}</span><small>Meu perfil</small></a><button type="button" class="sidebar-logout" id="pocvLogout">Sair</button></div>` : '');
     old.classList.add('pocv-sidebar');
     const current=location.pathname.split('/').pop()||'dashboard.html'; old.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});

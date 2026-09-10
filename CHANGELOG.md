@@ -1,3 +1,23 @@
+# v1.0.48 — Gerenciamento de acesso
+
+- Adicionado módulo **Gerenciamento de acesso** (`acessos.html`) para Diretor Geral e Diretoria Acadêmica.
+- Permissões configuráveis por perfil e página: **Sem acesso**, **Visualização** ou **Edição**.
+- Intervalo de semestres configurável por perfil; Coordenador de Curso recebe apenas os semestres definidos no perfil.
+- Quadro **Previsão de carga-horária** em Oferta controlado por permissão específica e desativado por padrão para Coordenador de Curso.
+- Autorização aplicada no servidor para páginas e operações de edição, evitando que a restrição dependa apenas da interface.
+- Banco de dados atualizado com o backup fornecido em 10/09/2026 às 17:27.
+
+# v1.0.47 — Remoção da visão por semestre na Projeção
+
+- Removido o quadro “Visão por semestre” da página Projeção por ser redundante e pouco intuitivo.
+- Mantida a visualização principal “Carga horária por grupo e semestre”, que concentra a informação detalhada por grupo e semestre.
+
+# v1.0.46 — Preferência de exibição do quadro de ofertas
+
+- Adiciona controle **Ocultar/Mostrar** ao quadro “Ofertas por curso e semestre” da página Projeção.
+- Persiste a última preferência no `localStorage` do navegador.
+- A preferência é restaurada automaticamente ao reabrir a página.
+
 # v1.0.41
 
 - Corrige cache do app.js em todas as páginas, evitando que o navegador execute a lógica antiga de turnos.
@@ -368,6 +388,11 @@ As informações históricas relevantes foram consolidadas neste arquivo e na do
 - Corrigida a regra de % Outras ofertas: qualquer valor < 20% atende à meta.
 - Removida a disciplina Orientação ao Desenvolvimento do Projeto Integrador das matrizes de Manutenção e os componentes de Seminário das matrizes de Comércio Integrado.
 - Definidos como Noite os turnos anteriormente A definir do Auxiliar em Eletricista, replicando a definição em todos os cenários.
+
+## 1.0.46 — 2026-09-10
+- Corrigida a escala visual das barras de Média semestral na Previsão de carga-horária: todas as barras agora usam a mesma escala proporcional, permitindo comparar corretamente as cargas entre grupos.
+- Padronizado o arredondamento das extremidades das barras.
+- Evitado o corte irregular das barras nas células da tabela.
 
 ## 1.0.43 — 2026-09-10
 - Atualizado `data/db.json` com o backup atual obtido do ACHA online em 2026-09-10.

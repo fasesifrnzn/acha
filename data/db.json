@@ -4142,9 +4142,9 @@
       {
         "matrix": 20,
         "name": "Especialização em Ensino (2026)",
-        "type": "Formação de Professores",
+        "type": "",
         "level": "Pós-graduação",
-        "form": "Especialização para professores",
+        "form": "",
         "course_id": "ESPECIALIZACAO_ENSINO",
         "course_name": "Especialização em Ensino",
         "campus": "ZN",
@@ -6421,7 +6421,7 @@
             "group": "Educação",
             "optional": true,
             "periods": {
-              "6": 4
+              "6": 2
             }
           },
           {
@@ -6567,14 +6567,6 @@
             "periods": {
               "8": 4
             }
-          },
-          {
-            "name": "Optativa - 8 - IV",
-            "group": "Informática",
-            "optional": true,
-            "periods": {
-              "8": 4
-            }
           }
         ],
         "optionalCatalog": [
@@ -6615,7 +6607,7 @@
           },
           {
             "name": "Educação para o Desenvolvimento Sustentável",
-            "group": "Educação",
+            "group": "Biologia",
             "weekly": 4,
             "clockHours": 60,
             "lessonHours": 80
@@ -6769,7 +6761,7 @@
           },
           {
             "name": "Tecnologias Digitais na Educação",
-            "group": "Educação",
+            "group": "Informática",
             "weekly": 4,
             "clockHours": 60,
             "lessonHours": 80
@@ -9286,7 +9278,7 @@
           },
           {
             "name": "Optativo III",
-            "group": "Finanças",
+            "group": "Gestão",
             "optional": true,
             "periods": {
               "4": 2
@@ -9294,7 +9286,7 @@
           },
           {
             "name": "Optativo III",
-            "group": "Gestão",
+            "group": "Finanças",
             "optional": true,
             "periods": {
               "4": 2
@@ -10001,6 +9993,7 @@
           {
             "name": "Fundamentos de Tecnologias Aplicadas ao Ensino",
             "group": "Informática",
+            "optional": false,
             "periods": {
               "1": 2
             }
@@ -10008,6 +10001,7 @@
           {
             "name": "Fundamentos de Tecnologias Aplicadas ao Ensino",
             "group": "Informática",
+            "optional": false,
             "periods": {
               "1": 2
             }
@@ -10015,6 +10009,7 @@
           {
             "name": "Fundamentos Históricos e a Profissão Professor",
             "group": "Filosofia",
+            "optional": false,
             "periods": {
               "1": 4
             }
@@ -10022,6 +10017,7 @@
           {
             "name": "Fundamentos Históricos e a Profissão Professor",
             "group": "Educação",
+            "optional": false,
             "periods": {
               "1": 4
             }
@@ -10029,6 +10025,7 @@
           {
             "name": "Fundamentos Históricos e a Profissão Professor",
             "group": "Matemática",
+            "optional": false,
             "periods": {
               "1": 2
             }
@@ -10036,6 +10033,7 @@
           {
             "name": "Fundamentos Históricos e a Profissão Professor",
             "group": "Educação",
+            "optional": false,
             "periods": {
               "1": 2
             }
@@ -10043,6 +10041,7 @@
           {
             "name": "Abordagens do Processo de Ensino e Aprendizagem",
             "group": "Sociologia",
+            "optional": false,
             "periods": {
               "1": 2
             }
@@ -10050,6 +10049,7 @@
           {
             "name": "Abordagens do Processo de Ensino e Aprendizagem",
             "group": "Educação",
+            "optional": false,
             "periods": {
               "1": 2
             }
@@ -10057,6 +10057,7 @@
           {
             "name": "Metodologia Aplicada ao TCC I",
             "group": "Matemática",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10064,6 +10065,7 @@
           {
             "name": "Metodologia Aplicada ao TCC I",
             "group": "Finanças",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10071,27 +10073,23 @@
           {
             "name": "Metodologia Aplicada ao TCC I",
             "group": "Gestão",
+            "optional": false,
             "periods": {
               "2": 2
             }
           },
           {
-            "name": "Educação Inclusiva ",
+            "name": "Educação Inclusiva",
             "group": "Artes",
+            "optional": false,
             "periods": {
               "2": 2
             }
           },
           {
-            "name": "Educação Inclusiva ",
+            "name": "Educação Inclusiva",
             "group": "Gestão",
-            "periods": {
-              "2": 2
-            }
-          },
-          {
-            "name": "Educação Inclusiva ",
-            "group": "Educação Física",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10099,6 +10097,7 @@
           {
             "name": "Práticas Interdisciplinares na Educação",
             "group": "Matemática",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10106,6 +10105,7 @@
           {
             "name": "Práticas Interdisciplinares na Educação",
             "group": "Biologia",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10113,6 +10113,7 @@
           {
             "name": "Práticas Interdisciplinares na Educação",
             "group": "Sociologia",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10120,6 +10121,7 @@
           {
             "name": "Tecnologias Digitais na Educação",
             "group": "Informática",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10127,6 +10129,7 @@
           {
             "name": "Tecnologias Digitais na Educação",
             "group": "Informática",
+            "optional": false,
             "periods": {
               "2": 2
             }
@@ -10134,6 +10137,7 @@
           {
             "name": "Pensamento Computacional",
             "group": "Informática",
+            "optional": false,
             "periods": {
               "3": 2
             }
@@ -10141,6 +10145,7 @@
           {
             "name": "Pensamento Computacional",
             "group": "Redes",
+            "optional": false,
             "periods": {
               "3": 2
             }
@@ -10148,6 +10153,7 @@
           {
             "name": "Tópicos Específicos",
             "group": "",
+            "optional": false,
             "periods": {
               "3": 4
             }
@@ -10155,6 +10161,7 @@
           {
             "name": "Tópicos Específicos",
             "group": "",
+            "optional": false,
             "periods": {
               "3": 4
             }
@@ -10162,6 +10169,7 @@
           {
             "name": "Metodologia Aplicada ao TCC II",
             "group": "Matemática",
+            "optional": false,
             "periods": {
               "3": 2
             }
@@ -10169,13 +10177,7 @@
           {
             "name": "Metodologia Aplicada ao TCC II",
             "group": "Finanças",
-            "periods": {
-              "3": 2
-            }
-          },
-          {
-            "name": "Metodologia Aplicada ao TCC II",
-            "group": "Gestão",
+            "optional": false,
             "periods": {
               "3": 2
             }
@@ -10190,8 +10192,17 @@
         "verticalization": "",
         "academicDirector": "DIAC",
         "fcc": "Não",
-        "offerLevel": "Pós-Graduação",
-        "offerForm": "Especialização docente"
+        "offerLevel": "Pós-graduação",
+        "offerForm": "",
+        "optionalCatalog": [],
+        "year": 2026,
+        "code": "",
+        "level": "Pós-graduação",
+        "form": "",
+        "type": "",
+        "modality": "Presencial",
+        "duration": 3,
+        "notes": ""
       },
       "21": {
         "name": "Técnico em Manutenção e Suporte em Informática (2024) — Integrado",
@@ -11072,7 +11083,7 @@
       "name": "Alba Sandyra Bezerra Lopes Campos",
       "discipline": "Sistemas de Informação",
       "group": "Informática",
-      "degree": "Mestrado",
+      "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
       "leave": "Não se aplica",
@@ -11314,7 +11325,8 @@
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 0,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "substituteId": 134
     },
     {
       "id": 30,
@@ -11376,7 +11388,8 @@
       "management": "Direção Acadêmica",
       "managementPct": 0.15,
       "classFactor": 0.15,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1213852"
     },
     {
       "id": 34,
@@ -11748,10 +11761,10 @@
     },
     {
       "id": 57,
-      "name": "Pablo Cruz Spinelli",
+      "name": "Iury Gabriel Amorim de Araujo",
       "discipline": "Didática",
       "group": "Educação",
-      "degree": "Mestrado",
+      "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
       "leave": "Não se aplica",
@@ -11759,7 +11772,10 @@
       "management": "Não se aplica",
       "managementPct": 1,
       "classFactor": 1,
-      "vinculo": "Efetivo"
+      "vinculo": "Visitante",
+      "matricula": "",
+      "coordinatorCourseId": null,
+      "coordinatorCourseName": null
     },
     {
       "id": 58,
@@ -12250,16 +12266,83 @@
       "leavePct": 1,
       "classFactor": 1,
       "substituteForId": 75
+    },
+    {
+      "id": 134,
+      "name": "Lucas Fernandes Mooneyhan Silva",
+      "discipline": "Gestão Organizacional, Cooperativismo, Terceiro Setor e Empreendedorismo",
+      "group": "Gestão",
+      "degree": "",
+      "regime": "DE",
+      "regimePct": 1,
+      "leave": "Não se aplica",
+      "management": "Não se aplica",
+      "vinculo": "Substituto temporário",
+      "matricula": "3552860",
+      "managementPct": 1,
+      "leavePct": 1,
+      "classFactor": 1,
+      "substituteForId": 29
     }
   ],
   "offers": {
     "2027.1": {
       "10|7|1|45": {
+        "optionalChoices": [],
+        "optionalChoice": "",
+        "name": "Optativa - 7 - I",
+        "ch": 4,
+        "group": "Informática",
+        "turn": "Tarde"
+      }
+    },
+    "2026.2": {
+      "10|6|1|37": {
         "optionalChoices": [
-          "Web Semântica e Ontologias"
+          "Educação para a Diversidade"
         ],
-        "optionalChoice": "Web Semântica e Ontologias",
-        "name": "Web Semântica e Ontologias",
+        "optionalChoice": "Educação para a Diversidade",
+        "name": "Educação para a Diversidade",
+        "ch": 2,
+        "group": "Educação",
+        "turn": "Noite"
+      },
+      "10|6|1|38": {
+        "optionalChoices": [
+          "Desenvolvimento de Sistemas Corporativos"
+        ],
+        "optionalChoice": "Desenvolvimento de Sistemas Corporativos",
+        "name": "Desenvolvimento de Sistemas Corporativos",
+        "ch": 4,
+        "group": "Informática",
+        "turn": "Noite"
+      },
+      "10|8|1|53": {
+        "optionalChoices": [
+          "Tecnologias Digitais na Educação"
+        ],
+        "optionalChoice": "Tecnologias Digitais na Educação",
+        "name": "Tecnologias Digitais na Educação",
+        "ch": 4,
+        "group": "Educação",
+        "turn": "Tarde"
+      },
+      "10|8|1|54": {
+        "optionalChoices": [
+          "Educação para o Desenvolvimento Sustentável"
+        ],
+        "optionalChoice": "Educação para o Desenvolvimento Sustentável",
+        "name": "Educação para o Desenvolvimento Sustentável",
+        "ch": 4,
+        "group": "Educação",
+        "turn": "Tarde"
+      },
+      "10|8|1|55": {
+        "optionalChoices": [
+          "Laboratório de Sistemas Operacionais"
+        ],
+        "optionalChoice": "Laboratório de Sistemas Operacionais",
+        "name": "Laboratório de Sistemas Operacionais",
         "ch": 4,
         "group": "Informática",
         "turn": "Tarde"
@@ -15144,9 +15227,9 @@
           ]
         }
       ],
-      "realModelVersion": 7,
+      "realModelVersion": 8,
       "createdAt": "2026-08-29T12:53:59.774Z",
-      "updatedAt": "2026-09-09T16:31:06.211Z"
+      "updatedAt": "2026-09-10T14:49:54.015Z"
     },
     {
       "id": "sc-manut-artesanato-2028",
@@ -21015,8 +21098,10 @@
       "role": "coordenador_curso",
       "passwordHash": "96343972fec90d80f867daaa467a1541daf7b3c4dac705007f2d623024047f65",
       "photoData": "",
-      "suapUsername": "",
-      "suapMatricula": "2813232"
+      "suapUsername": "2813232",
+      "suapMatricula": "2813232",
+      "suapName": "Alba Lopes",
+      "suapPhotoUrl": "https://suap.ifrn.edu.br/djtools/arquivo/comum/vinculo/a6bb3696-9a27-4c2f-9ae7-67164166ab9b/foto/150x200/"
     },
     {
       "id": "usr-16",
@@ -21073,7 +21158,9 @@
       "passwordHash": "7506e51284b5864f508593a0613038004737be56635c9f7bd12939426365f85c",
       "photoData": "",
       "suapUsername": "1213852",
-      "suapMatricula": "1213852"
+      "suapMatricula": "1213852",
+      "suapName": "Fabricia Rocha",
+      "suapPhotoUrl": "https://suap.ifrn.edu.br/djtools/arquivo/comum/vinculo/a8e68642-b50c-435e-aa26-7383e38d8ddd/foto/150x200/"
     },
     {
       "id": "usr-53",
@@ -21208,6 +21295,89 @@
     "Matemática": {
       "teacherId": 49,
       "area": "Ciências da Natureza"
+    }
+  },
+  "accessControl": {
+    "version": 1,
+    "profiles": {
+      "diretor_geral": {
+        "label": "Diretor Geral",
+        "pages": {
+          "dashboard.html": "edit",
+          "index.html": "edit",
+          "pocv.html": "edit",
+          "alocacao.html": "edit",
+          "projecao-cenario.html": "edit",
+          "indicadores.html": "edit",
+          "matrizes.html": "edit",
+          "turmas.html": "edit",
+          "docentes.html": "edit",
+          "grupos.html": "edit",
+          "regras.html": "edit",
+          "variaveis.html": "edit",
+          "demandas.html": "edit",
+          "backup.html": "edit",
+          "acessos.html": "edit",
+          "perfil.html": "edit"
+        },
+        "semesterFrom": "2024.1",
+        "semesterTo": "2034.2",
+        "features": {
+          "oferta.previsao": true
+        }
+      },
+      "diretoria_academica": {
+        "label": "Diretoria Acadêmica",
+        "pages": {
+          "dashboard.html": "edit",
+          "index.html": "edit",
+          "pocv.html": "edit",
+          "alocacao.html": "edit",
+          "projecao-cenario.html": "edit",
+          "indicadores.html": "edit",
+          "matrizes.html": "edit",
+          "turmas.html": "edit",
+          "docentes.html": "edit",
+          "grupos.html": "edit",
+          "regras.html": "edit",
+          "variaveis.html": "edit",
+          "demandas.html": "edit",
+          "backup.html": "edit",
+          "acessos.html": "edit",
+          "perfil.html": "edit"
+        },
+        "semesterFrom": "2024.1",
+        "semesterTo": "2034.2",
+        "features": {
+          "oferta.previsao": true
+        }
+      },
+      "coordenador_curso": {
+        "label": "Coordenador de Curso",
+        "pages": {
+          "dashboard.html": "view",
+          "index.html": "view",
+          "pocv.html": "none",
+          "alocacao.html": "none",
+          "projecao-cenario.html": "none",
+          "indicadores.html": "none",
+          "matrizes.html": "none",
+          "turmas.html": "view",
+          "docentes.html": "none",
+          "grupos.html": "none",
+          "regras.html": "none",
+          "variaveis.html": "none",
+          "demandas.html": "none",
+          "backup.html": "none",
+          "perfil.html": "edit",
+          "acessos.html": "none"
+        },
+        "semesterFrom": "2027.1",
+        "semesterTo": "2027.1",
+        "features": {
+          "oferta.previsao": false
+        }
+      }
     }
   }
 }

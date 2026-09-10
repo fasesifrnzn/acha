@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA — Projeção</title>
-<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.43"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.47"></script>
 <style>
 .proj-page{max-width:1500px}
 .proj-controls{display:grid;grid-template-columns:150px 150px 150px minmax(170px,1fr) 170px auto;gap:10px;align-items:end}
@@ -38,12 +38,7 @@
 .proj-sem.empty .avg{color:#cbd5e1}
 .proj-sem .dot{font-size:9px}
 .proj-section{grid-column:1/-1;padding:8px 10px;background:#f8fafc;color:#334155;font-size:10px;font-weight:900;border-bottom:1px solid var(--line)}
-.proj-status-grid{display:grid;min-width:1180px;grid-template-columns:185px repeat(var(--cols),minmax(115px,1fr))}
-.status-cell{padding:7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:9px;text-align:center;box-sizing:border-box}
 .status-label{position:sticky;left:0;background:#f8fafc;z-index:3;text-align:left;font-weight:900}
-.status-cell.sem{font-weight:900}
-.status-cell .saldo{display:block;font-size:11px;margin-top:2px}
-.status-cell.ok{color:#047857;background:#f0fdf4}.status-cell.warn{color:#b45309;background:#fffbeb}.status-cell.bad,.status-cell.low{color:#b91c1c;background:#fff1f2}
 .proj-footnote{font-size:10px;color:var(--muted);padding:9px 11px;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;background:#fff}
 .proj-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .proj-title h2{margin:0;font-size:14px}.proj-title .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:9px;color:var(--muted)}
@@ -119,6 +114,32 @@ header h1{font-size:22px;font-weight:700}
 .scenario-list th{background:#f8fafc;color:#475569;font-size:9px}
 .scenario-list .ch{font-weight:900;color:#0f766e;white-space:nowrap}
 .scenario-empty{padding:24px;text-align:center;color:var(--muted);font-size:10px}
+
+/* Mapa de ofertas: uma caixa independente para cada semestre */
+.offer-map-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+.offer-map{display:grid;min-width:1040px;grid-template-columns:220px repeat(var(--cols),minmax(120px,1fr))}
+.offer-map-cell{min-width:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);box-sizing:border-box}
+.offer-map-head{height:42px;padding:8px 9px;background:#f8fafc;color:#475569;font-size:11px;font-weight:800;text-align:center}
+.offer-map-head:first-child{text-align:left;position:sticky;left:0;z-index:4}
+.offer-course{min-height:70px;padding:7px 8px;background:#fff;position:sticky;left:0;z-index:3}
+.offer-course strong{display:block;font-size:10px;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.offer-course small{display:block;margin-top:3px;font-size:8px;color:var(--muted)}
+.offer-sem{min-height:70px;padding:5px;display:flex;flex-direction:column;gap:4px;background:#fff}
+.offer-sem.empty{background:#fbfdff}
+.offer-box{border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;padding:5px 6px;line-height:1.15;min-height:44px;box-sizing:border-box}
+.offer-box.new{border-color:#0f766e;background:#ecfdf5}
+.offer-box .offer-period{font-size:9px;font-weight:900;color:#334155}
+.offer-box.new .offer-period{color:#0f766e}
+.offer-box .offer-turn{font-size:8px;color:#64748b;margin-top:2px}
+.offer-new{display:inline-flex;align-items:center;width:max-content;margin-top:3px;padding:2px 5px;border-radius:999px;background:#0f766e;color:#fff;font-size:7px;font-weight:900;letter-spacing:.2px}
+.offer-box .offer-cohort{font-size:7px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.offer-empty-mark{color:#cbd5e1;font-size:12px;text-align:center;padding-top:25px}
+.offer-legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:9px;color:var(--muted)}
+.offer-legend-item{display:inline-flex;align-items:center;gap:4px}.offer-legend-box{width:12px;height:10px;border-radius:3px;border:1px solid #cbd5e1;background:#f8fafc}.offer-legend-box.new{border-color:#0f766e;background:#ecfdf5}
+@media(max-width:900px){
+ .offer-map{min-width:900px;grid-template-columns:190px repeat(var(--cols),minmax(100px,1fr))}
+}
+
 @media(max-width:900px){
  .proj-grid{min-width:900px;grid-template-columns:190px repeat(var(--cols),minmax(78px,1fr))}
  .proj-label .teacher-index{font-size:7px}
@@ -192,13 +213,20 @@ header h1{font-size:22px;font-weight:700}
   </div>
 </section>
 <section class="proj-kpis" id="kpis"></section>
-<section class="card" style="margin-top:12px;padding:12px">
+<section class="card" id="offerMapSection" style="margin-top:12px;padding:12px">
   <div class="proj-title">
-    <h2>Visão por semestre</h2>
-    <div class="legend"><span class="legend-item"><i class="legend-dot legend-ok"></i> Verde: mínimo até 20 h/a</span><span class="legend-item"><i class="legend-dot legend-warn"></i> Amarelo: 21 h/a até antes do máximo</span><span class="legend-item"><i class="legend-dot legend-bad"></i> Vermelho: abaixo do mínimo ou acima do máximo</span></div>
+    <h2>Ofertas por curso e semestre</h2>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="offer-legend"><span class="offer-legend-item"><i class="offer-legend-box new"></i> Nova oferta</span><span class="offer-legend-item"><i class="offer-legend-box"></i> Oferta em andamento</span></div>
+      <button class="btn secondary" id="toggleOfferMap" type="button">Ocultar</button>
+    </div>
   </div>
-  <div class="proj-table-wrap"><div class="proj-status-grid" id="semesterStatus"></div></div>
+  <div id="offerMapContent">
+    <div class="offer-map-wrap"><div class="offer-map" id="offerMap"></div></div>
+    <div class="proj-footnote" style="border-top:0">Cada caixa representa a oferta daquele curso naquele semestre. O número indica o período da turma naquele semestre. <strong>Nova oferta</strong> aparece sempre no semestre em que uma nova turma/coorte inicia.</div>
+  </div>
 </section>
+
 <section class="card" style="margin-top:12px;padding:12px">
   <div class="proj-title"><h2>Carga horária por grupo e semestre</h2><span class="muted" style="font-size:9px">CH total em h/a · média do grupo em h/a por índice docente</span></div>
   <div class="proj-table-wrap"><div class="proj-grid" id="projectionGrid"></div></div>
@@ -391,12 +419,8 @@ function fillSelects(){
   const types=[...new Set(Object.values(DB.meta||{}).map(x=>String(x.type||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));const oldt=$('type').value;$('type').innerHTML='<option value="">Todos os tipos</option>';types.forEach(t=>$('type').add(new Option(t,t)));if(types.includes(oldt))$('type').value=oldt;
 }
 function selectedSems(){let a=$('startSem').value,b=$('endSem').value;if(semIndex(a)>semIndex(b))[a,b]=[b,a];return semsBetween(a,b)}
-function renderStatus(sems,scenario){
+function computeStatusRows(sems,scenario){
   const cap=capacityByGroup(),rows=sems.map(sem=>{const req=workloadForSemester(scenario,sem),totalHa=Object.values(req).reduce((a,b)=>a+b,0),capacityClock=Object.values(cap).reduce((a,b)=>a+b.max,0),minCapacityClock=Object.values(cap).reduce((a,b)=>a+b.min,0),totalClock=haToClock(totalHa),saldoClock=capacityClock-totalClock;let state='ok',label='Viável';if(totalClock>capacityClock)state='bad',label='Déficit';else if(totalClock<minCapacityClock)state='low',label='Abaixo do mínimo';else if(totalClock>=capacityClock*.9)state='warn',label='Limite';return {sem,total:totalHa,totalClock,capacity:clockToHa(capacityClock),minCapacity:clockToHa(minCapacityClock),saldo:clockToHa(saldoClock),state,label}});
-
-  $('semesterStatus').style.setProperty('--cols',sems.length);let html=`<div class="status-cell status-label"><strong>SEMESTRE</strong><small style="display:block;color:var(--muted);margin-top:2px">CH total (h/a) · saldo docente</small></div>`;
-  rows.forEach(r=>html+=`<div class="status-cell sem ${r.state}" title="CH projetada: ${fmt(r.total)} h/a (${fmt(r.totalClock)} h-relógio) · máximo disponível: ${fmt(r.capacity)} h/a · mínimo agregado: ${fmt(r.minCapacity)} h/a · saldo: ${r.saldo>=0?'+':''}${fmt(r.saldo)} h/a"><strong>${esc(r.sem)}</strong><span class="saldo">${r.saldo>=0?'+':''}${fmt(r.saldo)} h/a</span><small>${esc(r.label)}</small></div>`);
-  $('semesterStatus').innerHTML=html;
   return rows;
 }
 
@@ -445,6 +469,74 @@ function sortArrow(key){
   if(scenarioSort.key!==key) return '↕';
   return scenarioSort.dir===1?'↑':'↓';
 }
+function offerCourseLabel(p){
+ const c=course(p.matrix),m=matrix(p.matrix);
+ return String(c.course_name||c.name||p.courseId||m.name||`Matriz ${p.matrix}`);
+}
+function offerTurnForSemester(p,sem){
+ const scheduled=p.turnSchedule&&p.turnSchedule[sem];
+ return String(scheduled||p.turn||'A definir');
+}
+function offerPlacementsForSemester(scenario,sem){
+ const si=semIndex(sem),out=[];
+ (scenario?.placements||[]).forEach(p=>{
+   if(!activePlacement(p,sem))return;
+   const period=si-semIndex(p.startSemester)+1;
+   out.push({p,period,newOffer:semIndex(p.startSemester)===si,turn:offerTurnForSemester(p,sem)});
+ });
+ return out;
+}
+const OFFER_MAP_PREF_KEY='acha.projecao.ofertasMapa.visivel';
+function offerMapVisible(){return localStorage.getItem(OFFER_MAP_PREF_KEY)!=='0'}
+function applyOfferMapVisibility(){
+ const section=$('offerMapSection'),content=$('offerMapContent'),btn=$('toggleOfferMap');
+ if(!section||!content||!btn)return;
+ const visible=offerMapVisible();
+ content.style.display=visible?'':'none';
+ btn.textContent=visible?'Ocultar':'Mostrar';
+ btn.title=visible?'Ocultar quadro de ofertas por curso e semestre':'Mostrar quadro de ofertas por curso e semestre';
+}
+function toggleOfferMap(){
+ localStorage.setItem(OFFER_MAP_PREF_KEY,offerMapVisible()?'0':'1');
+ applyOfferMapVisibility();
+}
+
+function renderOfferMap(sems,scenario){
+ const rows=new Map();
+ (scenario?.placements||[]).forEach(p=>{
+   const label=offerCourseLabel(p),key=`${String(p.matrix)}|${label}`;
+   if(!rows.has(key))rows.set(key,{key,label,matrix:Number(p.matrix),items:[]});
+   rows.get(key).items.push(p);
+ });
+ const ordered=[...rows.values()].sort((a,b)=>a.label.localeCompare(b.label,'pt-BR',{sensitivity:'base'})||a.matrix-b.matrix);
+ $('offerMap').style.setProperty('--cols',sems.length);
+ let html='<div class="offer-map-cell offer-map-head">CURSO</div>';
+ html+=sems.map(s=>`<div class="offer-map-cell offer-map-head">${esc(s)}</div>`).join('');
+ ordered.forEach(row=>{
+   const placements=row.items;
+   const first=placements.slice().sort((a,b)=>semIndex(a.startSemester)-semIndex(b.startSemester))[0];
+   html+=`<div class="offer-map-cell offer-course"><strong>${esc(row.label)}</strong><small>Matriz ${esc(row.matrix)}${first?.periodicity?` · ${esc(first.periodicity)}`:''}</small></div>`;
+   sems.forEach(sem=>{
+     const entries=offerPlacementsForSemester({placements},sem);
+     if(!entries.length){html+='<div class="offer-map-cell offer-sem empty"><span class="offer-empty-mark">—</span></div>';return;}
+     html+='<div class="offer-map-cell offer-sem">';
+     entries.sort((a,b)=>Number(a.period)-Number(b.period)||Number(a.p.seq||1)-Number(b.p.seq||1)).forEach(e=>{
+       const p=e.p, qty=Math.max(1,Number(p.quantity)||1);
+       const seq=Number(p.seq||1), cohort=qty>1?`seq. ${seq} · ${qty} turmas`:`seq. ${seq}`;
+       html+=`<div class="offer-box ${e.newOffer?'new':''}" title="${esc(`${row.label} · ${sem} · ${e.period}º período · ${e.turn}${e.newOffer?' · nova oferta':''}`)}">
+         <div class="offer-period">${esc(e.period)}º período</div>
+         <div class="offer-turn">${esc(e.turn)}</div>
+         <div class="offer-cohort">${esc(cohort)}</div>
+         ${e.newOffer?'<span class="offer-new">NOVA OFERTA</span>':''}
+       </div>`;
+     });
+     html+='</div>';
+   });
+ });
+ if(!ordered.length)html+='<div class="offer-map-cell offer-course" style="grid-column:1/-1;text-align:center;color:var(--muted)">Nenhuma oferta no cenário selecionado.</div>';
+ $('offerMap').innerHTML=html;
+}
+
 function renderGrid(sems,scenario){
  const reqBySem=Object.fromEntries(sems.map(s=>[s,workloadForSemester(scenario,s)]));
  const realScenario=SCENARIOS.find(s=>s.isReal)||SCENARIOS[0];
@@ -516,7 +608,7 @@ function bindProjectionTooltips(){
 }
 function positionTooltip(el,tip){const r=el.getBoundingClientRect(),w=tip.offsetWidth||320,h=tip.offsetHeight||120;let x=r.right+8,y=r.top;if(x+w>innerWidth-8)x=r.left-w-8;if(y+h>innerHeight-8)y=Math.max(8,innerHeight-h-8);tip.style.left=x+'px';tip.style.top=y+'px'}
 
-function render(){const sc=scenarioCurrent();if(!sc)return;const sems=selectedSems();const statusRows=renderStatus(sems,sc);renderGrid(sems,sc);renderKpis(sems,sc,statusRows);bindProjectionTooltips()}
+function render(){const sc=scenarioCurrent();if(!sc)return;const sems=selectedSems();const statusRows=computeStatusRows(sems,sc);renderOfferMap(sems,sc);renderGrid(sems,sc);renderKpis(sems,sc,statusRows);bindProjectionTooltips()}
 async function load(){
   const [dbR,scR,cfgR]=await Promise.all([fetch('/api/db',{cache:'no-store'}),fetch('/api/pocv/scenarios',{cache:'no-store'}),fetch('/api/pocv/config',{cache:'no-store'})]);
   DB=await dbR.json();const sj=await scR.json();const cj=await cfgR.json();SCENARIOS=sj.scenarios||[];CFG=cj.config||CFG;
@@ -524,6 +616,8 @@ async function load(){
   fillSelects();render();
   const initial=scenarioCurrent(); if(initial&&$('scenarioCurrentLabel')) $('scenarioCurrentLabel').textContent=`Cenário visualizado: ${initial.name}${initial.isReal?' · Real':''}`;
 }
+applyOfferMapVisibility();
+$('toggleOfferMap').onclick=toggleOfferMap;
 $('scenario').onchange=()=>{applyScenarioSelection()};
 $('startSem').onchange=render;$('endSem').onchange=render;$('group').onchange=render;$('type').onchange=render;$('refresh').onclick=()=>load().catch(e=>alert('Não foi possível atualizar a projeção: '+e.message));
 $('scenarioModalClose').onclick=closeScenarioModal;
