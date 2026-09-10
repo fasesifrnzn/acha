@@ -106,8 +106,14 @@ function offerForm(p){ return norm(meta(p).form); }
 function isTechnical(p){ return meta(p).type==='Técnico'; }
 function isTeacher(p){
   const m=meta(p);
-  // Licenciaturas são formação de professores mesmo quando o cadastro histórico da matriz não traz o tipo preenchido.
-  return m.type==='Formação de Professores' || (norm(m.level).includes('graduacao') && norm(m.form).includes('licenciatura'));
+  const n=norm(m.name);
+  const f=norm(m.form);
+  const l=norm(m.level);
+  // Formação de professores inclui explicitamente licenciaturas e especializações
+  // docentes, mesmo quando o cadastro histórico da matriz estiver incompleto.
+  const licenciatura=l.includes('graduacao') && f.includes('licenciatura');
+  const especializacao=(l.includes('pos-graduacao') || f.includes('pos-graduacao') || f.includes('especializacao')) && (f.includes('professor') || f.includes('docente') || n.includes('especializacao em ensino'));
+  return m.type==='Formação de Professores' || licenciatura || especializacao;
 }
 function isOther(p){ return meta(p).type==='Outras Ofertas'; }
 function isProeja(p){ return offerForm(p).includes('eja') || offerForm(p).includes('proeja'); }
