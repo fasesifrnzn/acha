@@ -11216,11 +11216,11 @@
       "degree": "Mestrado",
       "regime": "DE",
       "regimePct": 1,
-      "leave": "Redução por Saúde 50%",
-      "leavePct": 0.5,
+      "leave": "Não se aplica",
+      "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
-      "classFactor": 0.5,
+      "classFactor": 1,
       "vinculo": "Efetivo",
       "matricula": "",
       "coordinatorCourseId": null,
@@ -11461,12 +11461,15 @@
       "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
-      "leave": "Redução por Saúde 25%",
-      "leavePct": 0.75,
+      "leave": "Não se aplica",
+      "leavePct": 1,
       "management": "Não se aplica",
       "managementPct": 1,
-      "classFactor": 0.75,
-      "vinculo": "Efetivo"
+      "classFactor": 1,
+      "vinculo": "Efetivo",
+      "matricula": "",
+      "coordinatorCourseId": null,
+      "coordinatorCourseName": null
     },
     {
       "id": 40,
@@ -12258,7 +12261,8 @@
         "optionalChoice": "Web Semântica e Ontologias",
         "name": "Web Semântica e Ontologias",
         "ch": 4,
-        "group": "Informática"
+        "group": "Informática",
+        "turn": "Tarde"
       }
     }
   },

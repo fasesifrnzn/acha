@@ -78,12 +78,40 @@
     const found=courseRecord(coursesSource,matrixId);
     return String(found?.course_id||'').trim();
   }
+  // Determina o turno efetivo de uma turma. As regras de turno são definidas
+  // por período, mas nem todo período precisa repetir a regra: quando não há
+  // uma chave exata, vale a última regra anterior. Para matrizes antigas sem
+  // configuração própria (ex.: 1, 8, 12 e 19), usa-se a configuração da matriz
+  // mais recente do mesmo curso, evitando "A definir" quando a regra do curso
+  // está cadastrada em uma matriz vigente.
+  function turnForClass(db,matrixId,period,seq=1){
+    const source=db||{};
+    const turns=source.turn||{};
+    const findTurn=(id)=>{
+      const t=turns?.[String(id)]||{};
+      const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+      if(!keys.length)return null;
+      const p=Number(period);
+      const eligible=keys.filter(k=>k<=p);
+      const key=eligible.length?eligible[eligible.length-1]:keys[0];
+      const arr=t[String(key)];
+      return Array.isArray(arr)&&arr.length?arr[(Math.max(1,Number(seq)||1)-1)%arr.length]:null;
+    };
+    const direct=findTurn(matrixId);
+    if(direct)return direct;
+    const cid=courseId(source?.data?.courses||[],matrixId);
+    if(!cid)return 'A definir';
+    const ids=Object.keys(source?.data?.matrices||{}).filter(id=>courseId(source.data.courses,id)===cid&&turns?.[String(id)]);
+    ids.sort((a,b)=>Number(b)-Number(a));
+    for(const id of ids){const v=findTurn(id);if(v)return v;}
+    return 'A definir';
+  }
   function groupKey(v){
     // Identidade lógica do grupo: ignora maiúsculas/minúsculas,
     // acentos e espaços excedentes, sem alterar o nome exibido.
     return norm(v).replace(/\\s+/g,' ');
   }
-  window.POCV={norm,groupKey,esc,setGroups,setCourses,color,tag,palette:uniquePalette,courseRecord,courseName,courseId};
+  window.POCV={norm,groupKey,esc,setGroups,setCourses,color,tag,palette:uniquePalette,courseRecord,courseName,courseId,turnForClass};
   async function setupSidebar(){
     const old=document.querySelector('.mainnav'); if(!old)return;
     let session=null;

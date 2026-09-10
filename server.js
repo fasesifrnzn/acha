@@ -261,6 +261,26 @@ function coordinatorMatrixIds(db,user){
   if(!courseId)return [];
   return (db.data?.courses||[]).filter(c=>String(c.course_id||'').trim()===courseId).map(c=>String(c.matrix));
 }
+function normalizeOfferTurns(db){
+  let changed=false;
+  db.offers??={};
+  Object.entries(db.offers).forEach(([semester,rows])=>{
+    Object.entries(rows||{}).forEach(([key,offer])=>{
+      const parts=String(key).split('|');
+      const matrix=Number(parts[0]), period=Number(parts[1]), seq=Number(parts[2]);
+      if(!Number.isFinite(matrix)||!Number.isFinite(period)||!Number.isFinite(seq)||!offer)return;
+      const expected=classTurn(db,matrix,period,seq);
+      // O turno da oferta regular nunca é uma escolha independente da disciplina:
+      // ele pertence à turma (matriz + período + sequência). Corrige inclusive
+      // registros antigos que tenham ficado salvos como "A definir" ou com outro turno.
+      if(expected && expected!=='A definir' && offer.turn!==expected){
+        offer.turn=expected;
+        changed=true;
+      }
+    });
+  });
+  return changed;
+}
 function filterDbForUser(db,user){
   if(user.role!=='coordenador_curso')return db;
   const ids=new Set(coordinatorMatrixIds(db,user));
@@ -311,13 +331,24 @@ function matrixDuration(matrix){
   return Math.max(1,Number(matrix?.duration)||0,...nums,1);
 }
 function classTurn(db,matrixId,period,seq){
-  const t=db.turn?.[String(matrixId)]||{};
-  const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
-  if(!keys.length) return 'A definir';
-  const eligible=keys.filter(k=>k<=Number(period));
-  const key=eligible.length?eligible[eligible.length-1]:keys[0];
-  const arr=t[String(key)];
-  if(Array.isArray(arr)&&arr.length) return arr[(Number(seq||1)-1)%arr.length];
+  const findTurn=(id)=>{
+    const t=db.turn?.[String(id)]||{};
+    const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+    if(!keys.length)return null;
+    const eligible=keys.filter(k=>k<=Number(period));
+    const key=eligible.length?eligible[eligible.length-1]:keys[0];
+    const arr=t[String(key)];
+    return Array.isArray(arr)&&arr.length?arr[(Math.max(1,Number(seq)||1)-1)%arr.length]:null;
+  };
+  const direct=findTurn(matrixId);
+  if(direct)return direct;
+  const c=(db.data?.courses||[]).find(x=>String(x.matrix)===String(matrixId));
+  const cid=String(c?.course_id||'').trim();
+  if(!cid)return 'A definir';
+  const ids=(db.data?.matrices?Object.keys(db.data.matrices):[])
+    .filter(id=>String((db.data.courses||[]).find(x=>String(x.matrix)===String(id))?.course_id||'').trim()===cid&&db.turn?.[String(id)])
+    .sort((a,b)=>Number(b)-Number(a));
+  for(const id of ids){const v=findTurn(id);if(v)return v;}
   return 'A definir';
 }
 function cohortTurn(courseId,startSemester,fallback){
@@ -446,7 +477,7 @@ function buildInitialPocvScenario(db){
   return {
     id:'real',name:'Cenário Real',isReal:true,
     startSemester:'2027.1',endSemester:'2033.2',placements,
-    realModelVersion:7,
+    realModelVersion:8,
     createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
   };
 }
@@ -465,7 +496,7 @@ function ensurePocvScenarios(db){
     // que acompanha fielmente as entradas de data.semesters, inclusive quando
     // o turno muda entre períodos.
     const real=db.pocvScenarios.find(x=>x&&x.isReal);
-    if(real && (Number(real.realModelVersion||0)<7 || (real.placements||[]).some(p=>Number(p.span||0)!==matrixDuration(db.data?.matrices?.[String(p.matrix)]||{})))){
+    if(real && (Number(real.realModelVersion||0)<8 || (real.placements||[]).some(p=>Number(p.span||0)!==matrixDuration(db.data?.matrices?.[String(p.matrix)]||{})))){
       const rebuilt=buildInitialPocvScenario(db);
       rebuilt.createdAt=real.createdAt||rebuilt.createdAt;
       rebuilt.name=real.name||rebuilt.name;
@@ -489,6 +520,7 @@ async function api(req,res){
   if(req.method==='GET'&&p==='/api/backup'){
     const db=readDB();
     ensureAuthUsers(db);
+    if(normalizeOfferTurns(db))writeDB(db);
     const user=requireAuth(req,res,db);
     if(!user)return;
     if(user.role!=='diretor_geral'&&user.role!=='diretoria_academica')return send(res,403,{error:'Acesso restrito à Direção.'});
@@ -500,7 +532,7 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.37'
+      'X-ACHA-Version':'1.0.43'
     });
     return res.end(payload);
   }
@@ -805,7 +837,7 @@ async function api(req,res){
     }catch(e){return send(res,500,{error:e.message})}
   }
 
-  if(req.method==='GET'&&p==='/api/db'){const db=readDB(),user=requireAuth(req,res,db);if(!user)return;res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');return send(res,200,filterDbForUser(db,user));}
+  if(req.method==='GET'&&p==='/api/db'){const db=readDB(),user=requireAuth(req,res,db);if(!user)return;if(normalizeOfferTurns(db))writeDB(db);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');return send(res,200,filterDbForUser(db,user));}
   // Editor de matrizes curriculares
   if((req.method==='GET'||req.method==='PUT'||req.method==='POST') && (p==='/api/matrix' || p==='/api/matrices')){
     try{
@@ -925,6 +957,8 @@ async function api(req,res){
       if(authUser.role==='coordenador_curso' && !coordinatorMatrixIds(db,authUser).includes(String(x.key).split('|')[0]))return send(res,403,{error:'Oferta fora do curso coordenado.'});
       db.offers??={};db.offers[x.semester]??={};
       const current=db.offers[x.semester][x.key]||{};const next=Object.assign({},current,x.changes);
+      // O turno de uma oferta regular é herdado da turma e não pode ser alterado manualmente.
+      { const parts=String(x.key).split('|'); const expected=classTurn(db,Number(parts[0]),Number(parts[1]),Number(parts[2])); if(expected && expected!=='A definir') next.turn=expected; }
       // teacherId may only point to a teacher belonging to the offer's resulting group.
       if(Object.prototype.hasOwnProperty.call(x.changes,'teacherId') && x.changes.teacherId!=null && x.changes.teacherId!==''){
         const parts=String(x.key).split('|');const matrix=String(parts[0]),di=Number(parts[3]);const d=db.data?.matrices?.[matrix]?.disciplines?.[di];
@@ -1160,7 +1194,7 @@ const server=http.createServer(async(req,res)=>{
   // Força atualização da página de Docentes após deploy. O navegador/proxy não deve
   // reaproveitar uma cópia antiga dessa tela, que depende do editor embutido.
   if(pathname==='/docentes.html' && !url.parse(req.url,true).query.v){
-    res.writeHead(302,{'Location':'/docentes.html?v=1.0.36','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
+    res.writeHead(302,{'Location':'/docentes.html?v=1.0.43','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
     return res.end();
   }
   // Arquivos estáticos (CSS/JS/imagens) não são páginas protegidas.
@@ -1186,7 +1220,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.37'
+      'X-ACHA-Version':'1.0.43'
     });
     fs.createReadStream(file).pipe(res)
   })

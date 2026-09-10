@@ -3,7 +3,7 @@
 </style></head><body><header><h1>Grupos</h1><p>Grupos docentes encontrados nas matrizes e professores vinculados.</p></header><nav class="mainnav"></nav><main>
 <section class="card group-card"><div class="head"><div><h2 style="margin:0;font-size:16px">Grupos</h2><span class="count" id="count"></span></div><div class="group-controls"><input id="q" placeholder="Pesquisar grupo..."><div class="group-actions"><button class="secondary" id="openAll">Abrir todos</button><button class="secondary" id="closeAll">Recolher todos</button></div></div></div>
 <div class="tablewrap"><table class="group-table"><thead><tr><th data-key="group" style="width:55%"><button class="sort" data-key="group">Grupo ↕</button></th><th data-key="n" style="width:20%"><button class="sort" data-key="n">Disciplinas ↕</button></th><th data-key="ch"><button class="sort" data-key="ch">CH cadastrada ↕</button></th><th style="width:25%">Responsável pela distribuição</th></tr></thead><tbody id="b"></tbody></table></div></section>
-</main><script src="/app.js?v=1.0.0"></script><script>
+</main><script src="/app.js?v=1.0.43"></script><script>
 let DB=null;const state={open:new Set(),sortKey:'group',sortDir:1};const $=id=>document.getElementById(id);const esc=v=>POCV.esc(v);const norm=v=>POCV.norm(v);
 function groupData(){const d={};Object.values(DB?.data?.matrices||{}).forEach(m=>(m.disciplines||[]).forEach(x=>{const g=String(x.group||'').trim();if(!g)return;const key=g;d[key]??={n:0,ch:0};d[key].n++;d[key].ch+=Object.values(x.periods||{}).reduce((a,b)=>a+Number(b||0),0)}));return d}
 function responsible(g){const ref=DB.groupDistributionResponsibility?.[g];if(!ref)return null;return (DB.teachers||[]).find(t=>String(t.id)===String(ref.teacherId))||null}

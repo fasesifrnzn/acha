@@ -28,7 +28,7 @@ th[data-col="actions"]{width:92px;cursor:default}
 .inline-editor{width:100%;min-width:0;padding:6px 7px;border:1px solid var(--accent);border-radius:7px;background:#fff;font:inherit}.discipline-cell{cursor:pointer}.discipline-cell:hover{background:#f0fdfa}
 
 .projection-card{margin-bottom:16px}.projection-toggle{display:flex;align-items:center;gap:8px}.projection-toggle button{padding:6px 10px;font-size:12px}.projection-table{width:100%;table-layout:fixed}.projection-table th,.projection-table td{text-align:left}.projection-table td:nth-child(3),.projection-table td:nth-child(4),.projection-table td:nth-child(5),.projection-table td:nth-child(6){text-align:center}.projection-table th:nth-child(1){width:22%}.projection-table th:nth-child(2){width:18%}.projection-table th:nth-child(3){width:13%}.projection-table th:nth-child(4){width:13%}.projection-table th:nth-child(5){width:17%}.projection-table th:nth-child(6){width:17%}.projection-ch-cell{position:relative}.projection-ch-bg{position:absolute;left:7px;top:50%;height:12px;transform:translateY(-50%);border-radius:6px;opacity:.24;pointer-events:none}.projection-ch-content{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}.projection-good .projection-ch-bg{background:#16a34a}.projection-warn .projection-ch-bg{background:#f59e0b}.projection-bad .projection-ch-bg{background:#dc2626}.projection-good .projection-status{color:#15803d}.projection-warn .projection-status{color:#d97706}.projection-bad .projection-status{color:#dc2626}.projection-index-cell{cursor:pointer;font-weight:700}.projection-index-cell:hover{background:#f0fdfa}.projection-hidden{display:none!important}
-</style><link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.0"></script></head>
+</style><link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.43"></script></head>
 <script>if(location.protocol==='file:'){location.href='http://localhost:3000/login.html';}</script><body><header><h1>ACHA — Oferta Acadêmica | IFRN Campus Natal-Zona Norte</h1><p>Planejamento de turmas e disciplinas por semestre</p></header>
 <nav class="mainnav"><a href="index.html" class="active">📋 Oferta</a><a href="projecao-cenario.html">📊 Projeção</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls">
@@ -91,7 +91,32 @@ const filters={course:$('fCourse'),matrix:$('fMatrix'),period:$('fPeriod'),turn:
 const GROUP_OPTIONS=["Administração","Artes","Biologia","Educação Física","Filosofia","Física","Gestão","Informática","Língua Portuguesa","Matemática","Química","Sociologia","Finanças","Manutenção","Eletrônica","Comércio","Marketing","Inglês","Espanhol","Geografia","História","Logística","Projeto Integrador","Outros"];
 Object.keys(semesters).forEach(s=>{let o=document.createElement('option');o.value=s;o.textContent=s;semSel.appendChild(o)});semSel.value=semesters["2027.1"]?"2027.1":Object.keys(semesters)[0];
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function turn(id,p,seq){let r=TURN[String(id)]?.[String(p)];return r?r[(seq-1)%r.length]:"A definir"}
+function turn(id,p,seq){
+  const source=DB||{turn:TURN,data:{courses:DATA.courses,matrices:DATA.matrices}};
+  const find=(mid)=>{
+    const t=source?.turn?.[String(mid)]||{};
+    const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+    if(!keys.length)return null;
+    const n=Number(p);
+    const eligible=keys.filter(k=>k<=n);
+    const key=eligible.length?eligible[eligible.length-1]:keys[0];
+    const arr=t[String(key)];
+    return Array.isArray(arr)&&arr.length?arr[(Math.max(1,Number(seq)||1)-1)%arr.length]:null;
+  };
+  let value=find(id);
+  if(value)return value;
+  const courses=source?.data?.courses||[];
+  const current=courses.find(c=>String(c.matrix)===String(id));
+  const cid=String(current?.course_id||'').trim();
+  if(cid){
+    const ids=Object.keys(source?.data?.matrices||{}).filter(mid=>{
+      const c=courses.find(x=>String(x.matrix)===String(mid));
+      return String(c?.course_id||'').trim()===cid && !!source?.turn?.[String(mid)];
+    }).sort((a,b)=>Number(b)-Number(a));
+    for(const mid of ids){value=find(mid);if(value)return value;}
+  }
+  return 'A definir';
+}
 
 const COURSE_CODES={
   "4510":"Comércio EJA",
@@ -169,8 +194,8 @@ async function apiSave(semester,key,changes){
 function preparePocvTags(){
   const gs=[];const cs=[];Object.values(DB?.data?.matrices||matrix||{}).forEach(m=>{if(m?.name)cs.push(m.name);(m?.disciplines||[]).forEach(d=>{if(d?.group)gs.push(d.group)})});Object.values(DB?.data?.courses||courses||{}).forEach(c=>{if(c?.name)cs.push(c.name)});POCV.setGroups(gs);POCV.setCourses(cs);
 }
-function projectionTurn(id,p,seq){const r=DB?.turn?.[String(id)]?.[String(p)];return r?r[(seq-1)%r.length]:'A definir'}
-function projectionRows(s){let rows=[];const sem=DB?.data?.semesters?.[s]||[];sem.forEach(cl=>{const course=POCV.courseName(DB.data.courses,cl.matrix),m=DB.data.matrices[String(cl.matrix)]||{};(m.disciplines||[]).forEach((d,di)=>{const baseCh=d.periods?.[String(cl.period)];if(baseCh==null)return;const key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB.offers?.[s]?.[key]||{};const catalog=Array.isArray(m.optionalCatalog)?m.optionalCatalog:[];const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(ov.optionalChoice?[ov.optionalChoice]:[]);const selected=choices.map(n=>catalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean);if(d.optional===true&&selected.length){selected.forEach(o=>rows.push({name:o.name,course:ov.course||course||m.name||'',ch:Number(o.weekly||0),group:o.group||d.group||'',turn:ov.turn||projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)}));return;}const ch=Number(ov.ch??baseCh),group=String(ov.group??d.group??'').trim();if(!Number.isFinite(ch)||!group)return;rows.push({name:ov.name||d.name,course:ov.course||course||m.name||'',ch,group,turn:ov.turn||projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)});});});(DB?.extraOffers?.[s]||[]).forEach(x=>{if(x.group&&Number(x.ch||0)>0)rows.push({name:x.name,course:x.course||'Demanda avulsa',ch:Number(x.ch||0),group:String(x.group).trim(),turn:x.turn||'A definir',period:Number(x.period||0)});});return rows}
+function projectionTurn(id,p,seq){return POCV.turnForClass(DB,id,p,seq)}
+function projectionRows(s){let rows=[];const sem=DB?.data?.semesters?.[s]||[];sem.forEach(cl=>{const course=POCV.courseName(DB.data.courses,cl.matrix),m=DB.data.matrices[String(cl.matrix)]||{};(m.disciplines||[]).forEach((d,di)=>{const baseCh=d.periods?.[String(cl.period)];if(baseCh==null)return;const key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB.offers?.[s]?.[key]||{};const catalog=Array.isArray(m.optionalCatalog)?m.optionalCatalog:[];const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(ov.optionalChoice?[ov.optionalChoice]:[]);const selected=choices.map(n=>catalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean);if(d.optional===true&&selected.length){selected.forEach(o=>rows.push({name:o.name,course:ov.course||course||m.name||'',ch:Number(o.weekly||0),group:o.group||d.group||'',turn:projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)}));return;}const ch=Number(ov.ch??baseCh),group=String(ov.group??d.group??'').trim();if(!Number.isFinite(ch)||!group)return;rows.push({name:ov.name||d.name,course:ov.course||course||m.name||'',ch,group,turn:projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)});});});(DB?.extraOffers?.[s]||[]).forEach(x=>{if(x.group&&Number(x.ch||0)>0)rows.push({name:x.name,course:x.course||'Demanda avulsa',ch:Number(x.ch||0),group:String(x.group).trim(),turn:x.turn||'A definir',period:Number(x.period||0)});});return rows}
 function projectionIndex(g){return (DB.teachers||[]).filter(t=>t.group===g).reduce((sum,t)=>sum+Number(t.classFactor||0),0)}
 function projectionAvg(total,index){return index>=1?total/index:total}
 function projectionAnnualAvg(year,g){const a=projectionRows(year+'.1').filter(r=>r.group===g).reduce((s,r)=>s+r.ch,0),b=projectionRows(year+'.2').filter(r=>r.group===g).reduce((s,r)=>s+r.ch,0);const i=projectionIndex(g);return (projectionAvg(a,i)+projectionAvg(b,i))/2}
@@ -300,7 +325,7 @@ tbody.addEventListener('click',async e=>{
     editingRow=row;
     const fields=[['turma','Turma'],['course','Curso'],['period','Período'],['turn','Turno'],['name','Disciplina'],['ch','CH'],['group','Grupo']];
     const optionalField=editingRow.optional && editingRow.optionalCatalog?.length?`<div style="grid-column:1/-1"><label>Optativa a ser ofertada</label><select data-edit="optionalChoice"><option value="">— Nenhuma escolhida / manter vaga genérica —</option>${editingRow.optionalCatalog.map(o=>`<option value="${esc(o.name)}" ${String(o.name)===String(editingRow.optionalChoice||'')?'selected':''}>${esc(o.name)}${o.weekly?' — '+Math.round(Number(o.weekly)||0)+' h/a':''}</option>`).join('')}</select><small class="muted">Escolha uma disciplina do cadastro de optativas desta matriz.</small></div>`:'';
-    $('editFields').innerHTML=optionalField+fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
+    $('editFields').innerHTML=optionalField+fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:k==='turn'?`<input data-edit="turn" value="${esc(editingRow.turn)}" readonly title="Turno definido pela turma">`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
     $('editModal').style.display='flex';
     const os=$('editFields').querySelector('[data-edit="optionalChoice"]');
     if(os)os.onchange=()=>{const o=editingRow.optionalCatalog.find(v=>String(v.name)===String(os.value)); if(o){const n=$('editFields').querySelector('[data-edit="name"]'); if(n)n.value=o.name; const g=$('editFields').querySelector('[data-edit="group"]'); if(g)g.value=o.group||''; const ch=$('editFields').querySelector('[data-edit="ch"]'); if(ch)ch.value=o.weekly||ch.value;} else {const n=$('editFields').querySelector('[data-edit="name"]'); if(n)n.value=editingRow.optionalBaseName||''; const g=$('editFields').querySelector('[data-edit="group"]'); if(g)g.value=editingRow.optionalBaseGroup||''; const ch=$('editFields').querySelector('[data-edit="ch"]'); if(ch)ch.value=editingRow.optionalBaseCh||ch.value;}};
@@ -331,13 +356,13 @@ tbody.addEventListener('dblclick',e=>{
   const tr=e.target.closest('tr'); if(!tr||e.target.closest('.row-actions'))return;
   editingRow=currentRows[Number(tr.dataset.index)]; if(!editingRow)return;
   const fields=[['turma','Turma'],['course','Curso'],['period','Período'],['turn','Turno'],['name','Disciplina'],['ch','CH'],['group','Grupo']];
-  $('editFields').innerHTML=fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:k==='group'?`<select data-edit="group"><option value="">—</option>${[...new Set(GROUP_OPTIONS)].filter(Boolean).map(v=>`<option value="${esc(v)}" ${v===editingRow.group?'selected':''}>${esc(v)}</option>`).join('')}</select>`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
+  $('editFields').innerHTML=fields.map(([k,l])=>`<div><label>${l}</label>${k==='name'?`<select data-edit="name">${disciplineSelectHtml(editingRow.name)}</select>`:k==='group'?`<select data-edit="group"><option value="">—</option>${[...new Set(GROUP_OPTIONS)].filter(Boolean).map(v=>`<option value="${esc(v)}" ${v===editingRow.group?'selected':''}>${esc(v)}</option>`).join('')}</select>`:k==='turn'?`<input data-edit="turn" value="${esc(editingRow.turn)}" readonly title="Turno definido pela turma">`:`<input data-edit="${k}" value="${esc(editingRow[k])}">`}</div>`).join('');
   $('editModal').style.display='flex';
 });
 $('cancelEdit').onclick=()=>$('editModal').style.display='none'; $('closeOptionalModal').onclick=()=>$('optionalModal').style.display='none'; $('cancelOptional').onclick=()=>$('optionalModal').style.display='none'; $('optionalModal').onclick=e=>{if(e.target===$('optionalModal'))$('optionalModal').style.display='none'};
 $('saveEdit').onclick=async()=>{
   const changes={};
-  document.querySelectorAll('[data-edit]').forEach(inp=>{const k=inp.dataset.edit;editingRow[k]=(k==='period'||k==='ch')?Number(inp.value):inp.value;changes[k]=editingRow[k]});
+  document.querySelectorAll('[data-edit]').forEach(inp=>{const k=inp.dataset.edit;editingRow[k]=(k==='period'||k==='ch')?Number(inp.value):inp.value;if(k!=='turn')changes[k]=editingRow[k]});
   if(editingRow.optional){
     const choice=editingRow.optionalChoice||'';
     const os=document.querySelector('[data-edit="optionalChoice"]');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA — Cenários</title>
-<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.0"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.43"></script>
 <style>
 .pocv-page{max-width:1500px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -287,17 +287,32 @@ function normalizeScenarioPlacements(s){
     // Nunca confiar no span persistido: a matriz é a fonte de verdade.
     p.span=placementDuration(p);
     if(!p.courseId)p.courseId=courseIdFromMatrix(p.matrix);
-    // Uma coorte não pode ser reduzida por um turnSchedule truncado.
-    // O turnSchedule antigo é mantido apenas para compatibilidade/edição,
-    // mas a visualização usa p.turn durante toda a duração da coorte.
+    // O turno da coorte é derivado da própria turma (matriz + período + seq),
+    // e não de um valor digitado na oferta. Para cada semestre, o período da
+    // coorte é calculado a partir do início da placement e consultamos a mesma
+    // regra usada na tela Turmas. Isso elimina "A definir" e evita divergência.
+    const base=semIndex(p.startSemester);
+    const seq=Math.max(1,Number(p.seq)||1);
+    if(Number.isFinite(base)){
+      const schedule={};
+      for(let k=0;k<p.span;k++){
+        const sem=semFromIndex(base+k);
+        const period=k+1;
+        const resolved=turnFromMatrix(p.matrix,period,seq);
+        if(resolved && resolved!=='A definir')schedule[sem]=resolved;
+      }
+      if(Object.keys(schedule).length) p.turnSchedule={...p.turnSchedule,...schedule};
+      const first=schedule[semFromIndex(base)]||Object.values(schedule)[0]||Object.values(p.turnSchedule||{}).find(v=>v&&v!=='A definir');
+      if(first)p.turn=first;
+    }
     if(!p.turn || p.turn==='A definir'){
-      const first=Object.values(p.turnSchedule||{})[0];
+      const first=Object.values(p.turnSchedule||{}).find(v=>v&&v!=='A definir');
       if(first)p.turn=first;
     }
   });
   return s;
 }
-function turnFromMatrix(id,period,seq=1){const t=DB?.turn?.[String(id)]||{};const exact=t[String(period)];if(Array.isArray(exact)&&exact.length)return exact[(seq-1)%exact.length];const keys=Object.keys(t).map(Number).filter(Number.isFinite).sort((a,b)=>Math.abs(a-period)-Math.abs(b-period));if(keys.length){const a=t[String(keys[0])];if(a?.length)return a[(seq-1)%a.length]}return 'A definir'}
+function turnFromMatrix(id,period,seq=1){return POCV.turnForClass(DB,id,period,seq)}
 function laneOf(t){const s=norm(t);if(s.includes('manh'))return'morning';if(s.includes('tard')||s.includes('vesp'))return'afternoon';if(s.includes('noit'))return'night';return'unknown'}
 function laneTurn(lane){return lane==='morning'?'Matutino':lane==='afternoon'?'Vespertino':'Noturno'}
 function matrixYear(id){
@@ -410,16 +425,34 @@ function fillSemSelects(){
 }
 function placementEnd(p){return semIndex(p.startSemester)+placementDuration(p)-1}
 function placementTurnAt(p,sem){
-  // O turno salvo para uma coorte vale para todo o período de duração da
-  // matriz, salvo quando existe uma alteração explícita em turnSchedule.
-  // Não usar o semestre mais próximo como fallback: isso fazia uma coorte
-  // antiga aparecer em apenas 1–2 semestres quando seu turnSchedule estava
-  // truncado no início da simulação.
+  // O turno deve ser o da turma naquele semestre. Primeiro usamos o schedule
+  // recalculado pela regra da turma; o valor persistido fica apenas como
+  // compatibilidade para cenários antigos.
+  const base=semIndex(p.startSemester), si=semIndex(sem);
+  if(Number.isFinite(base)&&Number.isFinite(si)){
+    const period=si-base+1;
+    if(period>=1){
+      const resolved=turnFromMatrix(p.matrix,period,Math.max(1,Number(p.seq)||1));
+      if(resolved && resolved!=='A definir')return resolved;
+    }
+  }
   const ts=p?.turnSchedule;
-  if(ts && typeof ts==='object' && ts[sem]) return ts[sem];
-  return p?.turn||'A definir';
+  if(ts && typeof ts==='object' && ts[sem] && ts[sem]!=='A definir') return ts[sem];
+  return p?.turn&&p.turn!=='A definir'?p.turn:'A definir';
 }
-function placementSegments(p,lane){const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester));const b=Math.min(placementEnd(p),semIndex(current.endSemester));if(b<a)return [];const fixedLane=laneOf(p.turn);return fixedLane===lane?[{p,start:a,end:b}]:[];}
+function placementSegments(p,lane){
+  const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester));
+  const b=Math.min(placementEnd(p),semIndex(current.endSemester));
+  if(b<a)return [];
+  const out=[];let start=null;
+  for(let si=a;si<=b;si++){
+    const sem=semFromIndex(si), fixedLane=laneOf(placementTurnAt(p,sem));
+    if(fixedLane===lane){if(start==null)start=si;}
+    else if(start!=null){out.push({p,start,end:si-1});start=null;}
+  }
+  if(start!=null)out.push({p,start,end:b});
+  return out;
+}
 function repairScenarioOfferTurns(){
   if(!current||current.isReal)return false;
   const real=scenarios.find(s=>s&&s.isReal); if(!real)return false;

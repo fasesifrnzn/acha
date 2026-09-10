@@ -1,3 +1,30 @@
+# v1.0.41
+
+- Corrige cache do app.js em todas as páginas, evitando que o navegador execute a lógica antiga de turnos.
+- A Oferta continua derivando o turno exclusivamente da turma, nunca do campo salvo da disciplina.
+- Mantém a resolução de turnos por matriz/período/sequência com fallback para matriz vigente do mesmo curso.
+
+## 1.0.40 — Oferta vinculada ao turno da turma
+
+- A POCV recalcula o turno de cada placement por semestre a partir da turma (matriz, período e sequência), em vez de confiar em `A definir` ou em turno persistido.
+- Segmentos da POCV passam a acompanhar corretamente mudanças de turno entre períodos.
+- O segundo editor de oferta também deixa o turno somente leitura.
+
+## 1.0.39 — Turno da oferta sempre herdado da turma
+
+- A tabela **Oferta** passa a usar exclusivamente o turno calculado da turma para cada disciplina.
+- Registros antigos de `db.offers` com `A definir` ou turno divergente são normalizados no carregamento dos dados.
+- A API de edição de oferta ignora alterações manuais de turno e grava o turno correspondente à turma.
+- A Projeção passa a usar a mesma resolução de turno da tela de Turmas, inclusive para matrizes antigas.
+- O campo de turno no editor da Oferta fica somente leitura.
+
+# v1.0.38
+
+- Corrigida a determinação de turno das turmas por período: quando não existe chave exata, utiliza a regra anterior aplicável.
+- Matrizes antigas sem configuração própria de turno passam a utilizar a configuração da matriz vigente do mesmo curso.
+- A mesma regra foi aplicada às telas Turmas, Oferta, Alocação, Dashboard, Projeção por turno e POCV.
+- Cenário real da POCV atualizado para regenerar os turnos com a nova regra.
+
 # v1.0.37
 
 - Adicionado menu **Backup** para Direção-Geral e Direção Acadêmica.
@@ -341,3 +368,8 @@ As informações históricas relevantes foram consolidadas neste arquivo e na do
 - Corrigida a regra de % Outras ofertas: qualquer valor < 20% atende à meta.
 - Removida a disciplina Orientação ao Desenvolvimento do Projeto Integrador das matrizes de Manutenção e os componentes de Seminário das matrizes de Comércio Integrado.
 - Definidos como Noite os turnos anteriormente A definir do Auxiliar em Eletricista, replicando a definição em todos os cenários.
+
+## 1.0.43 — 2026-09-10
+- Atualizado `data/db.json` com o backup atual obtido do ACHA online em 2026-09-10.
+- Mantida a correção de determinação do turno por turma implementada na 1.0.42.
+- Atualização de versão/cache para 1.0.43.

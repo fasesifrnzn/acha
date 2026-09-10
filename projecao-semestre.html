@@ -13,7 +13,7 @@ th[data-col="group"]{width:22%}th[data-col="type"]{width:18%}th[data-col="total"
  font-weight:900;white-space:nowrap;box-sizing:border-box
 }
 
-</style><script src="/app.js?v=1.0.0"></script></head><body><header><h1>ACHA — Projeção por semestre | IFRN Campus Natal-Zona Norte</h1><p>Projeção de carga-horária por grupo e semestre</p></header>
+</style><script src="/app.js?v=1.0.43"></script></head><body><header><h1>ACHA — Projeção por semestre | IFRN Campus Natal-Zona Norte</h1><p>Projeção de carga-horária por grupo e semestre</p></header>
 <nav class="mainnav"><a href="index.html">📋 Oferta</a><a href="projecao.html" class="active">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls"><div class="semester-box"><div style="width:100%"><label>SEMESTRE</label><select id="semester"></select></div></div><div><label>BUSCA LIVRE</label><input id="search" placeholder="Grupo ou tipo..."></div><div><button id="refresh">Atualizar</button></div></div></section>
 <section class="card"><div class="head"><h2>Previsão de carga-horária</h2><span class="muted">Duplo clique no índice de docentes para editar</span></div><div class="tablewrap"><table class="proj-summary"><thead><tr><th data-col="group"><button class="sort" data-key="group">Grupo ↕</button></th><th data-col="type"><button class="sort" data-key="type">Tipo ↕</button></th><th data-col="total"><button class="sort" data-key="total">CH total ↕</button></th><th data-col="index"><button class="sort" data-key="index">Índice docentes ↕</button></th><th data-col="semavg"><button class="sort" data-key="semavg">Média semestral ↕</button></th><th data-col="annual"><button class="sort" data-key="annual">Média anual ↕</button></th></tr></thead><tbody id="summary"></tbody></table></div></section>
@@ -33,7 +33,7 @@ async function api(url,opt){const r=await fetch(url,opt);if(!r.ok)throw new Erro
 let DB=null,details=[],sortKey='group',sortDir=1,modalGroup='';
 const $=id=>document.getElementById(id);const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));const fmt=v=>Math.round(Number(v||0)).toLocaleString('pt-BR');const fmt1=v=>Number(v||0).toLocaleString('pt-BR',{maximumFractionDigits:1});
 
-function turn(id,p,seq){let r=DB.turn[String(id)]?.[String(p)];return r?r[(seq-1)%r.length]:'A definir'}
+function turn(id,p,seq){return POCV.turnForClass(DB,id,p,seq)}
 function teacherData(){return DB.teachers}
 function groupTeachers(g){return teacherData().filter(t=>t.group===g)}
 function idx(g){return groupTeachers(g).reduce((s,t)=>s+Number(t.classFactor||0),0)}
