@@ -368,9 +368,10 @@ async function load(){
   POCV_CONFIG=cfgJson.config||POCV_CONFIG;
   scenarios=(scenarioJson.scenarios||[]).map(normalizeScenarioPlacements);
   current=scenarios.find(x=>x.isReal)||scenarios[0]||null;
-  repairScenarioAlternatingOffers();
+  const repaired=repairScenarioOfferTurns();
   dirty=false;
   renderAll();
+  if(repaired && current && !current.isReal){dirty=true;updateStatus();save();}
 }
 function renderScenarioStrip(){
   $('scenarioStrip').innerHTML=scenarios.map(s=>`<div class="scenario-card ${s.id===current?.id?'active':''}" data-id="${esc(s.id)}">
@@ -419,7 +420,47 @@ function placementTurnAt(p,sem){
   return p?.turn||'A definir';
 }
 function placementSegments(p,lane){const a=Math.max(semIndex(p.startSemester),semIndex(current.startSemester));const b=Math.min(placementEnd(p),semIndex(current.endSemester));if(b<a)return [];const fixedLane=laneOf(p.turn);return fixedLane===lane?[{p,start:a,end:b}]:[];}
-function repairScenarioAlternatingOffers(){if(!current||current.isReal)return;['MSI_INTEGRADO','ARTESANATO'].forEach(key=>{const ps=(current.placements||[]).filter(p=>String(p.courseId||courseKeyOf(p.matrix))===key&&semIndex(p.startSemester)>=semIndex('2028.1')).sort((a,b)=>semIndex(a.startSemester)-semIndex(b.startSemester));ps.forEach((p,i)=>{p.turn=i%2===0?'Vespertino':'Matutino';p.alternatesTurns=true;p.alternatingTurns=['Vespertino','Matutino'];p.span=placementDuration(p);});});}
+function repairScenarioOfferTurns(){
+  if(!current||current.isReal)return false;
+  const real=scenarios.find(s=>s&&s.isReal); if(!real)return false;
+  let changed=false;
+  const realPlacements=real.placements||[];
+  current.placements=current.placements||[];
+  const groups=new Map();
+  realPlacements.forEach(r=>{
+    const key=`${String(r.courseId||courseKeyOf(r.matrix))}|${String(r.startSemester)}`;
+    const turn=r.turn||Object.values(r.turnSchedule||{})[0]||'A definir';
+    if(turn==='A definir')return;
+    if(!groups.has(key))groups.set(key,new Map());
+    if(!groups.get(key).has(turn))groups.get(key).set(turn,r);
+  });
+  // O cenário simulado deve preservar a mesma oferta de turnos cadastrada
+  // no cenário real. Ex.: se Manutenção Integrado tem uma turma Matutina e
+  // uma Vespertina no mesmo semestre de entrada, a simulação deve carregar
+  // as duas coortes, e não apenas a que foi criada pelo arraste.
+  [...current.placements].forEach(p=>{
+    const courseKey=String(p.courseId||courseKeyOf(p.matrix));
+    const key=`${courseKey}|${String(p.startSemester)}`;
+    const sourceTurns=groups.get(key); if(!sourceTurns||sourceTurns.size<2)return;
+    const existing=new Set(current.placements.filter(x=>String(x.courseId||courseKeyOf(x.matrix))===courseKey&&String(x.startSemester)===String(p.startSemester)).map(x=>x.turn));
+    sourceTurns.forEach((source,turn)=>{
+      if(existing.has(turn))return;
+      const cp=JSON.parse(JSON.stringify(source));
+      cp.id=`p${Date.now()}${Math.random().toString(36).slice(2,8)}`;
+      cp.source='simulation';
+      cp.order=Date.now()+Math.random();
+      cp.turn=turn;
+      cp.span=placementDuration(cp);
+      cp.turnSchedule={};
+      const base=semIndex(cp.startSemester);
+      for(let k=0;k<cp.span;k++)cp.turnSchedule[semFromIndex(base+k)]=turn;
+      cp.alternatesTurns=false;
+      cp.alternatingTurns=[turn];
+      current.placements.push(cp); existing.add(turn); changed=true;
+    });
+  });
+  return changed;
+}
 function visiblePlacements(){const a=semIndex(current.startSemester),b=semIndex(current.endSemester);return (current.placements||[]).filter(p=>placementEnd(p)>=a&&semIndex(p.startSemester)<=b)}
 function placementOrder(p){return Number.isFinite(Number(p.order))?Number(p.order):Number.MAX_SAFE_INTEGER}
 function variantKeyOfMatrix(id){

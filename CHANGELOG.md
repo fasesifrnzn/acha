@@ -1,4 +1,8 @@
-## 1.0.32
+## 1.0.34
+
+- Corrigida a projeção de cenários para preservar todos os turnos cadastrados na oferta real para a mesma coorte, incluindo Manutenção e Suporte em Informática Integrado Matutino e Vespertino.
+
+## 1.0.34
 - Corrige o carregamento da página Docentes com tratamento de sessão, timeout e cache-busting do editor.
 - Torna a leitura da ordem das colunas resistente a dados inválidos no localStorage.
 
