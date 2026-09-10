@@ -1,3 +1,7 @@
+## 1.0.32
+- Corrige o carregamento da página Docentes com tratamento de sessão, timeout e cache-busting do editor.
+- Torna a leitura da ordem das colunas resistente a dados inválidos no localStorage.
+
 ## 1.0.31
 - Vinculada a servidora Fabrícia Abrantes Figueiredo da Rocha à matrícula SUAP 1213852, mantendo o perfil Diretora Acadêmica para autenticação via SUAP.
 

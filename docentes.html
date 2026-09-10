@@ -31,12 +31,12 @@ table th[data-col="actions"], table td[data-col="actions"]{
 table td[data-col="actions"]{z-index:10;background:#fff!important}
 table th[data-col="actions"]{z-index:11;background:#f8fafc!important}
 </style>
-<script src="/app.js?v=1.0.0"></script><link rel="stylesheet" href="/style.css?v=1.0.0"></head>
+<script src="/app.js?v=1.0.32"></script><link rel="stylesheet" href="/style.css?v=1.0.32"></head>
 <body>
   <header><h1>Docentes</h1><p>Relação de docentes utilizada na projeção de ofertas.</p></header>
   <nav class="mainnav"><a href="index.html">📋 Oferta</a><a href="projecao.html">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html" class="active">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav>
   <main><section class="card"><div class="head"><div class="filters"><input id="search" type="search" placeholder="Pesquisar por nome ou disciplina" aria-label="Pesquisar docentes"><select id="group"><option value="">Todos os grupos</option></select><select id="vinculo"><option value="">Todos os vínculos</option></select><select id="situation"><option value="">Todas as situações</option><option value="disponivel">Sem afastamento ou gestão</option><option value="restricao">Com afastamento ou gestão</option></select></div><span class="total" id="total">Carregando…</span></div><div class="table-wrap"><table><thead><tr><th draggable="true" data-col="name" style="width:18%"><button type="button" class="sort" data-sort="name">Docente ↕</button></th><th draggable="true" data-col="matricula" style="width:10%"><button type="button" class="sort" data-sort="matricula">Matrícula ↕</button></th><th draggable="true" data-col="discipline" style="width:20%"><button type="button" class="sort" data-sort="discipline">Disciplina / área ↕</button></th><th draggable="true" data-col="group" style="width:12%"><button type="button" class="sort" data-sort="group">Grupo ↕</button></th><th draggable="true" data-col="degree" style="width:10%"><button type="button" class="sort" data-sort="degree">Titulação ↕</button></th><th draggable="true" data-col="vinculo" style="width:9%"><button type="button" class="sort" data-sort="vinculo">Vínculo ↕</button></th><th draggable="true" data-col="regime" style="width:10%"><button type="button" class="sort" data-sort="regime">Regime ↕</button></th><th draggable="true" data-col="situation" style="width:17%"><button type="button" class="sort" data-sort="situation">Situação ↕</button></th><th data-col="actions" class="actions-head" style="width:92px">Ações</th></tr></thead><tbody id="teachers"></tbody></table></div></section></main>
   <!-- A renderização, filtros e edição são controlados exclusivamente por docentes-editor.js. -->
 
-<script src="docentes-editor.js"></script></body>
+<script src="docentes-editor.js?v=1.0.32"></script></body>
 </html>

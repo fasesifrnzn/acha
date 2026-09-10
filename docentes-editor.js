@@ -25,7 +25,8 @@
   let sortKey = 'name', sortDir = 1;
 
   const defaultColumnOrder = ['name','matricula','discipline','group','degree','vinculo','regime','situation','actions'];
-  let teacherColumnOrder = JSON.parse(localStorage.getItem('docentes_column_order') || 'null');
+  let teacherColumnOrder = null;
+  try { teacherColumnOrder = JSON.parse(localStorage.getItem('docentes_column_order') || 'null'); } catch (_) { teacherColumnOrder = null; }
   if (!Array.isArray(teacherColumnOrder)) teacherColumnOrder = [...defaultColumnOrder];
   if (!teacherColumnOrder.includes('matricula')) {
     const nameIndex = teacherColumnOrder.indexOf('name');
@@ -475,16 +476,23 @@
 
   async function load() {
     try {
-      const response=await fetch(`${apiBase}/api/db`,{cache:'no-store'});
-      if(!response.ok) throw new Error('Erro ao carregar docentes.');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+      let response;
+      try {
+        response=await fetch(`${apiBase}/api/db`,{cache:'no-store',signal:controller.signal});
+      } finally { clearTimeout(timeout); }
+      if(response.status===401) throw new Error('Sessão expirada. Faça login novamente.');
+      if(!response.ok) throw new Error(`Erro ao carregar docentes (HTTP ${response.status}).`);
       const db=await response.json();
       teachers=Array.isArray(db.teachers)?db.teachers.map(t=>({...t,regime:normalizeRegime(t.regime)})):[];
       courses=Array.isArray(db.data?.courses)?db.data.courses:[];
       fillFilters();
       render();
     } catch(error) {
+      const message=error?.name==='AbortError' ? 'Tempo esgotado ao carregar os docentes.' : (error?.message || 'Erro ao carregar docentes.');
       $('total').textContent='Erro ao carregar';
-      $('teachers').innerHTML=`<tr><td class="empty" colspan="8">${escapeHtml(error.message)}</td></tr>`;
+      $('teachers').innerHTML=`<tr><td class="empty" colspan="9">${escapeHtml(message)}</td></tr>`;
     }
   }
 })();
