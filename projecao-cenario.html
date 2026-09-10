@@ -43,11 +43,11 @@
 .status-label{position:sticky;left:0;background:#f8fafc;z-index:3;text-align:left;font-weight:900}
 .status-cell.sem{font-weight:900}
 .status-cell .saldo{display:block;font-size:11px;margin-top:2px}
-.status-cell.ok{color:#047857;background:#f0fdf4}.status-cell.warn{color:#b45309;background:#fffbeb}.status-cell.bad{color:#b91c1c;background:#fff1f2}.status-cell.low{color:#c2410c;background:#fff7ed}
+.status-cell.ok{color:#047857;background:#f0fdf4}.status-cell.warn{color:#b45309;background:#fffbeb}.status-cell.bad,.status-cell.low{color:#b91c1c;background:#fff1f2}
 .proj-footnote{font-size:10px;color:var(--muted);padding:9px 11px;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;background:#fff}
 .proj-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .proj-title h2{margin:0;font-size:14px}.proj-title .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:9px;color:var(--muted)}
-.legend-item{display:inline-flex;align-items:center;gap:4px}.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.legend-ok{background:#16a34a}.legend-warn{background:#f59e0b}.legend-bad{background:#dc2626}.legend-low{background:#ea580c}
+.legend-item{display:inline-flex;align-items:center;gap:4px}.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block}.legend-ok{background:#16a34a}.legend-warn{background:#f59e0b}.legend-bad{background:#dc2626}.legend-low{background:#dc2626}
 @media(max-width:1100px){.proj-controls{grid-template-columns:repeat(3,1fr)}.proj-kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:700px){.proj-controls{grid-template-columns:1fr 1fr}.proj-kpis{grid-template-columns:1fr 1fr}}
 
@@ -195,7 +195,7 @@ header h1{font-size:22px;font-weight:700}
 <section class="card" style="margin-top:12px;padding:12px">
   <div class="proj-title">
     <h2>Visão por semestre</h2>
-    <div class="legend"><span class="legend-item"><i class="legend-dot legend-ok"></i> OK</span><span class="legend-item"><i class="legend-dot legend-warn"></i> Limite</span><span class="legend-item"><i class="legend-dot legend-low"></i> Abaixo do mínimo</span><span class="legend-item"><i class="legend-dot legend-bad"></i> Déficit</span></div>
+    <div class="legend"><span class="legend-item"><i class="legend-dot legend-ok"></i> Verde: mínimo até 20 h/a</span><span class="legend-item"><i class="legend-dot legend-warn"></i> Amarelo: 21 h/a até antes do máximo</span><span class="legend-item"><i class="legend-dot legend-bad"></i> Vermelho: abaixo do mínimo ou acima do máximo</span></div>
   </div>
   <div class="proj-table-wrap"><div class="proj-status-grid" id="semesterStatus"></div></div>
 </section>
@@ -311,9 +311,10 @@ function cellState(g,totalHa){
     const add=Math.max(1,Math.ceil(excessClock/maxPerTeacher));
     return {cls:'bad',label:`Déficit · +${add}`,title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) acima da capacidade máxima de aulas do grupo (${fmt(clockToHa(l.max))} h/a = ${fmt(l.max)} h-relógio). Necessário acrescentar aproximadamente ${add} docente(s).`,avg:avgHa};
   }
-  if(totalClock<l.min)return {cls:'low',label:'Abaixo do mínimo',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) abaixo do mínimo agregado de aulas do grupo (${fmt(clockToHa(l.min))} h/a = ${fmt(l.min)} h-relógio).`,avg:avgHa};
-  if(totalClock>=l.warn)return {cls:'warn',label:'Limite',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) próxima do limite máximo agregado de ${fmt(clockToHa(l.max))} h/a (${fmt(l.max)} h-relógio).`,avg:avgHa};
-  return {cls:'ok',label:'OK',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) dentro da faixa agregada de ${fmt(clockToHa(l.min))} a ${fmt(clockToHa(l.max))} h/a.`,avg:avgHa};
+  if(totalClock<l.min)return {cls:'bad',label:'Abaixo do mínimo',title:`Carga projetada ${fmt(totalHa)} h/a (${fmt(totalClock)} h-relógio) abaixo do mínimo agregado de aulas do grupo (${fmt(clockToHa(l.min))} h/a = ${fmt(l.min)} h-relógio).`,avg:avgHa};
+  const minHa=clockToHa(l.min), maxHa=clockToHa(l.max);
+  if(avgHa<=20)return {cls:'ok',label:'OK',title:`Média projetada ${fmt(avgHa)} h/a dentro da faixa verde (${fmt(minHa)} a 20 h/a).`,avg:avgHa};
+  return {cls:'warn',label:'Limite',title:`Média projetada ${fmt(avgHa)} h/a na faixa amarela (acima de 20 h/a e abaixo do máximo de ${fmt(maxHa)} h/a).`,avg:avgHa};
 }
 function courseCodeForMatrix(id){
   const map={1:'4206',2:'4206',3:'0000',4:'0000',5:'4407',6:'4407',7:'4407',8:'4111',9:'4111',10:'4411',11:'4411',12:'4506',13:'4506',14:'4510',15:'4510',16:'4069',17:'4069',18:'4069',19:'4103',20:'4103'};

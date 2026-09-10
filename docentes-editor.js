@@ -34,6 +34,9 @@
   }
   defaultColumnOrder.forEach(key => { if (!teacherColumnOrder.includes(key)) teacherColumnOrder.push(key); });
   teacherColumnOrder = teacherColumnOrder.filter(key => defaultColumnOrder.includes(key));
+  // A coluna Ações é fixa e permanece sempre como última coluna.
+  teacherColumnOrder = teacherColumnOrder.filter(key => key !== 'actions');
+  teacherColumnOrder.push('actions');
   localStorage.setItem('docentes_column_order', JSON.stringify(teacherColumnOrder));
 
   function optionsFor(field) {
@@ -428,6 +431,7 @@
     if(!teacher) return;
     if(event.target.closest('.edit-teacher')) openModal(teacher);
     else if(event.target.closest('.delete-teacher')) { editedTeacher=teacher; modalMode='edit'; remove(); }
+    else if(event.target.closest('.editable')) openModal(teacher);
   });
 
   document.querySelectorAll('.sort').forEach(button=>button.addEventListener('click',()=>{

@@ -1,6 +1,9 @@
+## 1.0.30
+- Vinculada a servidora Fabrícia Abrantes Figueiredo da Rocha à matrícula SUAP 1213852, mantendo o perfil Diretora Acadêmica para autenticação via SUAP.
+
 # Changelog
 
-## 1.0.26
+## 1.0.30
 
 - Indicadores: Licenciatura passou a ser considerada em Formação de professores mesmo quando a matriz histórica não possui o tipo preenchido.
 - Indicadores: Auxiliar em Operador de Computador e Auxiliar em Eletricista classificados como Técnico com recorte PROEJA FIC Fundamental, deixando de entrar em Outras Ofertas.
