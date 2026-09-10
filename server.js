@@ -483,6 +483,28 @@ async function api(req,res){
   const parsed=url.parse(req.url,true),p=parsed.pathname;
   if(req.method==='GET'&&p==='/api/health')return send(res,200,{ok:true,service:'acha',timestamp:new Date().toISOString()});
 
+  // Backup administrativo: devolve o db.json completo e atual, exatamente como
+  // está armazenado no servidor, para permitir continuar o desenvolvimento
+  // localmente com os dados produzidos na aplicação online.
+  if(req.method==='GET'&&p==='/api/backup'){
+    const db=readDB();
+    ensureAuthUsers(db);
+    const user=requireAuth(req,res,db);
+    if(!user)return;
+    if(user.role!=='diretor_geral'&&user.role!=='diretoria_academica')return send(res,403,{error:'Acesso restrito à Direção.'});
+    const payload=JSON.stringify(db,null,2);
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+    res.writeHead(200,{
+      'Content-Type':'application/json; charset=utf-8',
+      'Content-Disposition':`attachment; filename="acha-db-backup-${stamp}.json"`,
+      'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma':'no-cache',
+      'Expires':'0',
+      'X-ACHA-Version':'1.0.37'
+    });
+    return res.end(payload);
+  }
+
   if(p==='/api/profile' && req.method==='GET'){
     const db=readDB();ensureAuthUsers(db);const user=requireAuth(req,res,db);if(!user)return;
     return send(res,200,{ok:true,user:authUserPayload(db,user)});
@@ -1164,7 +1186,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.36'
+      'X-ACHA-Version':'1.0.37'
     });
     fs.createReadStream(file).pipe(res)
   })

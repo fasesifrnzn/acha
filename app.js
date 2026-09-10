@@ -12,7 +12,8 @@
     ['grupos.html','tag','Grupos'],
     ['regras.html','gear','Regras'],
     ['variaveis.html','gear','Variáveis'],
-    ['demandas.html','note','Demandas avulsas']
+    ['demandas.html','note','Demandas avulsas'],
+    ['backup.html','download','Backup']
   ];
   const iconSvg={
     home:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.8 12 3l9 7.8v9.2a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
@@ -25,7 +26,8 @@
     tag:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11V5a2 2 0 0 1 2-2h6l10 10-6 6L5 9z"/><circle cx="8" cy="7" r="1"/></svg>',
     gear:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.7 3 .7 2a7.8 7.8 0 0 1 3.2 0l.7-2 2.2.9-.7 2a8 8 0 0 1 2.3 2.3l2-.7.9 2.2-2 .7a7.8 7.8 0 0 1 0 3.2l2 .7-.9 2.2-2-.7a8 8 0 0 1-2.3 2.3l.7 2-2.2.9-.7-2a7.8 7.8 0 0 1-3.2 0l-.7 2-2.2-.9.7-2a8 8 0 0 1-2.3-2.3l-2 .7-.9-2.2 2-.7a7.8 7.8 0 0 1 0-3.2l-2-.7.9-2.2 2 .7A8 8 0 0 1 8.2 6l-.7-2z"/><circle cx="12" cy="12" r="2.8"/></svg>',
     timeline:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/><path d="M7 3v4M12 10v4M17 17v4"/></svg>',
-    note:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg>'
+    note:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h5"/></svg>',
+    download:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg>'
   };
   const palette=[
     ['#e0f2fe','#075985','#bae6fd'],['#dcfce7','#166534','#bbf7d0'],['#fef3c7','#92400e','#fde68a'],['#fce7f3','#9d174d','#fbcfe8'],

@@ -1,3 +1,10 @@
+# v1.0.37
+
+- Adicionado menu **Backup** para Direção-Geral e Direção Acadêmica.
+- Adicionado `GET /api/backup`, que baixa o `db.json` completo e atual do servidor.
+- O arquivo é gerado com nome contendo data/hora e sem cache.
+- Backup restrito aos perfis de direção; coordenadores de curso não têm acesso.
+
 ## 1.0.36
 
 - Corrigida a projeção de cenários para preservar todos os turnos cadastrados na oferta real para a mesma coorte, incluindo Manutenção e Suporte em Informática Integrado Matutino e Vespertino.
