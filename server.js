@@ -1135,6 +1135,12 @@ const server=http.createServer(async(req,res)=>{
     const db=readDB();ensureAuthUsers(db);const user=userFromRequest(req,db);
     pathname=user?'/dashboard.html':'/login.html';
   }
+  // Força atualização da página de Docentes após deploy. O navegador/proxy não deve
+  // reaproveitar uma cópia antiga dessa tela, que depende do editor embutido.
+  if(pathname==='/docentes.html' && !url.parse(req.url,true).query.v){
+    res.writeHead(302,{'Location':'/docentes.html?v=1.0.35','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
+    return res.end();
+  }
   // Arquivos estáticos (CSS/JS/imagens) não são páginas protegidas.
   // Antes, o middleware de autorização tratava style.css/app.js como páginas
   // e redirecionava esses requests para dashboard.html, quebrando a interface.
@@ -1150,7 +1156,18 @@ const server=http.createServer(async(req,res)=>{
   }
   const file=path.normalize(path.join(ROOT,pathname));
   if(!file.startsWith(ROOT))return send(res,403,{error:'Forbidden'});
-  fs.stat(file,(err,st)=>{if(err||!st.isFile())return send(res,404,'Not found','text/plain; charset=utf-8');const ext=path.extname(file).toLowerCase();res.writeHead(200,{'Content-Type':MIME[ext]||'application/octet-stream'});fs.createReadStream(file).pipe(res)})
+  fs.stat(file,(err,st)=>{
+    if(err||!st.isFile())return send(res,404,'Not found','text/plain; charset=utf-8');
+    const ext=path.extname(file).toLowerCase();
+    res.writeHead(200,{
+      'Content-Type':MIME[ext]||'application/octet-stream',
+      'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma':'no-cache',
+      'Expires':'0',
+      'X-ACHA-Version':'1.0.35'
+    });
+    fs.createReadStream(file).pipe(res)
+  })
 });
 
 server.on('error',(err)=>{
