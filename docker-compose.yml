@@ -6,21 +6,24 @@ services:
     container_name: acha
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "5001:5001"
     environment:
       NODE_ENV: production
-      PORT: 3000
-      DB_FILE: /app/data/db.json
+      PORT: 5001
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-acha}
     networks:
       - database_network
       - proxy_network
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:3000/api/health"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:5001/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 10s
-
 
 networks:
   database_network:

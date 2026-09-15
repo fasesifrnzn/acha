@@ -4,3 +4,6 @@ pocv-data
 *.zip
 *.bat
 README-Docker.md
+
+data/db.json
+data/backups

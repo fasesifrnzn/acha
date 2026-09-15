@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA | Indicadores</title>
-<link rel="stylesheet" href="/style.css?v=1.0.18">
-<script src="/app.js?v=1.0.18"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.77">
+<script src="/app.js?v=1.0.77"></script>
 <style>
 .ind-page{max-width:1500px}
 .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
@@ -471,7 +471,6 @@ document.addEventListener('click',e=>{
   if(b) showModal(b.dataset.key,Number(b.dataset.year));
 });
 load().catch(e=>{
-  console.error(e);
   $('content').innerHTML=`<section class="panel" style="padding:16px;color:#b91c1c">Não foi possível carregar os indicadores: ${esc(e.message)}</section>`;
 });
 })();

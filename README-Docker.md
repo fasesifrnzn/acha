@@ -1,74 +1,77 @@
 # ACHA — implantação Docker / Portainer
 
-## Stack
+## Arquitetura atual
 
-O projeto possui:
+A partir da versão 1.0.95, o **MySQL é a fonte única de dados operacionais** do ACHA.
 
-- `Dockerfile`;
-- `docker-compose.yml`;
-- `docker-compose.bind.yml`;
-- `.dockerignore`;
-- endpoint `/api/health`;
-- volume persistente para o banco;
-- variável `DB_FILE=/var/data/db.json`.
+O arquivo `db.json` não é banco operacional. Ele é mantido apenas como **cópia de recuperação/backup** no volume persistente.
 
-### Deploy no Portainer
+### Variáveis obrigatórias
 
-1. Acesse **Stacks → Add stack**.
-2. Use o `docker-compose.yml` do repositório.
-3. Faça o deploy.
-4. Acesse `http://IP-DO-SERVIDOR:3000`.
-
-### Persistência
-
-O banco deve ficar fora do container, em armazenamento persistente:
+Configure no Portainer/ambiente do container:
 
 ```text
-acha_data:/var/data
+MYSQL_HOST=<nome-ou-host-do-mysql-na-database_network>
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=<senha>
+MYSQL_DATABASE=acha
 ```
 
-O arquivo utilizado pelo servidor é:
+O container não inicia se não conseguir carregar o estado do ACHA a partir do MySQL. Isso evita que uma indisponibilidade do banco seja mascarada por dados antigos em JSON.
+
+## Deploy no Portainer
+
+1. Atualize o código do repositório.
+2. Garanta que a rede do MySQL esteja disponível para o container.
+3. Configure as variáveis `MYSQL_*`.
+4. Faça **Rebuild/Deploy** da Stack.
+5. Preserve o volume `acha_data` (ou o bind mount configurado).
+
+## Persistência
+
+O banco operacional fica no MySQL:
 
 ```text
-/var/data/db.json
+acha
 ```
 
-**Não remova o volume durante uma atualização.**
+O volume do ACHA é usado para backups:
 
-### Atualização
+```text
+/var/data/backups
+```
 
-1. atualize o código no repositório;
-2. faça o rebuild/redeploy da Stack;
-3. preserve o volume de dados.
+O arquivo `/var/data/db.json` também é mantido como snapshot de recuperação, mas **não é utilizado como fonte operacional**.
 
-### Backup
+## Backup
 
-Antes de atualizações importantes, faça backup do `db.json` persistido.
+Exportação manual do MySQL para JSON:
 
-### Teste de saúde
+```bash
+npm run backup:mysql
+```
+
+Também são gerados snapshots automáticos após gravações bem-sucedidas.
+
+## Atualização
+
+1. faça backup do MySQL;
+2. atualize o código;
+3. faça rebuild/redeploy;
+4. não remova o banco `acha`;
+5. não remova o volume de backups.
+
+## Saúde
 
 ```text
 GET /api/health
 ```
 
-A resposta deve indicar `ok: true` e o serviço `acha`.
-
-### Porta
-
-A configuração padrão publica:
+A aplicação também disponibiliza:
 
 ```text
-3000:3000
+GET /api/mysql/status
 ```
 
-Se necessário, altere somente a porta externa, por exemplo `8080:3000`.
-
-## Bind mount
-
-`docker-compose.bind.yml` permite manter o banco em uma pasta explícita do host:
-
-```text
-./acha-data:/var/data
-```
-
-Para produção, o volume nomeado é a opção preferencial da configuração inicial.
+para consultar o estado da última persistência.

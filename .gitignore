@@ -6,9 +6,24 @@ node_modules/
 .env.*
 !.env.example
 
-# Logs e arquivos temporários
+# Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Dados persistidos / snapshots locais
+data/db.json
+data/backups/
+pocv-data/
+acha-data/
+
+# Backups/exportações locais
+*.bak
+*.backup
+*.sql
+*.dump
+*.zip
 
 # Sistema operacional / editores
 .DS_Store
@@ -16,9 +31,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Dados persistidos de produção
-pocv-data/
-
-# Backups locais
-*.bak
-*.backup
+# Arquivos temporários
+*.tmp
+*.temp
+*.swp
