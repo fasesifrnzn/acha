@@ -45,6 +45,12 @@ async function limparTabelas(conn) {
 }
 
 async function main() {
+  if (!fs.existsSync(DB_FILE)) {
+    throw new Error(
+      `Arquivo de origem da migração não encontrado: ${DB_FILE}. ` +
+      `No primeiro deploy, disponibilize o db.json no diretório data/ do servidor.`
+    );
+  }
   const db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
   const conn = await mysql.createConnection({
     host: process.env.MYSQL_HOST || '127.0.0.1', port: Number(process.env.MYSQL_PORT || 3306),
@@ -53,6 +59,36 @@ async function main() {
   });
   try {
     await execSchema(conn);
+
+    // No primeiro deploy, a migração deve acontecer somente quando o schema
+    // estiver vazio. Em redeploys posteriores, não podemos limpar o banco.
+    const initialOnly = String(process.env.MIGRATION_MODE || '').toLowerCase() === 'initial';
+    if (initialOnly) {
+      const [counts] = await conn.query(`
+        SELECT
+          (SELECT COUNT(*) FROM semestres) AS semestres,
+          (SELECT COUNT(*) FROM cursos) AS cursos,
+          (SELECT COUNT(*) FROM matrizes) AS matrizes,
+          (SELECT COUNT(*) FROM docentes) AS docentes,
+          (SELECT COUNT(*) FROM ofertas) AS ofertas,
+          (SELECT COUNT(*) FROM cenarios_pocv) AS cenarios
+      `);
+      const c = counts[0];
+      const total = Object.values(c).reduce((sum, value) => sum + Number(value || 0), 0);
+
+      if (total > 0) {
+        if (Number(c.semestres) > 0 && Number(c.cursos) > 0 && Number(c.matrizes) > 0) {
+          console.log('Migração inicial já realizada. Banco ACHA contém dados; nenhuma limpeza foi executada.');
+          return;
+        }
+        throw new Error(
+          `Banco ACHA não está vazio e também não parece estar completo para uma migração inicial. ` +
+          `Semestres=${c.semestres}, Cursos=${c.cursos}, Matrizes=${c.matrizes}, Docentes=${c.docentes}, ` +
+          `Ofertas=${c.ofertas}, Cenários=${c.cenarios}. Migração interrompida para evitar perda de dados.`
+        );
+      }
+    }
+
     await conn.beginTransaction();
     try {
       await limparTabelas(conn);

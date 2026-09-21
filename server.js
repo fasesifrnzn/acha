@@ -339,6 +339,179 @@ function classTurn(db,matrixId,period,seq){
   return 'A definir';
 }
 
+function semesterIndex(s){
+  const m=String(s||'').match(/^(\d{4})\.(1|2)$/);
+  return m ? Number(m[1])*2 + Number(m[2])-1 : NaN;
+}
+function semesterFromIndex(i){
+  const n=Number(i);
+  if(!Number.isFinite(n)) return '';
+  const year=Math.floor(n/2), part=n%2+1;
+  return `${year}.${part}`;
+}
+function matrixDuration(matrix){
+  const nums=(matrix?.disciplines||[]).flatMap(d=>Object.keys(d?.periods||{}).map(Number).filter(Number.isFinite));
+  return Math.max(1,Number(matrix?.duration)||0,...nums,1);
+}
+function cohortTurn(courseId,startSemester,fallback){
+  const id=String(courseId||'');
+  const year=Number(String(startSemester||'').slice(0,4));
+  if(!Number.isFinite(year)) return fallback||'A definir';
+  // Regra de coorte: a alternância anual é entre novas entradas. Uma coorte
+  // permanece no turno em que ingressou durante toda a duração do curso.
+  if(id==='COMERCIO') return year%2===1?'Manhã':'Tarde';
+  if(id==='INFORMATICA_INTERNET') return year%2===1?'Tarde':'Manhã';
+  // Licenciatura em Informática: entrada anual alternada entre Noite e
+  // Tarde. No cenário solicitado, 2027.1 é a entrada noturna.
+  if(id==='LICENCIATURA_INFORMATICA') return year%2===1?'Noite':'Tarde';
+  return fallback||'A definir';
+}
+function normalizePocvScenario(db,scenario,applyCoorteRule=false){
+  if(!scenario || !Array.isArray(scenario.placements)) return scenario;
+  scenario.placements.forEach(p=>{
+    const m=db.data?.matrices?.[String(p.matrix)]||{};
+    p.span=matrixDuration(m);
+    if(!p.courseId){
+      const c=(db.data?.courses||[]).find(x=>String(x.matrix)===String(p.matrix));
+      if(c?.course_id)p.courseId=c.course_id;
+    }
+    if(!(Number(p.vacancies)>0)) p.vacancies=defaultVacanciesForMatrix(db,p.matrix);
+    if(applyCoorteRule && ['COMERCIO','INFORMATICA_INTERNET','LICENCIATURA_INFORMATICA'].includes(String(p.courseId||'')) && p.startSemester){
+      p.turn=cohortTurn(p.courseId,p.startSemester,p.turn);
+      const base=semesterIndex(p.startSemester),schedule={};
+      for(let k=0;k<p.span;k++)schedule[semesterFromIndex(base+k)]=p.turn;
+      p.turnSchedule=schedule;
+    }
+  });
+  return scenario;
+}
+
+function buildInitialPocvScenario(db){
+  const min=semesterIndex('2027.1'), max=semesterIndex('2033.2');
+  const semesters=Object.keys(db.data?.semesters||{})
+    .sort((a,b)=>semesterIndex(a)-semesterIndex(b));
+  const cohorts=new Map();
+
+  // A tabela de turmas é a fonte de verdade do cenário real. Cada registro
+  // representa uma turma em um período da matriz. A coorte é reconstruída
+  // pelo semestre de início = semestre atual - (período - 1).
+  semesters.forEach(sem=>{
+    const si=semesterIndex(sem);
+    (db.data.semesters[sem]||[]).forEach(cl=>{
+      const matrix=Number(cl.matrix), period=Number(cl.period)||1, seq=Number(cl.seq)||1;
+      if(!Number.isFinite(matrix)) return;
+      const start=si-(period-1);
+      const key=`${matrix}|${seq}|${start}`;
+      if(!cohorts.has(key)) cohorts.set(key,{matrix,seq,start,observations:[]});
+      cohorts.get(key).observations.push({sem,si,period,turn:classTurn(db,matrix,period,seq)});
+    });
+  });
+
+  const placements=[]; let pid=1;
+  [...cohorts.values()].sort((a,b)=>a.start-b.start||a.matrix-b.matrix||a.seq-b.seq).forEach(c=>{
+    const m=db.data?.matrices?.[String(c.matrix)]||{};
+    const duration=matrixDuration(m);
+    // No cenário real, não projetamos além do que a tabela de turmas realmente
+    // contém. Isso é importante para matrizes antigas que foram encerradas ou
+    // substituídas antes de completar a duração nominal. Para uma coorte cujo
+    // início é anterior ao primeiro semestre disponível no banco, usamos o
+    // primeiro período observado e seguimos até o primeiro buraco da sequência.
+    const obs=c.observations.slice().sort((a,b)=>a.si-b.si);
+    let actualEnd=null;
+    if(obs.length){
+      let prevSi=null, prevPeriod=null;
+      for(const o of obs){
+        if(prevSi!==null && (o.si!==prevSi+1 || o.period!==prevPeriod+1)) break;
+        actualEnd=o.si; prevSi=o.si; prevPeriod=o.period;
+      }
+    }
+    const end=Math.min(c.start+duration-1, actualEnd==null?c.start+duration-1:actualEnd, max);
+    if(end<min || c.start>max || actualEnd==null) return;
+
+    // O turno é parte da configuração da coorte. Para matrizes em que o
+    // turno muda conforme o período (ex.: Comércio, Informática para Internet,
+    // Licenciatura e Marketing), preservamos a agenda por semestre em vez de
+    // transformar cada período em uma nova "oferta".
+    const turnSchedule={};
+    c.observations.forEach(o=>{
+      if(o.si>=min && o.si<=max && o.turn) turnSchedule[o.sem]=o.turn;
+    });
+
+    // Detecta a periodicidade das entradas (anual, semestral ou única) usando
+    // os semestres de início observados para a mesma matriz/coorte-seq.
+    const starts=[...new Set([...cohorts.values()]
+      .filter(x=>x.matrix===c.matrix && x.seq===c.seq)
+      .map(x=>x.start).sort((a,b)=>a-b))];
+    let periodicity='unica';
+    if(starts.length>1){
+      const diffs=starts.slice(1).map((v,i)=>v-starts[i]);
+      if(diffs.every(x=>x===2)) periodicity='anual';
+      else if(diffs.every(x=>x===1)) periodicity='semestral';
+      else periodicity='anual';
+    }
+
+    // Para a visualização, mantemos uma entrada por coorte. A interface pode
+    // desenhar segmentos por turno a partir de turnSchedule sem perder a
+    // identidade da oferta/coorte.
+    const firstObserved=c.observations.slice().sort((a,b)=>a.si-b.si)[0];
+    const course=(db.data?.courses||[]).find(x=>String(x.matrix)===String(c.matrix));
+    const fallbackTurn=cohortTurn(course?.course_id,semesterFromIndex(c.start),firstObserved?.turn||'A definir');
+    placements.push({
+      id:`p${pid++}`,
+      matrix:c.matrix,
+      seq:c.seq,
+      courseId:course?.course_id||'',
+      startSemester:semesterFromIndex(c.start),
+      turn:fallbackTurn,
+      turnSchedule,
+      quantity:1,
+      vacancies:defaultVacanciesForMatrix(db,c.matrix),
+      startPeriod:1,
+      span:duration,
+      source:'real',
+      locked:false,
+      periodicity,
+      alternatesTurns:Object.values(turnSchedule).filter(Boolean).length>1 && new Set(Object.values(turnSchedule).filter(Boolean)).size>1,
+      alternatingTurns:[...new Set(Object.values(turnSchedule).filter(Boolean))]
+    });
+  });
+
+  return {
+    id:'real',name:'Cenário Real',isReal:true,
+    startSemester:'2027.1',endSemester:'2033.2',placements,
+    realModelVersion:8,
+    createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()
+  };
+}
+function ensurePocvScenarios(db){
+  if(!Array.isArray(db.pocvScenarios) || !db.pocvScenarios.length){
+    db.pocvScenarios=[buildInitialPocvScenario(db)];
+    writeDB(db);
+  }else{
+    let changed=false;
+    const beforeNormalize=JSON.stringify(db.pocvScenarios);
+    if(!db.pocvScenarios.some(x=>x&&x.isReal)){
+      db.pocvScenarios[0].isReal=true;
+      changed=true;
+    }
+    // Migração única da representação antiga do cenário real para a versão
+    // que acompanha fielmente as entradas de data.semesters, inclusive quando
+    // o turno muda entre períodos.
+    const real=db.pocvScenarios.find(x=>x&&x.isReal);
+    if(real && (Number(real.realModelVersion||0)<8 || (real.placements||[]).some(p=>Number(p.span||0)!==matrixDuration(db.data?.matrices?.[String(p.matrix)]||{})))){
+      const rebuilt=buildInitialPocvScenario(db);
+      rebuilt.createdAt=real.createdAt||rebuilt.createdAt;
+      rebuilt.name=real.name||rebuilt.name;
+      db.pocvScenarios=db.pocvScenarios.map(x=>x.id===real.id?{...rebuilt,id:real.id,isReal:true}:x);
+      changed=true;
+    }
+    db.pocvScenarios.forEach(s=>normalizePocvScenario(db,s,!!s.isReal));
+    const normalizedChanged=beforeNormalize!==JSON.stringify(db.pocvScenarios);
+    if(changed||normalizedChanged) writeDB(db);
+  }
+  return db.pocvScenarios;
+}
+
 function normalizeOfferTurns(db){
   let changed=false;
   db.offers??={};

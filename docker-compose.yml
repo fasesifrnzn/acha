@@ -1,4 +1,45 @@
 services:
+  acha-schema:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: acha-schema
+    restart: "no"
+    environment:
+      NODE_ENV: production
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-acha}
+    networks:
+      - database_network
+    command: ["node", "scripts/init-mysql-schema.js"]
+
+  acha-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: acha-migrate
+    restart: "no"
+    environment:
+      NODE_ENV: production
+      MYSQL_HOST: ${MYSQL_HOST:-mysql}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-acha}
+      DB_FILE: /app/data/db.json
+      MIGRATION_MODE: initial
+    volumes:
+      - ./data:/app/data:ro
+    networks:
+      - database_network
+    depends_on:
+      acha-schema:
+        condition: service_completed_successfully
+    command: ["node", "scripts/migrate-json-to-mysql.js"]
+
   acha:
     build:
       context: .
@@ -18,8 +59,11 @@ services:
     networks:
       - database_network
       - proxy_network
+    depends_on:
+      acha-migrate:
+        condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:5001/api/health"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:5000/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3

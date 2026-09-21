@@ -75,3 +75,28 @@ GET /api/mysql/status
 ```
 
 para consultar o estado da última persistência.
+
+
+### Inicialização resiliente do schema
+
+Além do serviço `acha-schema`, o próprio ACHA verifica o `database/schema.sql` antes da primeira leitura do MySQL. Assim, se o Portainer/Compose não executar o serviço one-shot por alguma particularidade da stack, o ACHA ainda consegue criar as tabelas necessárias automaticamente.
+
+A operação é idempotente e não apaga dados existentes.
+
+
+## Primeiro deploy após a migração para MySQL
+
+O primeiro deploy de produção segue esta ordem:
+
+1. `acha-schema` cria/verifica as tabelas no banco MySQL `acha`;
+2. `acha-migrate` importa o `data/db.json` para as tabelas MySQL;
+3. `acha` somente inicia depois que a migração termina com sucesso.
+
+O arquivo `data/db.json` precisa existir no servidor no diretório `data/` ao lado do `docker-compose.yml`. Ele é montado somente no container de migração e em modo somente leitura.
+
+A migração usa `MIGRATION_MODE=initial`:
+- banco vazio → importa os dados;
+- banco já migrado → não limpa nem importa novamente;
+- banco parcialmente preenchido → interrompe o deploy para evitar perda de dados.
+
+Depois do primeiro deploy, o `acha-migrate` pode permanecer como serviço concluído; novos deploys não apagam o banco.

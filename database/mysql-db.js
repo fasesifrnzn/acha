@@ -38,7 +38,47 @@ async function createConnection() {
   return mysql.createConnection(mysqlConfig());
 }
 
+let schemaReadyPromise = null;
+
+async function ensureSchema() {
+  if (schemaReadyPromise) return schemaReadyPromise;
+
+  schemaReadyPromise = (async () => {
+    const fs = require('fs');
+    const path = require('path');
+    const schemaPath = path.join(__dirname, 'schema.sql');
+    if (!fs.existsSync(schemaPath)) {
+      throw new Error(`Schema MySQL não encontrado: ${schemaPath}`);
+    }
+
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    // O schema do ACHA é composto por CREATE/ALTER simples, sem procedures.
+    // Executamos cada instrução separadamente para manter compatibilidade com
+    // conexões MySQL que não habilitam multipleStatements.
+    const statements = schema
+      .split(/;[ \t]*(?:\r?\n|$)/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const conn = await createConnection();
+    try {
+      for (const statement of statements) {
+        await conn.query(statement);
+      }
+      console.log(`[MySQL] Schema verificado: ${statements.length} instruções processadas.`);
+    } finally {
+      await conn.end();
+    }
+  })().catch(err => {
+    schemaReadyPromise = null;
+    throw err;
+  });
+
+  return schemaReadyPromise;
+}
+
 async function readDatabase() {
+  await ensureSchema();
   const conn = await createConnection();
   try {
     const db = {

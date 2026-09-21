@@ -1,5 +1,54 @@
 # Changelog
 
+## 1.0.104 — primeiro deploy MySQL: schema + migração inicial
+
+- o Compose passa a executar três etapas na ordem: `acha-schema` → `acha-migrate` → `acha`;
+- a primeira migração usa `data/db.json` como fonte;
+- a migração inicial é protegida: se o banco já contiver dados completos, não limpa nem migra novamente;
+- se o banco estiver parcialmente preenchido, a migração é interrompida para evitar perda de dados;
+- o ACHA só inicia depois da conclusão bem-sucedida da migração inicial;
+- `acha-migrate` monta `./data` em modo somente leitura;
+- permanece o MySQL externo, sem serviço `mysql:` no Compose;
+- porta externa `5002` e porta interna `5000`.
+
+
+## 1.0.103 — inicialização resiliente do schema MySQL
+
+- o ACHA passa a verificar/criar o schema antes da primeira leitura do MySQL;
+- `readDatabase()` não depende mais exclusivamente do serviço `acha-schema` do Docker Compose;
+- mantém-se o serviço `acha-schema` como inicialização explícita do deploy;
+- corrige o cenário em que o container ACHA inicia com o banco criado, mas sem as tabelas `semestres` e demais tabelas do schema;
+- inicialização continua idempotente com `CREATE TABLE IF NOT EXISTS`.
+
+
+## 1.0.102 — compactação da tabela de projeção
+
+- grade de carga horária passa a ocupar toda a largura disponível;
+- colunas de semestre ficam compactadas para exibir o período completo em telas desktop;
+- rolagem horizontal é preservada apenas para telas menores, mantendo legibilidade;
+- tabela de ofertas recebe o mesmo comportamento de largura no desktop.
+
+
+## 1.0.100 — correção POCV/projeção
+
+- restauradas as funções auxiliares da POCV removidas durante a limpeza do pacote;
+- corrigidos `ensurePocvScenarios`, `buildInitialPocvScenario` e `normalizePocvScenario`;
+- restaurados `matrixDuration` e `cohortTurn` necessários à projeção;
+- corrige o erro `ensurePocvScenarios is not defined` na página de Cenários;
+- a Projeção volta a receber os cenários e ofertas reconstruídos do MySQL.
+
+
+## 1.0.99 — Docker + inicialização do schema MySQL
+
+- porta externa `5002` e porta interna `5000`;
+- serviço `acha-schema` para inicialização idempotente do schema;
+- MySQL continua sendo externo e compartilhado;
+- ACHA depende da conclusão bem-sucedida do inicializador de schema;
+- redes externas `database_network` e `proxy_network` mantidas;
+- nenhum dado é apagado pelo inicializador do schema;
+- adicionada documentação do fluxo de produção.
+
+
 ## 1.0.98 — migração seletiva de docentes
 
 - adicionada `npm run migrate:mysql:docentes`;
@@ -38,7 +87,45 @@
 - Docker/Compose passam a declarar `mysql2` e as variáveis `MYSQL_*` corretamente.
 - Versão HTTP/terminal atualizada para 1.0.95.
 
-# Changelog — ACHA
+# Changelog
+
+## 1.0.104 — primeiro deploy MySQL: schema + migração inicial
+
+- o Compose passa a executar três etapas na ordem: `acha-schema` → `acha-migrate` → `acha`;
+- a primeira migração usa `data/db.json` como fonte;
+- a migração inicial é protegida: se o banco já contiver dados completos, não limpa nem migra novamente;
+- se o banco estiver parcialmente preenchido, a migração é interrompida para evitar perda de dados;
+- o ACHA só inicia depois da conclusão bem-sucedida da migração inicial;
+- `acha-migrate` monta `./data` em modo somente leitura;
+- permanece o MySQL externo, sem serviço `mysql:` no Compose;
+- porta externa `5002` e porta interna `5000`.
+
+
+## 1.0.103 — inicialização resiliente do schema MySQL
+
+- o ACHA passa a verificar/criar o schema antes da primeira leitura do MySQL;
+- `readDatabase()` não depende mais exclusivamente do serviço `acha-schema` do Docker Compose;
+- mantém-se o serviço `acha-schema` como inicialização explícita do deploy;
+- corrige o cenário em que o container ACHA inicia com o banco criado, mas sem as tabelas `semestres` e demais tabelas do schema;
+- inicialização continua idempotente com `CREATE TABLE IF NOT EXISTS`.
+
+
+## 1.0.102 — compactação da tabela de projeção
+
+- grade de carga horária passa a ocupar toda a largura disponível;
+- colunas de semestre ficam compactadas para exibir o período completo em telas desktop;
+- rolagem horizontal é preservada apenas para telas menores, mantendo legibilidade;
+- tabela de ofertas recebe o mesmo comportamento de largura no desktop.
+
+
+## 1.0.100 — correção POCV/projeção
+
+- restauradas as funções auxiliares da POCV removidas durante a limpeza do pacote;
+- corrigidos `ensurePocvScenarios`, `buildInitialPocvScenario` e `normalizePocvScenario`;
+- restaurados `matrixDuration` e `cohortTurn` necessários à projeção;
+- corrige o erro `ensurePocvScenarios is not defined` na página de Cenários;
+- a Projeção volta a receber os cenários e ofertas reconstruídos do MySQL.
+ — ACHA
 
 ## 1.0.93
 - Define o MySQL como fonte primária de persistência.

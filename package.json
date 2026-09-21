@@ -1,6 +1,6 @@
 {
   "name": "acha",
-  "version": "1.0.98",
+  "version": "1.0.104",
   "private": true,
   "scripts": {
     "start": "node server.js",
@@ -9,7 +9,8 @@
     "test:mysql:read": "node scripts/test-mysql-read.js",
     "test:mysql:sync": "node scripts/test-mysql-sync.js",
     "backup:mysql": "node scripts/backup-mysql-to-json.js",
-    "migrate:mysql:docentes": "node scripts/migrate-teachers-to-mysql.js"
+    "migrate:mysql:docentes": "node scripts/migrate-teachers-to-mysql.js",
+    "init:mysql:schema": "node scripts/init-mysql-schema.js"
   },
   "dependencies": {
     "mysql2": "^3.14.3"
