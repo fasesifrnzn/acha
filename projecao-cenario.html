@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA — Projeção</title>
-<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.47"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.77"><script src="/app.js?v=1.0.77"></script>
 <style>
 .proj-page{max-width:1500px}
 .proj-controls{display:grid;grid-template-columns:150px 150px 150px minmax(170px,1fr) 170px auto;gap:10px;align-items:end}
@@ -73,7 +73,7 @@
 header h1{font-size:22px;font-weight:700}
 
 /* Projeção — leitura compacta */
-.proj-grid{grid-template-columns:220px repeat(var(--cols),minmax(92px,1fr));min-width:1040px}
+.proj-grid{grid-template-columns:180px repeat(var(--cols),minmax(0,1fr));min-width:0;width:100%}
 .proj-cell{padding:3px 5px}
 .proj-head{height:30px;min-height:30px;padding:3px 5px;font-size:9px}
 .proj-label{height:40px;min-height:40px;padding:3px 5px;gap:6px;align-items:center}
@@ -117,7 +117,7 @@ header h1{font-size:22px;font-weight:700}
 
 /* Mapa de ofertas: uma caixa independente para cada semestre */
 .offer-map-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
-.offer-map{display:grid;min-width:1040px;grid-template-columns:220px repeat(var(--cols),minmax(120px,1fr))}
+.offer-map{display:grid;min-width:0;width:100%;grid-template-columns:180px repeat(var(--cols),minmax(0,1fr))}
 .offer-map-cell{min-width:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);box-sizing:border-box}
 .offer-map-head{height:42px;padding:8px 9px;background:#f8fafc;color:#475569;font-size:11px;font-weight:800;text-align:center}
 .offer-map-head:first-child{text-align:left;position:sticky;left:0;z-index:4}
@@ -136,12 +136,18 @@ header h1{font-size:22px;font-weight:700}
 .offer-empty-mark{color:#cbd5e1;font-size:12px;text-align:center;padding-top:25px}
 .offer-legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:9px;color:var(--muted)}
 .offer-legend-item{display:inline-flex;align-items:center;gap:4px}.offer-legend-box{width:12px;height:10px;border-radius:3px;border:1px solid #cbd5e1;background:#f8fafc}.offer-legend-box.new{border-color:#0f766e;background:#ecfdf5}
+@media(max-width:1100px){
+ .offer-map{min-width:1040px;grid-template-columns:190px repeat(var(--cols),minmax(82px,1fr))}
+}
 @media(max-width:900px){
- .offer-map{min-width:900px;grid-template-columns:190px repeat(var(--cols),minmax(100px,1fr))}
+ .offer-map{min-width:900px;grid-template-columns:175px repeat(var(--cols),minmax(72px,1fr))}
 }
 
+@media(max-width:1100px){
+ .proj-grid{min-width:1040px;grid-template-columns:190px repeat(var(--cols),minmax(78px,1fr))}
+}
 @media(max-width:900px){
- .proj-grid{min-width:900px;grid-template-columns:190px repeat(var(--cols),minmax(78px,1fr))}
+ .proj-grid{min-width:900px;grid-template-columns:175px repeat(var(--cols),minmax(68px,1fr))}
  .proj-label .teacher-index{font-size:7px}
  .proj-sem .avg{font-size:11px}
 }

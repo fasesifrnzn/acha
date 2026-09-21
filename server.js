@@ -4,6 +4,8 @@ const path=require('path');
 const url=require('url');
 const crypto=require('crypto');
 const https=require('https');
+const { readDatabase: readMySQLDatabase } = require('./database/mysql-db');
+const { syncDatabase: syncMySQLDatabase } = require('./database/mysql-sync');
 
 // Carrega automaticamente o arquivo .env local, sem depender de dotenv.
 // O segredo do SUAP permanece no servidor e nunca é enviado ao navegador.
@@ -57,44 +59,22 @@ function httpRequestJson(method,target,headers={},bodyText=''){
 }
 
 async function suapUserRequest(accessToken){
-  console.log('========== SUAP DEBUG ==========');
-  console.log('Recebi access token no servidor:', !!accessToken);
-  console.log('Prefixo do token:', accessToken ? String(accessToken).slice(0,15)+'...' : '(vazio)');
-
-  // Rota oficial da API atual do SUAP para os dados do usuário autenticado.
-  // Confirmada na documentação: GET /api/rh/meus-dados/
   const endpoint='/api/rh/meus-dados/';
   const headers={'Authorization':`Bearer ${accessToken}`,'Accept':'application/json'};
-  console.log('Consultando SUAP:', endpoint);
-  try{
-    const result=await httpRequestJson('GET',`${SUAP_OAUTH.baseUrl}${endpoint}`,headers,'');
-    console.log('SUAP respondeu com sucesso em:', endpoint);
-    console.log('DADOS DO USUÁRIO SUAP:', JSON.stringify(result,null,2));
-    console.log('Matrícula:', result?.matricula || result?.vinculo?.matricula || '(não informada)');
-    console.log('Nome:', result?.nome_usual || result?.nome || result?.vinculo?.nome || '(não informado)');
-    console.log('E-mail:', result?.email || '(não informado)');
-    console.log('Campus:', result?.vinculo?.campus || '(não informado)');
-    console.log('Cargo:', result?.vinculo?.cargo || '(não informado)');
-    console.log('========== FIM SUAP DEBUG ==========');
-    return result;
-  }catch(e){
-    console.log('SUAP falhou em:', endpoint);
-    console.log('HTTP:', e.statusCode || '(sem status)');
-    console.log('Erro:', e.message);
-    console.log('========== FIM SUAP DEBUG ==========');
-    throw e;
-  }
+  return httpRequestJson('GET',`${SUAP_OAUTH.baseUrl}${endpoint}`,headers,'');
 }
 function normalizePersonName(v){return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ')}
 function authUserPayload(db,user){
   const teacher=(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId));
-  return {id:user.id,teacherId:user.teacherId,displayName:user.displayName,role:user.role,matricula:teacher?.matricula||user.suapMatricula||'',coordinatorCourseId:teacher?.coordinatorCourseId||'',coordinatorCourseName:teacher?.coordinatorCourseName||'',photoData:user.photoData||'',suapPhotoUrl:user.suapPhotoUrl||'',suapLinked:!!user.suapUsername};
+  return {id:user.id,teacherId:user.teacherId,displayName:user.displayName,role:user.role,matricula:teacher?.matricula||user.suapMatricula||'',coordinatorCourseId:teacher?.coordinatorCourseId||'',coordinatorCourseName:teacher?.coordinatorCourseName||'',managementArea:teacher?.managementArea||'',distributionGroups:teacher?.distributionGroups||[],photoData:user.photoData||'',suapPhotoUrl:user.suapPhotoUrl||'',suapLinked:!!user.suapUsername};
 }
 
 const ROOT=__dirname;
 // In production, set DB_FILE to a path on persistent storage (e.g. /var/data/db.json).
 // Locally, the database lives in ./data/db.json.
 const DB_FILE=process.env.DB_FILE || path.join(ROOT,'data','db.json');
+let dbCache=null;
+let dbReady=false;
 const PORT=process.env.PORT||3000;
 const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
 
@@ -120,7 +100,7 @@ const MANAGEMENT_FACTORS={
 };
 
 const PEDAGOGICAL_AREA_RESPONSIBILITIES={
-  'Ciências da Natureza':['Biologia','Física','Química'],
+  'Ciências da Natureza':['Biologia','Física','Química','Matemática'],
   'Linguagens e Humanidades':['Artes','Educação Física','Espanhol','Filosofia','Geografia','História','Inglês','Português','Sociologia']
 };
 function applyPedagogicalAreaResponsibility(teacher){
@@ -189,23 +169,36 @@ function applyTeacherFactor(teacher){
   teacher.classFactor=Number((teacher.regimePct*teacher.managementPct*teacher.leavePct).toFixed(2));
   return teacher;
 }
-function readDB(){ensureDB();const db=JSON.parse(fs.readFileSync(DB_FILE,'utf8'));(db.teachers||[]).forEach(applyTeacherFactor);return db}
+function readDB(){
+  if(!dbReady || !dbCache) throw new Error('Banco MySQL ainda não foi inicializado.');
+  (dbCache.teachers||[]).forEach(applyTeacherFactor);
+  ensureWorkflow(dbCache);
+  return dbCache;
+}
 
 const PAGE_CATALOG=[
-  ['dashboard.html','Início'],['index.html','Oferta'],['pocv.html','Cenários'],['alocacao.html','Alocação'],['projecao-cenario.html','Projeção'],['indicadores.html','Indicadores'],['matrizes.html','Matrizes'],['turmas.html','Turmas'],['docentes.html','Docentes'],['grupos.html','Grupos'],['regras.html','Regras'],['variaveis.html','Variáveis'],['demandas.html','Demandas avulsas'],['backup.html','Backup'],['perfil.html','Meu perfil'],['acessos.html','Gerenciamento de acesso']
+  ['dashboard.html','Início'],['index.html','Oferta'],['pocv.html','Cenários'],['alocacao.html','Alocação'],['projecao-cenario.html','Projeção'],['indicadores.html','Indicadores'],['matrizes.html','Matrizes'],['turmas.html','Turmas'],['docentes.html','Docentes'],['grupos.html','Grupos'],['regras.html','Regras'],['variaveis.html','Variáveis'],['demandas.html','Demandas avulsas'],['backup.html','Backup'],['perfil.html','Meu perfil'],['acessos.html','Gerenciamento de acesso'],['pendencias.html','Pendências'],['notificacoes.html','Notificações']
 ];
 const PAGE_IDS=new Set(PAGE_CATALOG.map(([p])=>p));
 const PERMISSION_LEVELS=new Set(['none','view','edit']);
 const ACCESS_DEFAULTS={
   diretor_geral:{label:'Diretor Geral',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'edit'])),semesterFrom:'2024.1',semesterTo:'2034.2',features:{'oferta.previsao':true}},
   diretoria_academica:{label:'Diretoria Acadêmica',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'edit'])),semesterFrom:'2024.1',semesterTo:'2034.2',features:{'oferta.previsao':true}},
-  coordenador_curso:{label:'Coordenador de Curso',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'none'])),semesterFrom:'2026.1',semesterTo:'2030.2',features:{'oferta.previsao':false}}
+  coordenador_curso:{label:'Coordenador de Curso',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'none'])),semesterFrom:'2026.1',semesterTo:'2030.2',features:{'oferta.previsao':false}},
+  coordenador_area:{label:'Coordenação de Área',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'none'])),semesterFrom:'2024.1',semesterTo:'2034.2',features:{'oferta.previsao':false}}
 };
 ACCESS_DEFAULTS.coordenador_curso.pages['dashboard.html']='edit';
 ACCESS_DEFAULTS.coordenador_curso.pages['index.html']='edit';
 ACCESS_DEFAULTS.coordenador_curso.pages['alocacao.html']='edit';
 ACCESS_DEFAULTS.coordenador_curso.pages['matrizes.html']='edit';
 ACCESS_DEFAULTS.coordenador_curso.pages['turmas.html']='edit';
+ACCESS_DEFAULTS.coordenador_curso.pages['demandas.html']='edit';
+ACCESS_DEFAULTS.coordenador_curso.pages['notificacoes.html']='edit';
+['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html','perfil.html','notificacoes.html'].forEach(p=>ACCESS_DEFAULTS.coordenador_area.pages[p]='view');
+ACCESS_DEFAULTS.diretor_geral.pages['pendencias.html']='edit';
+ACCESS_DEFAULTS.diretor_geral.pages['notificacoes.html']='edit';
+ACCESS_DEFAULTS.diretoria_academica.pages['pendencias.html']='edit';
+ACCESS_DEFAULTS.diretoria_academica.pages['notificacoes.html']='edit';
 function accessConfig(db){
   const src=db?.accessControl?.profiles||{};
   const out={version:1,profiles:{}};
@@ -233,10 +226,38 @@ function semesterInAccessRange(db,user,semester){
   if(idx==null)return false; return (from==null||idx>=from)&&(to==null||idx<=to);
 }
 function featureAccess(db,user,key){const a=roleAccess(db,user);return !!(a?.features?.[key]);}
-const ROLE_PERMISSIONS={diretor_geral:'all',diretoria_academica:'all',coordenador_curso:['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']};
+const ROLE_PERMISSIONS={diretor_geral:'all',diretoria_academica:'all',coordenador_curso:['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html'],coordenador_area:['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']};
 const COORDINATOR_PAGES=new Set(ROLE_PERMISSIONS.coordenador_curso);
 const sessions=new Map();
 const suapStates=new Map();
+function body(req){
+  return new Promise((resolve,reject)=>{
+    let raw='';
+    req.on('data',chunk=>{
+      raw+=chunk;
+      if(raw.length>5_000_000){
+        reject(new Error('Corpo da requisição muito grande.'));
+        req.destroy();
+      }
+    });
+    req.on('end',()=>{
+      if(!raw.trim()) return resolve({});
+      try{ resolve(JSON.parse(raw)); }
+      catch(e){ reject(new Error('JSON inválido no corpo da requisição.')); }
+    });
+    req.on('error',reject);
+  });
+}
+function send(res,status,payload){
+  const body=JSON.stringify(payload===undefined?null:payload);
+  res.writeHead(status,{
+    'Content-Type':'application/json; charset=utf-8',
+    'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma':'no-cache',
+    'Expires':'0'
+  });
+  res.end(body);
+}
 function redirect(res,status,location){res.writeHead(status,{Location:location,'Cache-Control':'no-store'});res.end();}
 function hashPassword(value){return crypto.createHash('sha256').update(String(value??''),'utf8').digest('hex')}
 function firstLast(name){
@@ -248,6 +269,8 @@ function roleForTeacher(t){
   if(m==='Direção-Geral') return 'diretor_geral';
   if(m==='Direção Acadêmica') return 'diretoria_academica';
   if(m==='Coordenação de Curso') return 'coordenador_curso';
+  if(m.startsWith('Assessor Pedagógico de Área:')) return 'coordenador_area';
+  if(m.startsWith('Assessor Pedagógico de Área:')) return 'coordenador_area';
   return null;
 }
 function ensureAuthUsers(db){
@@ -294,87 +317,6 @@ function coordinatorMatrixIds(db,user){
   if(!courseId)return [];
   return (db.data?.courses||[]).filter(c=>String(c.course_id||'').trim()===courseId).map(c=>String(c.matrix));
 }
-function normalizeOfferTurns(db){
-  let changed=false;
-  db.offers??={};
-  Object.entries(db.offers).forEach(([semester,rows])=>{
-    Object.entries(rows||{}).forEach(([key,offer])=>{
-      const parts=String(key).split('|');
-      const matrix=Number(parts[0]), period=Number(parts[1]), seq=Number(parts[2]);
-      if(!Number.isFinite(matrix)||!Number.isFinite(period)||!Number.isFinite(seq)||!offer)return;
-      const expected=classTurn(db,matrix,period,seq);
-      // O turno da oferta regular nunca é uma escolha independente da disciplina:
-      // ele pertence à turma (matriz + período + sequência). Corrige inclusive
-      // registros antigos que tenham ficado salvos como "A definir" ou com outro turno.
-      if(expected && expected!=='A definir' && offer.turn!==expected){
-        offer.turn=expected;
-        changed=true;
-      }
-    });
-  });
-  return changed;
-}
-function filterDbForUser(db,user){
-  if(user.role!=='coordenador_curso')return db;
-  const ids=new Set(coordinatorMatrixIds(db,user));
-  const out=JSON.parse(JSON.stringify(db));
-  out.data.courses=(db.data?.courses||[]).filter(c=>ids.has(String(c.matrix)));
-  out.data.matrices={}; ids.forEach(id=>{if(db.data?.matrices?.[id])out.data.matrices[id]=db.data.matrices[id]});
-  out.data.semesters={};
-  Object.entries(db.data?.semesters||{}).forEach(([sem,rows])=>{
-    out.data.semesters[sem]=(rows||[]).filter(r=>ids.has(String(r.matrix)));
-  });
-  out.turn={}; ids.forEach(id=>{if(db.turn?.[id])out.turn[id]=db.turn[id]});
-  const groups=new Set(); Object.values(out.data.matrices).forEach(m=>(m.disciplines||[]).forEach(d=>{if(d.group)groups.add(String(d.group).trim())}));
-  out.teachers=(db.teachers||[]).filter(t=>groups.has(String(t.group||'').trim()) || String(t.id)===String(user.teacherId));
-  out.offers={}; Object.entries(db.offers||{}).forEach(([sem,rows])=>{out.offers[sem]={};Object.entries(rows||{}).forEach(([key,val])=>{if(ids.has(String(key).split('|')[0]))out.offers[sem][key]=val})});
-  out.extraOffers={}; Object.entries(db.extraOffers||{}).forEach(([sem,rows])=>{out.extraOffers[sem]=(rows||[]).filter(v=>{
-    const course=String(v.course||'').trim(); return !course || ids.has(String((db.data?.courses||[]).find(c=>String(c.course_id||'')===course)?.matrix));
-  })});
-  out.pocvScenarios=[];
-  out.authUsers=[user];
-  out.authUser={id:user.id,teacherId:user.teacherId,displayName:user.displayName,role:user.role,coordinatorCourseId:(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId))?.coordinatorCourseId||''};
-  return out;
-}
-
-function filterDbByAccessWindow(db,user){
-  if(!user || user.role!=='coordenador_curso') return db;
-  const out=db;
-  for(const key of Object.keys(out.data?.semesters||{})) if(!semesterInAccessRange(db,user,key)) delete out.data.semesters[key];
-  for(const key of Object.keys(out.offers||{})) if(!semesterInAccessRange(db,user,key)) delete out.offers[key];
-  for(const key of Object.keys(out.extraOffers||{})) if(!semesterInAccessRange(db,user,key)) delete out.extraOffers[key];
-  return out;
-}
-function filterDbForUserWithAccess(db,user){
-  return filterDbByAccessWindow(filterDbForUser(db,user),user);
-}
-
-function writeDB(db){
-  ensureDB();
-  const tmp=DB_FILE+'.tmp';
-  fs.writeFileSync(tmp,JSON.stringify(db,null,2),'utf8');
-  fs.renameSync(tmp,DB_FILE);
-}
-function send(res,status,data,type='application/json; charset=utf-8'){
-  res.writeHead(status,{'Content-Type':type,'Cache-Control':'no-store','Access-Control-Allow-Origin':'*'});
-  res.end(typeof data==='string'?data:JSON.stringify(data));
-}
-function body(req){return new Promise((resolve,reject)=>{let b='';req.on('data',c=>{b+=c;if(b.length>3e6)reject(new Error('payload too large'))});req.on('end',()=>{try{resolve(b?JSON.parse(b):{})}catch(e){reject(e)}});req.on('error',reject)})}
-
-function semesterIndex(s){
-  const m=String(s||'').match(/^(\d{4})\.(1|2)$/);
-  return m ? Number(m[1])*2 + Number(m[2])-1 : NaN;
-}
-function semesterFromIndex(i){
-  const n=Number(i);
-  if(!Number.isFinite(n)) return '';
-  const year=Math.floor(n/2), part=n%2+1;
-  return `${year}.${part}`;
-}
-function matrixDuration(matrix){
-  const nums=(matrix?.disciplines||[]).flatMap(d=>Object.keys(d?.periods||{}).map(Number).filter(Number.isFinite));
-  return Math.max(1,Number(matrix?.duration)||0,...nums,1);
-}
 function classTurn(db,matrixId,period,seq){
   const findTurn=(id)=>{
     const t=db.turn?.[String(id)]||{};
@@ -395,6 +337,21 @@ function classTurn(db,matrixId,period,seq){
     .sort((a,b)=>Number(b)-Number(a));
   for(const id of ids){const v=findTurn(id);if(v)return v;}
   return 'A definir';
+}
+
+function semesterIndex(s){
+  const m=String(s||'').match(/^(\d{4})\.(1|2)$/);
+  return m ? Number(m[1])*2 + Number(m[2])-1 : NaN;
+}
+function semesterFromIndex(i){
+  const n=Number(i);
+  if(!Number.isFinite(n)) return '';
+  const year=Math.floor(n/2), part=n%2+1;
+  return `${year}.${part}`;
+}
+function matrixDuration(matrix){
+  const nums=(matrix?.disciplines||[]).flatMap(d=>Object.keys(d?.periods||{}).map(Number).filter(Number.isFinite));
+  return Math.max(1,Number(matrix?.duration)||0,...nums,1);
 }
 function cohortTurn(courseId,startSemester,fallback){
   const id=String(courseId||'');
@@ -555,9 +512,354 @@ function ensurePocvScenarios(db){
   return db.pocvScenarios;
 }
 
+function normalizeOfferTurns(db){
+  let changed=false;
+  db.offers??={};
+  Object.entries(db.offers).forEach(([semester,rows])=>{
+    Object.entries(rows||{}).forEach(([key,offer])=>{
+      const parts=String(key).split('|');
+      const matrix=Number(parts[0]), period=Number(parts[1]), seq=Number(parts[2]);
+      if(!Number.isFinite(matrix)||!Number.isFinite(period)||!Number.isFinite(seq)||!offer)return;
+      const expected=classTurn(db,matrix,period,seq);
+      // O turno da oferta regular nunca é uma escolha independente da disciplina:
+      // ele pertence à turma (matriz + período + sequência). Corrige inclusive
+      // registros antigos que tenham ficado salvos como "A definir" ou com outro turno.
+      if(expected && expected!=='A definir' && offer.turn!==expected){
+        offer.turn=expected;
+        changed=true;
+      }
+    });
+  });
+  return changed;
+}
+function filterDbForArea(db,user){
+  const teacher=(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId));
+  const area=String(teacher?.managementArea||'').trim();
+  const groups=new Set((teacher?.distributionGroups||db.pedagogicalAreaResponsibilities?.[area]?.groups||[]).map(x=>String(x).trim()).filter(Boolean));
+  const out=JSON.parse(JSON.stringify(db)); out.data=out.data||{}; out.data.matrices={};
+  const allowedMatrices=new Set(), disciplineMap=new Map();
+  Object.entries(db.data?.matrices||{}).forEach(([id,m])=>{const kept=[];const map=new Map();(m?.disciplines||[]).forEach((d,oldIndex)=>{if(groups.has(String(d?.group||'').trim())){map.set(String(oldIndex),kept.length);kept.push(d)}});if(!kept.length)return;out.data.matrices[id]={...m,disciplines:kept};allowedMatrices.add(String(id));disciplineMap.set(String(id),map);});
+  out.data.courses=(db.data?.courses||[]).filter(c=>allowedMatrices.has(String(c.matrix)));
+  out.data.semesters={};Object.entries(db.data?.semesters||{}).forEach(([sem,rows])=>{const rr=(rows||[]).filter(r=>allowedMatrices.has(String(r.matrix)));if(rr.length)out.data.semesters[sem]=rr;});
+  out.turn={};allowedMatrices.forEach(id=>{if(db.turn?.[id])out.turn[id]=db.turn[id]});
+  out.teachers=(db.teachers||[]).filter(t=>groups.has(String(t.group||'').trim())||String(t.id)===String(user.teacherId));
+  out.offers={};Object.entries(db.offers||{}).forEach(([sem,rows])=>{const rr={};Object.entries(rows||{}).forEach(([key,val])=>{const parts=String(key).split('|'),matrix=parts[0],oldDi=String(parts[3]||'').split('::')[0],newDi=disciplineMap.get(matrix)?.get(oldDi);if(allowedMatrices.has(matrix)&&newDi!==undefined)rr[[parts[0],parts[1],parts[2],newDi].join('|')+(String(parts[3]||'').includes('::')?`::${String(parts[3]).split('::').slice(1).join('::')}`:'')]=val});if(Object.keys(rr).length)out.offers[sem]=rr});
+  out.extraOffers={};Object.entries(db.extraOffers||{}).forEach(([sem,rows])=>{const rr=(rows||[]).filter(v=>groups.has(String(v?.group||'').trim()));if(rr.length)out.extraOffers[sem]=rr});
+  out.pocvScenarios=[];out.authUsers=[user];out.authUser={id:user.id,teacherId:user.teacherId,displayName:user.displayName,role:user.role,managementArea:area,distributionGroups:[...groups]};return out;
+}
+
+function filterDbForUser(db,user){
+  if(user.role==='coordenador_area')return filterDbForArea(db,user);
+  if(user.role!=='coordenador_curso')return db;
+  const ids=new Set(coordinatorMatrixIds(db,user));
+  const out=JSON.parse(JSON.stringify(db));
+  out.data.courses=(db.data?.courses||[]).filter(c=>ids.has(String(c.matrix)));
+  out.data.matrices={}; ids.forEach(id=>{if(db.data?.matrices?.[id])out.data.matrices[id]=db.data.matrices[id]});
+  out.data.semesters={};
+  Object.entries(db.data?.semesters||{}).forEach(([sem,rows])=>{
+    out.data.semesters[sem]=(rows||[]).filter(r=>ids.has(String(r.matrix)));
+  });
+  out.turn={}; ids.forEach(id=>{if(db.turn?.[id])out.turn[id]=db.turn[id]});
+  const groups=new Set(); Object.values(out.data.matrices).forEach(m=>(m.disciplines||[]).forEach(d=>{if(d.group)groups.add(String(d.group).trim())}));
+  out.teachers=(db.teachers||[]).filter(t=>groups.has(String(t.group||'').trim()) || String(t.id)===String(user.teacherId));
+  out.offers={}; Object.entries(db.offers||{}).forEach(([sem,rows])=>{out.offers[sem]={};Object.entries(rows||{}).forEach(([key,val])=>{if(ids.has(String(key).split('|')[0]))out.offers[sem][key]=val})});
+  out.extraOffers={}; Object.entries(db.extraOffers||{}).forEach(([sem,rows])=>{out.extraOffers[sem]=(rows||[]).filter(v=>{
+    const course=String(v.course||'').trim(); return !course || ids.has(String((db.data?.courses||[]).find(c=>String(c.course_id||'')===course)?.matrix));
+  })});
+  out.pocvScenarios=[];
+  out.authUsers=[user];
+  out.authUser={id:user.id,teacherId:user.teacherId,displayName:user.displayName,role:user.role,coordinatorCourseId:(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId))?.coordinatorCourseId||''};
+  return out;
+}
+
+function filterDbByAccessWindow(db,user){
+  if(!user || !['coordenador_curso','coordenador_area'].includes(user.role)) return db;
+  const out=db;
+  for(const key of Object.keys(out.data?.semesters||{})) if(!semesterInAccessRange(db,user,key)) delete out.data.semesters[key];
+  for(const key of Object.keys(out.offers||{})) if(!semesterInAccessRange(db,user,key)) delete out.offers[key];
+  for(const key of Object.keys(out.extraOffers||{})) if(!semesterInAccessRange(db,user,key)) delete out.extraOffers[key];
+  return out;
+}
+function filterDbForUserWithAccess(db,user){const out=filterDbByAccessWindow(filterDbForUser(db,user),user);return annotateValidation(db,user,out);}
+
+function ensureWorkflow(db){db.approvals=Array.isArray(db.approvals)?db.approvals:[];db.notifications=Array.isArray(db.notifications)?db.notifications:[];}
+function userDisplay(db,id){return (db.authUsers||[]).find(x=>String(x.id)===String(id))?.displayName||'Usuário';}
+function coordinatorOwnsOffer(db,user,semester,key){return semesterInAccessRange(db,user,semester)&&coordinatorMatrixIds(db,user).includes(String(key).split('|')[0]);}
+function synthesizeOfferFromKey(db,semester,key){
+  const parts=String(key||'').split('|');
+  if(parts.length<4)return null;
+  const matrix=String(parts[0]),period=String(parts[1]),seq=String(parts[2]),di=Number(String(parts[3]).split('::')[0]);
+  if(!Number.isFinite(di))return null;
+  const cl=(db.data?.semesters?.[semester]||[]).find(c=>String(c.matrix)===matrix&&String(c.period)===period&&String(c.seq)===seq);
+  const m=db.data?.matrices?.[matrix]; const d=m?.disciplines?.[di];
+  if(!cl||!m||!d)return null;
+  const course=(db.data?.courses||[]).find(c=>String(c.matrix)===matrix)?.name||m.name||'';
+  const baseCh=d.periods?.[String(period)];
+  if(baseCh==null)return null;
+  return {name:d.name||'',ch:Number(baseCh)||0,group:d.group||'',turn:classTurn(db,Number(matrix),Number(period),Number(seq))||'A definir',course};
+}
+function resolvePreviewOffer(db,semester,x){
+  const rows=db.offers?.[semester]||{};
+  const candidates=[];
+  const add=(k)=>{if(k&&rows[k]&& !candidates.includes(k))candidates.push(k)};
+  add(x?.key); add(x?.previewKey); add(x?.originalKey);
+  const src=x?.source||{};
+  const matrix=String(src.matrix||'').trim(), period=String(src.period||'').trim(), seq=String(src.seq||'').trim(), di=String(src.disciplineIndex||'').split('::')[0].trim();
+  if(matrix&&period&&seq&&di){add(`${matrix}|${period}|${seq}|${di}`);}
+  const prefix=matrix&&period&&seq?`${matrix}|${period}|${seq}|`:'';
+  if(prefix){
+    const name=String(src.name||'').trim().toLowerCase();
+    for(const [k,v] of Object.entries(rows)){
+      if(!String(k).startsWith(prefix))continue;
+      const kdi=String(k).split('|')[3].split('::')[0];
+      if(di&&kdi===di){add(k);continue;}
+      if(name){
+        const d=db.data?.matrices?.[matrix]?.disciplines?.[Number(kdi)];
+        if(String(d?.name||'').trim().toLowerCase()===name)add(k);
+      }
+    }
+  }
+  // Último recurso: quando a visualização remapeou os índices das disciplinas,
+  // procure pela turma e pelo nome da disciplina na matriz original.
+  const srcName=String(src.name||'').trim().toLowerCase();
+  if(matrix&&period&&seq&&srcName){
+    for(const [k,v] of Object.entries(rows)){
+      const kp=String(k).split('|');
+      if(String(kp[0])!==matrix||String(kp[1])!==period||String(kp[2])!==seq)continue;
+      const kdi=Number(String(kp[3]||'').split('::')[0]);
+      const d=db.data?.matrices?.[matrix]?.disciplines?.[kdi];
+      if(String(d?.name||'').trim().toLowerCase()===srcName)add(k);
+    }
+  }
+  for(const k of candidates){if(rows[k])return {key:k,current:rows[k]};}
+  // Muitas ofertas são geradas a partir da matriz e só passam a existir em
+  // db.offers quando alguém as confirma/edita. No modo de teste isso também
+  // precisa ser uma oferta válida, não um 404.
+  const direct=String(x?.originalKey||x?.key||x?.previewKey||'');
+  const synthesized=synthesizeOfferFromKey(db,semester,direct);
+  if(synthesized)return {key:direct,current:synthesized};
+  const srcKey=matrix&&period&&seq&&di?`${matrix}|${period}|${seq}|${di}`:'';
+  if(srcKey){const generated=synthesizeOfferFromKey(db,semester,srcKey);if(generated)return {key:srcKey,current:generated};}
+  return null;
+}
+function approvalTargetLabel(db,a){if(String(a.type||'').startsWith('offer_')){const raw=String(a.targetKey||'').split('|'),p3=String(raw[3]||'').split('::')[0],m=db.data?.matrices?.[raw[0]]||{},d=m.disciplines?.[Number(p3)],course=(db.data?.courses||[]).find(c=>String(c.matrix)===String(raw[0]))?.name||a.snapshot?.course||a.course||'Oferta';return `${course} · ${d?.name||a.snapshot?.name||a.targetKey||'Oferta'} · ${a.semester}`;}return `${a.proposed?.name||a.snapshot?.name||'Demanda avulsa'} · ${a.semester}`;}
+function createApproval(db,user,fields){const a={id:`ap${Date.now()}-${Math.random().toString(36).slice(2,7)}`,status:'pending',requesterId:user.id,requesterName:user.displayName,requesterRole:user.role,createdAt:new Date().toISOString(),...fields};db.approvals.push(a);return a;}
+function pushNotification(db,userId,title,message,approvalId){db.notifications.push({id:`nt${Date.now()}-${Math.random().toString(36).slice(2,7)}`,userId,title,message,approvalId:String(approvalId||''),read:false,createdAt:new Date().toISOString()});}
+function notifyDirectors(db,title,message,approvalId){ensureWorkflow(db);(db.authUsers||[]).filter(u=>u.role==='diretor_geral'||u.role==='diretoria_academica').forEach(u=>pushNotification(db,u.id,title,message,approvalId));}
+function applyApproval(db,a){
+  if(a.type==='offer_confirm'||a.type==='offer_change'){
+    db.offers??={};db.offers[a.semester]??={};const cur=db.offers[a.semester][a.targetKey]||{};
+    if(a.type==='offer_change'&&a.action==='delete'){delete db.offers[a.semester][a.targetKey];db.offerDeletions??={};db.offerDeletions[a.semester]??={};db.offerDeletions[a.semester][a.targetKey]={approvalId:a.id,deletedAt:new Date().toISOString(),deletedBy:a.decidedById,snapshot:a.snapshot||null};}
+    else{
+      // A aprovação da Direção deve materializar a oferta mesmo quando ela
+      // ainda não existia em db.offers (ofertas geradas pela matriz).
+      const existing=db.offers[a.semester]?.[a.targetKey];
+      const seed=existing||a.snapshot||synthesizeOfferFromKey(db,a.semester,a.targetKey)||{};
+      if(!existing && Object.keys(seed).length) db.offers[a.semester][a.targetKey]=JSON.parse(JSON.stringify(seed));
+      const requestedTurn=String(a.changes?.turn||'').trim();
+      const scope=String(a.changes?.turnScope||'offer');
+      const applyOne=(key)=>{
+        const base=db.offers[a.semester]?.[key]||a.snapshot||synthesizeOfferFromKey(db,a.semester,key)||{};
+        const next={...base,...(a.changes||{})};
+        delete next.turnScope;
+        const p=String(key).split('|'),expected=classTurn(db,Number(p[0]),Number(p[1]),Number(p[2]));
+        if(scope!=='class' && expected&&expected!=='A definir' && !requestedTurn) next.turn=expected;
+        if(requestedTurn) next.turn=requestedTurn;
+        const canonicalCourse=(db.data?.courses||[]).find(c=>String(c.matrix)===String(p[0]))?.name;
+        if(canonicalCourse) next.course=canonicalCourse;
+        const optChoices=Array.isArray(next.optionalChoices)?next.optionalChoices.filter(Boolean):(next.optionalChoice?[next.optionalChoice]:[]);
+        if(optChoices.length){ next.name=optChoices.join(' + '); next.optionalChoices=optChoices; next.optionalChoice=optChoices.length===1?optChoices[0]:''; }
+        next.validationStatus='approved';next.validationSource='director_approval';next.validationApprovalId=a.id;next.validationUpdatedAt=new Date().toISOString();next.validationBy=a.decidedById;
+        db.offers[a.semester][key]=next;
+      };
+      const target=String(a.targetKey), parts=target.split('|');
+      if(scope==='class' && requestedTurn){
+        const prefix=`${parts[0]}|${parts[1]}|${parts[2]}|`;
+        Object.keys(db.offers[a.semester]||{}).filter(k=>String(k).startsWith(prefix)).forEach(applyOne);
+      }else applyOne(target);
+    }
+  }else if(a.type==='offer_duplicate'){
+    db.offers??={};db.offers[a.semester]??={};
+    const d=a.duplicate||{}, source=String(a.targetKey||'').split('|'), matrix=String(d.matrix||source[0]), period=String(d.period||source[1]), seq=String(d.seq||source[2]), di=String(d.disciplineIndex||source[3]);
+    const qty=Math.max(2,Math.min(5,Number(d.quantity)||2));
+    const sourceKey=String(a.targetKey||'');
+    const sourceBase=db.offers[a.semester]?.[sourceKey]||a.snapshot||synthesizeOfferFromKey(db,a.semester,sourceKey)||{};
+    const sourceParts=sourceKey.split('|');
+    const canonicalCourse=(db.data?.courses||[]).find(c=>String(c.matrix)===String(sourceParts[0]))?.name;
+    const confirmedSource={...sourceBase};
+    if(canonicalCourse) confirmedSource.course=canonicalCourse;
+    confirmedSource.validationStatus='approved';confirmedSource.validationSource='director_approval';confirmedSource.validationApprovalId=a.id;confirmedSource.validationUpdatedAt=new Date().toISOString();confirmedSource.validationBy=a.decidedById;
+    db.offers[a.semester][sourceKey]=confirmedSource;
+    // quantity representa o total final de ofertas, incluindo a original.
+    for(let n=0;n<qty-1;n++){
+      const id=`${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+      const key=`${matrix}|${period}|${seq}|${di}::dup::${id}`;
+      const base=db.offers[a.semester]?.[a.targetKey]||a.snapshot||{};
+      const next={...base,...(a.changes||{}),duplicateOf:a.targetKey,duplicateRequestId:a.id,validationStatus:'approved',validationUpdatedAt:new Date().toISOString(),validationBy:a.decidedById};
+      const expected=classTurn(db,Number(matrix),Number(period),Number(seq));if(expected&&expected!=='A definir')next.turn=expected;
+      const dupCourse=(db.data?.courses||[]).find(c=>String(c.matrix)===matrix)?.name;if(dupCourse)next.course=dupCourse;
+      delete next.notes; db.offers[a.semester][key]=next;
+    }
+  }else if(a.type==='extra_create'){
+    db.extraOffers??={};db.extraOffers[a.semester]??=[];const x={...a.proposed,id:Math.max(0,...db.extraOffers[a.semester].map(v=>Number(v.id)||0))+1,createdAt:new Date().toISOString(),validationStatus:'approved',validationUpdatedAt:new Date().toISOString(),validationBy:a.decidedById};db.extraOffers[a.semester].push(x);
+  }else if(a.type==='extra_change'){
+    const arr=db.extraOffers?.[a.semester]||[],i=arr.findIndex(v=>String(v.id)===String(a.targetId));if(i>=0)arr[i]={...arr[i],...(a.changes||{}),validationStatus:'approved',validationUpdatedAt:new Date().toISOString(),validationBy:a.decidedById};
+  }else if(a.type==='extra_delete'){if(db.extraOffers?.[a.semester])db.extraOffers[a.semester]=db.extraOffers[a.semester].filter(v=>String(v.id)!==String(a.targetId));}
+}
+function annotateValidation(db,user,out){
+  const isDir=user&&['diretor_geral','diretoria_academica'].includes(user.role);
+  const visible=isDir?db.approvals:db.approvals.filter(a=>String(a.requesterId)===String(user.id));
+  out.offers??={};
+  const latest=new Map();
+  visible.filter(a=>a.targetKey&&a.semester&&String(a.type).startsWith('offer_')).forEach(a=>{
+    const key=`${a.semester}\u001f${String(a.targetKey).split('::')[0]}`;
+    const prev=latest.get(key);
+    const ta=String(a.updatedAt||a.decidedAt||a.createdAt||'');
+    const tp=String(prev?.updatedAt||prev?.decidedAt||prev?.createdAt||'');
+    if(!prev||ta>=tp) latest.set(key,a);
+  });
+  latest.forEach((a,composite)=>{
+    const [semester,base]=composite.split('\u001f');
+    out.offers[semester]??={};
+    const targets=Object.keys(out.offers[semester]).filter(k=>String(k).split('::')[0]===base);
+    targets.forEach(k=>{
+      const v=out.offers[semester][k];
+      if(!v)return;
+      v.validationStatus=a.status;
+      v.validationApprovalId=a.id;
+      v.validationNote=a.decisionNote||'';
+      v.validationApprovalType=a.type;
+      v.validationAction=a.action||'';
+    });
+  });
+  out.offerDeletions=db.offerDeletions||{};out.approvals=visible;return out;
+}
+let mysqlSyncRunning=false;
+let mysqlSyncPending=null;
+let mysqlSyncLastStatus={state:'idle',updatedAt:null,error:null,attempt:null};
+const mysqlSyncWaiters=[];
+function notifyMySQLSyncWaiters(){
+  if(mysqlSyncRunning||mysqlSyncPending) return;
+  while(mysqlSyncWaiters.length) mysqlSyncWaiters.shift()();
+}
+function waitForMySQLSync(){
+  if(!mysqlSyncRunning&&!mysqlSyncPending) return Promise.resolve();
+  return new Promise(resolve=>mysqlSyncWaiters.push(resolve));
+}
+
+function cloneDb(db){ return JSON.parse(JSON.stringify(db)); }
+
+function backupJSONSnapshot(db, label='auto'){
+  const dataDir=path.dirname(DB_FILE);
+  if(!fs.existsSync(dataDir))fs.mkdirSync(dataDir,{recursive:true});
+  const backupDir=path.join(dataDir,'backups');
+  if(!fs.existsSync(backupDir))fs.mkdirSync(backupDir,{recursive:true});
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const target=path.join(backupDir,`db-${label}-${stamp}.json`);
+  fs.writeFileSync(target,JSON.stringify(db,null,2),'utf8');
+  const tmp=DB_FILE+'.tmp';
+  fs.writeFileSync(tmp,JSON.stringify(db,null,2),'utf8');
+  fs.renameSync(tmp,DB_FILE);
+  return target;
+}
+
+function queueMySQLSync(db){
+  try{ mysqlSyncPending=cloneDb(db); }catch(e){
+    mysqlSyncLastStatus={state:'error',updatedAt:new Date().toISOString(),error:e.message,attempt:null};
+    return;
+  }
+  if(mysqlSyncRunning) return;
+  mysqlSyncRunning=true;
+  mysqlSyncLastStatus={state:'pending',updatedAt:new Date().toISOString(),error:null,attempt:null};
+  (async()=>{
+    while(mysqlSyncPending){
+      const snapshot=mysqlSyncPending;
+      mysqlSyncPending=null;
+      let ok=false,lastErr=null;
+      for(let attempt=1;attempt<=3&&!ok;attempt++){
+        try{
+          mysqlSyncLastStatus={state:'syncing',updatedAt:new Date().toISOString(),error:null,attempt};
+          await syncMySQLDatabase(snapshot);
+          ok=true;
+          backupJSONSnapshot(snapshot,'auto');
+          mysqlSyncLastStatus={state:'ok',updatedAt:new Date().toISOString(),error:null,attempt};
+        }catch(e){
+          lastErr=e;
+          if(attempt<3) await new Promise(r=>setTimeout(r,500*attempt));
+        }
+      }
+      if(!ok){
+        mysqlSyncLastStatus={state:'error',updatedAt:new Date().toISOString(),error:lastErr?.message||String(lastErr),attempt:3};
+        console.error('Persistência MySQL falhou; estado MySQL preservado e backup JSON não atualizado:',lastErr?.message||lastErr);
+        try{ dbCache=await readMySQLDatabase(); (dbCache.teachers||[]).forEach(applyTeacherFactor); }
+        catch(refreshErr){ console.error('Falha ao recarregar estado MySQL após erro:',refreshErr.message); }
+      }
+    }
+  })().finally(()=>{mysqlSyncRunning=false;notifyMySQLSyncWaiters();});
+}
+
+function writeDB(db){
+  dbCache=db;
+  queueMySQLSync(db);
+}
+
+async function persistDBAndSync(db){
+  dbCache=db;
+  await waitForMySQLSync();
+  mysqlSyncRunning=true;
+  try{
+    mysqlSyncLastStatus={state:'syncing',updatedAt:new Date().toISOString(),error:null,attempt:1};
+    const snapshot=cloneDb(db);
+    await syncMySQLDatabase(snapshot);
+    const backup=backupJSONSnapshot(snapshot,'critical');
+    dbCache=db;
+    mysqlSyncLastStatus={state:'ok',updatedAt:new Date().toISOString(),error:null,attempt:1,backup};
+    return true;
+  }catch(e){
+    mysqlSyncLastStatus={state:'error',updatedAt:new Date().toISOString(),error:e?.message||String(e),attempt:1};
+    try{ dbCache=await readMySQLDatabase(); }catch(refreshErr){ console.error('Falha ao recarregar MySQL após erro crítico:',refreshErr.message); }
+    throw e;
+  }finally{
+    mysqlSyncRunning=false;
+    if(mysqlSyncPending){
+      const pending=mysqlSyncPending;
+      mysqlSyncPending=null;
+      queueMySQLSync(pending);
+    }else{
+      notifyMySQLSyncWaiters();
+    }
+  }
+}
+
+async function initializeDatabase(){
+  try{
+    const loaded=await readMySQLDatabase();
+    dbCache=loaded;
+    (dbCache.teachers||[]).forEach(applyTeacherFactor);
+    dbReady=true;
+    // Gera uma cópia local de recuperação sem torná-la fonte operacional.
+    backupJSONSnapshot(dbCache,'startup');
+    mysqlSyncLastStatus={state:'ok',updatedAt:new Date().toISOString(),error:null,attempt:null};
+    console.log(`MySQL conectado — banco: ${process.env.MYSQL_DATABASE||'acha'}`);
+    return true;
+  }catch(e){
+    dbReady=false;
+    console.error('ERRO FATAL: não foi possível inicializar o ACHA a partir do MySQL.');
+    console.error(e.stack||e);
+    return false;
+  }
+}
+
+async function readDBForApi(){
+  await waitForMySQLSync();
+  if(!dbReady || !dbCache) throw new Error('Banco MySQL não inicializado.');
+  return dbCache;
+}
+
 async function api(req,res){
   const parsed=url.parse(req.url,true),p=parsed.pathname;
   if(req.method==='GET'&&p==='/api/health')return send(res,200,{ok:true,service:'acha',timestamp:new Date().toISOString()});
+  if(req.method==='GET'&&p==='/api/mysql/status')return send(res,200,{ok:true,mysqlSync:mysqlSyncLastStatus});
 
   // Backup administrativo: devolve o db.json completo e atual, exatamente como
   // está armazenado no servidor, para permitir continuar o desenvolvimento
@@ -577,7 +879,7 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.48'
+      'X-ACHA-Version':'1.0.95'
     });
     return res.end(payload);
   }
@@ -633,14 +935,10 @@ async function api(req,res){
       if(!suapConfigured())return send(res,503,{error:'Integração SUAP não configurada.'});
       const x=await body(req);
       const accessToken=String(x.accessToken||'').trim();
-      console.log('========== SUAP CLIENT LOGIN ==========');
-      console.log('POST /api/suap/client-login recebido');
-      console.log('Token recebido:', !!accessToken, accessToken ? accessToken.slice(0,15)+'...' : '(vazio)');
       if(!accessToken)return send(res,400,{error:'Access token do SUAP não informado.'});
       if(accessToken.length>4096)return send(res,400,{error:'Access token inválido.'});
 
       const me=await suapUserRequest(accessToken);
-      console.log('USUÁRIO RETORNADO AO CLIENT-LOGIN:', me);
       const db=readDB();ensureAuthUsers(db);
 
       const matricula=String(
@@ -706,15 +1004,6 @@ async function api(req,res){
       if(suapPhotoUrl) user.suapPhotoUrl=suapPhotoUrl;
       const linkedTeacher=db.teachers.find(t=>String(t.id)===String(user.teacherId));
       if(linkedTeacher && matricula) linkedTeacher.matricula=matricula;
-      console.log('ACHA — usuário vinculado:', {
-        achaUserId:user.id,
-        teacherId:user.teacherId,
-        nome: user.displayName,
-        matricula: matricula,
-        role: user.role,
-        docenteEncontrado: !!linkedTeacher,
-        docenteMatricula: linkedTeacher?.matricula || ''
-      });
       writeDB(db);
 
       const sessionToken=crypto.randomBytes(32).toString('hex');
@@ -763,6 +1052,104 @@ async function api(req,res){
   const authUser=requireAuth(req,res,dbForAuth);
   if(!authUser)return;
 
+  if(p==='/api/validation'&&req.method==='GET'){const db=readDB();const approvals=(authUser.role==='diretor_geral'||authUser.role==='diretoria_academica')?db.approvals:db.approvals.filter(a=>String(a.requesterId)===String(authUser.id));return send(res,200,{ok:true,approvals:approvals.slice().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)))});}
+  if(p==='/api/offer/undo-confirm'&&req.method==='POST'){
+    try{const x=await body(req),db=readDB();const key=String(x.key||'');if(!x.semester||!key)return send(res,400,{error:'Semestre e oferta são obrigatórios.'});const isDir=['diretor_geral','diretoria_academica'].includes(authUser.role);if(!isDir&&!['coordenador_curso','coordenador_area'].includes(authUser.role))return send(res,403,{error:'Acesso restrito.'});const resolved=resolvePreviewOffer(db,x.semester,{key,source:x.source||{}});const resolvedKey=resolved?.key||key;const current=db.offers?.[x.semester]?.[resolvedKey];if(!current||current.validationStatus!=='approved'||current.validationSource!=='coordinator_confirmation')return send(res,409,{error:'Esta oferta não possui uma confirmação direta que possa ser desfeita.'});if(!isDir&&!coordinatorOwnsOffer(db,authUser,x.semester,resolvedKey))return send(res,403,{error:'Oferta fora da área/curso autorizado.'});const previous=current.confirmationPrevious;if(previous===null||previous===undefined)delete db.offers[x.semester][resolvedKey];else db.offers[x.semester][resolvedKey]=previous;writeDB(db);return send(res,200,{ok:true,undone:true});}catch(e){return send(res,500,{error:e.message})}
+  }
+  if(p==='/api/offer/undo-delete'&&req.method==='POST'){
+    try{const x=await body(req),db=readDB();const semester=String(x.semester||''),key=String(x.key||'');if(!semester||!key)return send(res,400,{error:'Semestre e oferta são obrigatórios.'});const isDir=['diretor_geral','diretoria_academica'].includes(authUser.role);if(!isDir&&!['coordenador_curso','coordenador_area'].includes(authUser.role))return send(res,403,{error:'Acesso restrito.'});const resolvedPreview=String(req.headers['x-acha-preview']||'')==='director'?resolvePreviewOffer(db,semester,{key,source:x.source||{}}):null;const resolvedKey=resolvedPreview?.key||key;const del=db.offerDeletions?.[semester]?.[resolvedKey];if(!del)return send(res,404,{error:'Exclusão não encontrada.'});if(!isDir&&!coordinatorOwnsOffer(db,authUser,semester,resolvedKey))return send(res,403,{error:'Oferta fora da área/curso autorizado.'});if(del.snapshot){db.offers??={};db.offers[semester]??={};db.offers[semester][resolvedKey]={...del.snapshot,validationStatus:'approved',validationSource:'restored_after_delete',validationUpdatedAt:new Date().toISOString(),validationBy:authUser.id};}if(db.offerDeletions?.[semester])delete db.offerDeletions[semester][resolvedKey];writeDB(db);return send(res,200,{ok:true,restored:true});}catch(e){return send(res,500,{error:e.message})}
+  }
+  if(p==='/api/validation'&&req.method==='POST'){
+    try{const x=await body(req),db=readDB();ensureWorkflow(db);
+      const previewDirector=String(req.headers['x-acha-preview']||'')==='director'&&(authUser.role==='diretor_geral'||authUser.role==='diretoria_academica');
+      if(previewDirector){
+        if(!x.semester||!semesterInAccessRange(db,authUser,x.semester))return send(res,400,{error:'Semestre não autorizado.'});
+        const previewRequester={id:String(x.previewRequester?.id||authUser.id),displayName:String(x.previewRequester?.name||authUser.displayName),role:String(x.previewRequester?.role||'coordenador_curso')};
+        if(x.kind==='offer'){
+          const resolved=resolvePreviewOffer(db,x.semester,x); if(!resolved)return send(res,404,{error:'Oferta não encontrada.'});
+          const key=resolved.key,cur=resolved.current, pth=key.split('|'), d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(String(pth[3]).split('::')[0])];
+          if(x.action==='confirm' && !(d?.optional===true && (x.changes?.optionalChoices||x.changes?.optionalChoice))){
+            db.offers??={};db.offers[x.semester]??={};const previous=Object.prototype.hasOwnProperty.call(db.offers[x.semester],key)?JSON.parse(JSON.stringify(db.offers[x.semester][key])):null;const next={...cur,...(x.changes||{}),validationStatus:'approved',validationSource:'coordinator_confirmation',confirmationCreatedAt:new Date().toISOString(),confirmationBy:previewRequester.id,confirmationPrevious:previous};const canonicalCourse=(db.data?.courses||[]).find(c=>String(c.matrix)===String(pth[0]))?.name;if(canonicalCourse)next.course=canonicalCourse;const optChoices=Array.isArray(next.optionalChoices)?next.optionalChoices.filter(Boolean):(next.optionalChoice?[next.optionalChoice]:[]);if(optChoices.length){next.name=optChoices.join(' + ');next.optionalChoices=optChoices;next.optionalChoice=optChoices.length===1?optChoices[0]:'';}delete next.turnScope;db.offers[x.semester][key]=next;await persistDBAndSync(db);return send(res,200,{ok:true,preview:true,approved:true,direct:true});
+          }
+          if(x.action==='confirm'&&d?.optional===true&&!(x.changes?.optionalChoices||x.changes?.optionalChoice))return send(res,400,{error:'Para validar uma oferta optativa, selecione a disciplina optativa.'});
+          if(db.approvals.some(v=>v.status==='pending'&&String(v.requesterId)===previewRequester.id&&v.semester===x.semester&&v.targetKey===key))return send(res,409,{error:'Já existe uma solicitação pendente para esta oferta.'});
+          if(x.action==='duplicate'){
+            const du=x.duplicate||{};const a=createApproval(db,previewRequester,{type:'offer_duplicate',action:'duplicate',semester:x.semester,targetKey:key,duplicate:{matrix:String(du.matrix||pth[0]),period:String(du.period||pth[1]),seq:String(du.seq||pth[2]),disciplineIndex:String(du.disciplineIndex||String(pth[3]).split('::')[0]),quantity:Math.max(2,Math.min(5,Number(du.quantity)||2))},changes:x.changes||{},snapshot:cur,targetLabel:approvalTargetLabel(db,{type:'offer_duplicate',targetKey:key,semester:x.semester})});notifyDirectors(db,'Nova duplicidade de oferta para avaliação',`${approvalTargetLabel(db,a)} — solicitação cadastrada no modo de teste.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,preview:true,approval:a});
+          }
+          const a=createApproval(db,previewRequester,{type:x.action==='confirm'?'offer_confirm':'offer_change',action:x.action==='delete'?'delete':x.action,semester:x.semester,targetKey:key,changes:x.changes||{},snapshot:cur,targetLabel:approvalTargetLabel(db,{type:'offer_change',targetKey:key,semester:x.semester})});notifyDirectors(db,'Nova pendência para avaliação',`${approvalTargetLabel(db,a)} — solicitação cadastrada no modo de teste.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,preview:true,approval:a});
+        }
+        if(x.kind==='extra')return send(res,400,{error:'Use o fluxo de demanda avulsa para este item.'});
+        return send(res,400,{error:'Tipo de solicitação inválido.'});
+      }
+      if(!['coordenador_curso','coordenador_area'].includes(authUser.role))return send(res,403,{error:'Somente Coordenadores podem solicitar validações.'});if(!x.semester||!semesterInAccessRange(db,authUser,x.semester))return send(res,400,{error:'Semestre não autorizado.'});let a;
+      if(x.kind==='offer'){
+        const resolved=resolvePreviewOffer(db,x.semester,x);const resolvedKey=resolved?.key||String(x.key||'');if(!resolvedKey)return send(res,404,{error:'Oferta não encontrada.'});if(!coordinatorOwnsOffer(db,authUser,x.semester,resolvedKey))return send(res,403,{error:'Oferta fora do curso coordenado.'});const cur=resolved?.current||db.offers?.[x.semester]?.[resolvedKey]||synthesizeOfferFromKey(db,x.semester,resolvedKey);if(!cur)return send(res,404,{error:'Oferta não encontrada.'});const pth=String(resolvedKey).split('|'),d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(String(pth[3]).split('::')[0])];x.key=resolvedKey;
+        if(x.action==='duplicate'){
+          const du=x.duplicate||{}, sameClass=du.sameClass===true, matrix=String(du.matrix||pth[0]),period=String(du.period||pth[1]),seq=String(du.seq||pth[2]),di=String(du.disciplineIndex||String(pth[3]).split('::')[0]);
+          if(!coordinatorMatrixIds(db,authUser).includes(matrix))return send(res,403,{error:'A turma de destino não pertence ao curso coordenado.'});
+          const targetExists=(db.data?.semesters?.[x.semester]||[]).some(c=>String(c.matrix)===matrix&&String(c.period)===period&&String(c.seq)===seq);if(!targetExists)return send(res,400,{error:'Turma de destino não encontrada no semestre selecionado.'});
+          const baseKey=`${matrix}|${period}|${seq}|${di}`;if(!sameClass&&String(baseKey)===String(x.key))return send(res,400,{error:'Escolha uma turma diferente da oferta de origem para solicitar a duplicidade.'});
+          const already=Object.keys(db.offers?.[x.semester]||{}).some(k=>sameClass?String(k).startsWith(baseKey+'::dup::'):(String(k)===baseKey||String(k).startsWith(baseKey+'::dup::')));if(already)return send(res,409,{error:sameClass?'Já existe uma solicitação/oferta duplicada desta disciplina para esta turma.':'Já existe uma oferta desta disciplina na turma de destino.'});
+          if(db.approvals.some(v=>v.status==='pending'&&v.requesterId===authUser.id&&v.type==='offer_duplicate'&&v.semester===x.semester&&String(v.duplicate?.matrix)===matrix&&String(v.duplicate?.period)===period&&String(v.duplicate?.seq)===seq&&String(v.duplicate?.disciplineIndex)===di))return send(res,409,{error:'Já existe uma solicitação de duplicidade pendente para esta turma.'});
+          const qty=Math.max(2,Math.min(5,Number(du.quantity)||2));a=createApproval(db,authUser,{type:'offer_duplicate',action:'duplicate',semester:x.semester,targetKey:x.key,duplicate:{matrix,period,seq,disciplineIndex:di,quantity:qty},changes:{notes:String(x.changes?.notes||'').trim()},snapshot:cur,targetLabel:approvalTargetLabel(db,{type:'offer_duplicate',targetKey:x.key,semester:x.semester})});
+          notifyDirectors(db,'Nova duplicidade de oferta para avaliação',`${approvalTargetLabel(db,a)} — duplicidade solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,approval:a});
+        }const choices=Array.isArray(x.changes?.optionalChoices)?x.changes.optionalChoices.filter(Boolean):(x.changes?.optionalChoice?[x.changes.optionalChoice]:[]);
+        const isOptionalConfirmation=x.action==='confirm'&&d?.optional===true&&choices.length>0;
+        if(x.action==='confirm'&&!isOptionalConfirmation){
+          db.offers??={};db.offers[x.semester]??={};
+          const previous=Object.prototype.hasOwnProperty.call(db.offers[x.semester],x.key)?JSON.parse(JSON.stringify(db.offers[x.semester][x.key])):null;
+          const next={...cur,...(x.changes||{}),validationStatus:'approved',validationSource:'coordinator_confirmation',confirmationCreatedAt:new Date().toISOString(),confirmationBy:authUser.id,confirmationPrevious:previous};
+          delete next.turnScope; db.offers[x.semester][x.key]=next; await persistDBAndSync(db); return send(res,200,{ok:true,approved:true,direct:true,offer:next});
+        }
+        if(x.action==='confirm'&&d?.optional===true&&!choices.length)return send(res,400,{error:'Para validar uma oferta optativa, o coordenador deve vincular qual disciplina optativa será ofertada.'});
+        if(db.approvals.some(v=>v.status==='pending'&&v.requesterId===authUser.id&&v.semester===x.semester&&v.targetKey===x.key))return send(res,409,{error:'Já existe uma solicitação pendente para esta oferta.'});
+        a=createApproval(db,authUser,{type:x.action==='confirm'?'offer_confirm':'offer_change',action:x.action==='delete'?'delete':x.action,semester:x.semester,targetKey:x.key,changes:x.changes||{},snapshot:cur,targetLabel:approvalTargetLabel(db,{type:'offer_change',targetKey:x.key,semester:x.semester})});
+      }else if(x.kind==='extra'){
+        const teacher=(db.teachers||[]).find(t=>String(t.id)===String(authUser.teacherId)),cid=String(teacher?.coordinatorCourseId||'');
+        if(x.action==='create'){if(String(x.proposed?.course||'')!==cid)return send(res,403,{error:'A demanda deve pertencer ao curso coordenado.'});a=createApproval(db,authUser,{type:'extra_create',semester:x.semester,proposed:{name:String(x.proposed.name||'').trim(),ch:Number(x.proposed.ch)||0,type:String(x.proposed.type||'Dependência'),group:String(x.proposed.group||''),turn:String(x.proposed.turn||''),course:cid,notes:String(x.proposed.notes||'')},targetLabel:String(x.proposed.name||'Demanda avulsa')});}
+        else{const arr=db.extraOffers?.[x.semester]||[],item=arr.find(v=>String(v.id)===String(x.id));if(!item)return send(res,404,{error:'Demanda avulsa não encontrada.'});a=createApproval(db,authUser,{type:x.action==='delete'?'extra_delete':'extra_change',semester:x.semester,targetId:x.id,changes:x.changes||{},snapshot:item,targetLabel:item.name});}
+      }else return send(res,400,{error:'Tipo de solicitação inválido.'});
+      notifyDirectors(db,'Nova pendência para avaliação',`${approvalTargetLabel(db,a)} — solicitação cadastrada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,approval:a});
+    }catch(e){return send(res,500,{error:e.message})}
+  }
+  if(p==='/api/validation'&&req.method==='PUT'){
+    const previewValidation=String(req.headers['x-acha-preview']||'')==='director' && (authUser.role==='diretor_geral'||authUser.role==='diretoria_academica');
+    if(previewValidation){
+      try{
+        const x=await body(req),db=readDB(),a=db.approvals.find(v=>String(v.id)===String(x.id));
+        if(!a)return send(res,404,{error:'Pendência não encontrada.'});
+        if(!['pending','correction_requested'].includes(a.status))return send(res,409,{error:'Esta pendência já foi julgada.'});
+        const previewRequesterId=String(x.previewRequester?.id||a.requesterId||'');
+        if(previewRequesterId && String(a.requesterId)!==previewRequesterId)return send(res,403,{error:'Esta pendência não pertence ao coordenador simulado.'});
+        if(x.operation==='cancel_pending'){
+          db.approvals=db.approvals.filter(v=>String(v.id)!==String(a.id));
+          db.notifications=(db.notifications||[]).filter(n=>String(n.approvalId||'')!==String(a.id));
+          writeDB(db);return send(res,200,{ok:true,cancelled:true,preview:true});
+        }
+        if(x.operation==='edit_pending'){
+          if(a.type!=='offer_change'||a.action==='delete')return send(res,400,{error:'Somente alterações de oferta podem ser editadas enquanto pendentes.'});
+          const ch=x.changes||{},snap=a.snapshot||{};
+          const hasChange=['name','group','ch','turn','optionalChoice','optionalChoices','notes'].some(k=>JSON.stringify(ch[k]??'')!==JSON.stringify(snap[k]??''));
+          if(!hasChange)return send(res,400,{error:'Nenhuma alteração foi informada.'});
+          a.changes={...ch};a.status='pending';a.decisionNote='';delete a.decidedBy;delete a.decidedById;delete a.decidedAt;a.updatedAt=new Date().toISOString();
+          notifyDirectors(db,'Alteração reenviada para avaliação',`${approvalTargetLabel(db,a)} — alteração atualizada no modo de teste.`,a.id);
+          writeDB(db);return send(res,200,{ok:true,approval:a,preview:true});
+        }
+        return send(res,400,{error:'Operação de validação inválida.'});
+      }catch(e){return send(res,500,{error:e.message})}
+    }
+    if(authUser.role==='coordenador_curso'||authUser.role==='coordenador_area'){
+      try{const x=await body(req),db=readDB(),a=db.approvals.find(v=>String(v.id)===String(x.id));if(!a)return send(res,404,{error:'Pendência não encontrada.'});if(!['pending','correction_requested'].includes(a.status))return send(res,409,{error:'Esta pendência já foi julgada.'});if(String(a.requesterId)!==String(authUser.id))return send(res,403,{error:'Esta pendência não pertence ao coordenador atual.'});
+        if(x.operation==='cancel_pending'){if(!['pending','correction_requested'].includes(a.status))return send(res,409,{error:'Esta solicitação não pode mais ser cancelada.'});db.approvals=db.approvals.filter(v=>String(v.id)!==String(a.id));db.notifications=(db.notifications||[]).filter(n=>String(n.approvalId||'')!==String(a.id));writeDB(db);return send(res,200,{ok:true,cancelled:true});}
+        if(x.operation==='edit_pending'){if(a.type!=='offer_change'||a.action==='delete')return send(res,400,{error:'Somente alterações de oferta podem ser editadas enquanto pendentes.'});const ch=x.changes||{},snap=a.snapshot||{};const hasChange=['name','group','ch','turn','optionalChoice','optionalChoices','notes'].some(k=>JSON.stringify(ch[k]??'')!==JSON.stringify(snap[k]??''));if(!hasChange)return send(res,400,{error:'Nenhuma alteração foi informada.'});{const pk=String(a.targetKey||'').split('|'),md=db.data?.matrices?.[pk[0]]||{},dd=md.disciplines?.[Number(String(pk[3]||'').split('::')[0])];if(dd?.optional&&ch.name){const catalog=Array.isArray(md.optionalCatalog)?md.optionalCatalog:[];if(!catalog.some(o=>String(o.name)===String(ch.name)))return send(res,400,{error:'Disciplina optativa inválida.'});}}a.changes={...ch};a.status='pending';a.decisionNote='';delete a.decidedBy;delete a.decidedById;delete a.decidedAt;a.updatedAt=new Date().toISOString();notifyDirectors(db,'Alteração reenviada para avaliação',`${approvalTargetLabel(db,a)} — alteração atualizada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,200,{ok:true,approval:a});}
+      }catch(e){return send(res,500,{error:e.message})}
+    }
+    if(authUser.role!=='diretor_geral'&&authUser.role!=='diretoria_academica')return send(res,403,{error:'Acesso restrito à Direção.'});
+    try{const x=await body(req),db=readDB(),a=db.approvals.find(v=>String(v.id)===String(x.id));if(!a)return send(res,404,{error:'Pendência não encontrada.'});if(a.status!=='pending')return send(res,409,{error:'Esta pendência já foi julgada.'});const decision=x.decision==='approve'?'approved':x.decision==='correction'?'correction_requested':null;if(!decision)return send(res,400,{error:'Decisão inválida.'});a.status=decision;a.decisionNote=String(x.note||'').trim();a.decidedBy=authUser.displayName;a.decidedById=authUser.id;a.decidedAt=new Date().toISOString();if(decision==='approved')applyApproval(db,a);pushNotification(db,a.requesterId,decision==='approved'?'Solicitação aprovada':'Correção solicitada',`${approvalTargetLabel(db,a)} — ${decision==='approved'?'aprovada':'devolvida para correção'}.${a.decisionNote?' '+a.decisionNote:''}`,a.id);writeDB(db);return send(res,200,{ok:true,approval:a});}catch(e){return send(res,500,{error:e.message})}
+  }
+  if(p==='/api/notifications'&&req.method==='GET'){const db=readDB(),all=db.notifications.filter(n=>String(n.userId)===String(authUser.id)).sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).map(n=>{const a=db.approvals.find(v=>String(v.id)===String(n.approvalId));return {...n,semester:a?.semester||'',targetKey:a?.targetKey||'',approvalType:a?.type||''};});return send(res,200,{ok:true,notifications:all,unread:all.filter(n=>!n.read).length});}
+  if(p==='/api/notifications/read-all'&&req.method==='PUT'){const db=readDB();db.notifications.filter(n=>String(n.userId)===String(authUser.id)).forEach(n=>n.read=true);writeDB(db);return send(res,200,{ok:true});}
+
   if(p==='/api/access' && req.method==='GET'){
     if(authUser.role!=='diretor_geral'&&authUser.role!=='diretoria_academica')return send(res,403,{error:'Acesso restrito à Direção.'});
     const db=readDB(); return send(res,200,{ok:true,catalog:PAGE_CATALOG,levels:[['none','Sem acesso'],['view','Visualização'],['edit','Edição']],access:accessConfig(db)});
@@ -784,7 +1171,7 @@ async function api(req,res){
 
   // Autorização por página/recurso: leitura exige view/edit; mutações exigem edit.
   const apiPageMap={
-    '/api/pocv':'pocv.html','/api/pocv/config':'pocv.html','/api/teacher':'docentes.html','/api/teacher-link':'docentes.html','/api/matrix':'matrizes.html','/api/matrices':'matrizes.html','/api/offer':'index.html','/api/extra-offer':'index.html','/api/demand':'demandas.html','/api/group':'grupos.html','/api/variable':'variaveis.html','/api/rule':'regras.html','/api/turma':'turmas.html','/api/backup':'backup.html','/api/profile':'perfil.html','/api/access':'acessos.html'
+    '/api/pocv':'pocv.html','/api/pocv/config':'pocv.html','/api/teacher':'docentes.html','/api/teacher-link':'docentes.html','/api/matrix':'matrizes.html','/api/matrices':'matrizes.html','/api/offer':'index.html','/api/extra-offer':'index.html','/api/demand':'demandas.html','/api/group':'grupos.html','/api/variable':'variaveis.html','/api/rule':'regras.html','/api/turma':'turmas.html','/api/backup':'backup.html','/api/profile':'perfil.html','/api/access':'acessos.html','/api/validation':'pendencias.html','/api/notifications':'notificacoes.html'
   };
   const apiPage=Object.keys(apiPageMap).sort((a,b)=>b.length-a.length).find(k=>p===k||p.startsWith(k+'/'));
   if(apiPage){
@@ -912,7 +1299,7 @@ async function api(req,res){
     }catch(e){return send(res,500,{error:e.message})}
   }
 
-  if(req.method==='GET'&&p==='/api/db'){const db=readDB(),user=requireAuth(req,res,db);if(!user)return;if(normalizeOfferTurns(db))writeDB(db);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');return send(res,200,filterDbForUserWithAccess(db,user));}
+  if(req.method==='GET'&&p==='/api/db'){const authDb=readDB();const user=requireAuth(req,res,authDb);if(!user)return;const db=await readDBForApi();if(normalizeOfferTurns(db))writeDB(db);res.setHeader('Cache-Control','no-store, no-cache, must-revalidate, proxy-revalidate');res.setHeader('Pragma','no-cache');return send(res,200,filterDbForUserWithAccess(db,user));}
   // Editor de matrizes curriculares
   if((req.method==='GET'||req.method==='PUT'||req.method==='POST') && (p==='/api/matrix' || p==='/api/matrices')){
     try{
@@ -1009,7 +1396,7 @@ async function api(req,res){
     try{
       const x=await body(req); if(!x.semester||!String(x.name||'').trim()) return send(res,400,{error:'Semestre e disciplina são obrigatórios'});
       const db=readDB();
-      if(authUser.role==='coordenador_curso'){const cid=String((db.teachers||[]).find(t=>String(t.id)===String(authUser.teacherId))?.coordinatorCourseId||'');if(String(x.course||'')!==cid)return send(res,403,{error:'A demanda deve pertencer ao curso coordenado.'});}
+      if(authUser.role==='coordenador_curso'){const teacher=(db.teachers||[]).find(t=>String(t.id)===String(authUser.teacherId)),cid=String(teacher?.coordinatorCourseId||'');if(String(x.course||'')!==cid)return send(res,403,{error:'A demanda deve pertencer ao curso coordenado.'});const a=createApproval(db,authUser,{type:'extra_create',semester:x.semester,proposed:{name:String(x.name).trim(),ch:Number(x.ch)||0,type:String(x.type||'Dependência'),group:String(x.group||''),turn:String(x.turn||''),course:cid,notes:String(x.notes||'')},targetLabel:String(x.name).trim()});notifyDirectors(db,'Nova demanda avulsa para avaliação',`${approvalTargetLabel(db,a)} — solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});}
       db.extraOffers??={}; db.extraOffers[x.semester]??=[];
       const id=Math.max(0,...db.extraOffers[x.semester].map(v=>Number(v.id)||0))+1;
       const item={id,name:String(x.name).trim(),ch:Number(x.ch)||0,group:String(x.group||'').trim(),course:String(x.course||'').trim(),type:String(x.type||'Dependência').trim(),turn:String(x.turn||'').trim(),notes:String(x.notes||'').trim(),createdAt:new Date().toISOString()};
@@ -1019,21 +1406,28 @@ async function api(req,res){
   if(req.method==='PUT'&&p==='/api/extra-offer'){
     try{
       const x=await body(req); const db=readDB(); const arr=db.extraOffers?.[x.semester]||[]; const i=arr.findIndex(v=>String(v.id)===String(x.id));
-      if(i<0)return send(res,404,{error:'Demanda avulsa não encontrada'}); arr[i]=Object.assign({},arr[i],x.changes||{}); writeDB(db); return send(res,200,{ok:true,offer:arr[i]});
+      if(i<0)return send(res,404,{error:'Demanda avulsa não encontrada'}); if(authUser.role==='coordenador_curso'){const a=createApproval(db,authUser,{type:'extra_change',semester:x.semester,targetId:x.id,changes:x.changes||{},snapshot:arr[i],targetLabel:arr[i].name});notifyDirectors(db,'Nova alteração em demanda avulsa para avaliação',`${approvalTargetLabel(db,a)} — solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});} arr[i]=Object.assign({},arr[i],x.changes||{}); writeDB(db); return send(res,200,{ok:true,offer:arr[i]});
     }catch(e){return send(res,500,{error:e.message})}
   }
   if(req.method==='DELETE'&&p==='/api/extra-offer'){
-    try{const semester=parsed.query.semester,id=parsed.query.id; const db=readDB(); if(db.extraOffers?.[semester]) db.extraOffers[semester]=db.extraOffers[semester].filter(v=>String(v.id)!==String(id)); writeDB(db); return send(res,200,{ok:true})}catch(e){return send(res,500,{error:e.message})}
+    try{const semester=parsed.query.semester,id=parsed.query.id; const db=readDB(); if(authUser.role==='coordenador_curso'){const item=(db.extraOffers?.[semester]||[]).find(v=>String(v.id)===String(id));if(!item)return send(res,404,{error:'Demanda avulsa não encontrada'});const a=createApproval(db,authUser,{type:'extra_delete',semester,targetId:id,changes:{},snapshot:item,targetLabel:item.name});notifyDirectors(db,'Nova correção em demanda avulsa para avaliação',`${approvalTargetLabel(db,a)} — exclusão solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});} if(db.extraOffers?.[semester]) db.extraOffers[semester]=db.extraOffers[semester].filter(v=>String(v.id)!==String(id)); writeDB(db); return send(res,200,{ok:true})}catch(e){return send(res,500,{error:e.message})}
   }
   if(req.method==='PUT'&&p==='/api/offer'){
     try{
       const x=await body(req);if(!x.semester||!x.key||!x.changes)return send(res,400,{error:'Dados inválidos'});
       const db=readDB();
+      const previewDirector=String(req.headers['x-acha-preview']||'')==='director'&&(authUser.role==='diretor_geral'||authUser.role==='diretoria_academica');
+      if(previewDirector){
+        if(!semesterInAccessRange(db,authUser,x.semester))return send(res,400,{error:'Semestre não autorizado.'});
+        const resolved=resolvePreviewOffer(db,x.semester,x); if(!resolved)return send(res,404,{error:'Oferta não encontrada.'});
+        const fake={type:'offer_change',action:'change',semester:x.semester,targetKey:resolved.key,changes:x.changes||{},snapshot:resolved.current,decidedById:authUser.id};
+        applyApproval(db,fake);writeDB(db);return send(res,200,{ok:true,preview:true,approved:true});
+      }
+      if(authUser.role==='coordenador_curso'){if(!coordinatorOwnsOffer(db,authUser,x.semester,x.key))return send(res,403,{error:'Oferta fora do curso coordenado ou semestre não autorizado.'});const current=db.offers?.[x.semester]?.[x.key]||synthesizeOfferFromKey(db,x.semester,x.key);if(!current)return send(res,404,{error:'Oferta não encontrada.'});const pth=String(x.key).split('|'),d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(pth[3])],choices=Array.isArray(x.changes?.optionalChoices)?x.changes.optionalChoices.filter(Boolean):(x.changes?.optionalChoice?[x.changes.optionalChoice]:[]);if(d?.optional===true&&x.action!=='delete'&&!choices.length)return send(res,400,{error:'Para validar uma oferta optativa, o coordenador deve vincular qual disciplina optativa será ofertada.'});const a=createApproval(db,authUser,{type:'offer_change',semester:x.semester,targetKey:x.key,action:'change',changes:x.changes||{},snapshot:current,targetLabel:approvalTargetLabel(db,{type:'offer_change',targetKey:x.key,semester:x.semester})});notifyDirectors(db,'Nova correção em oferta para avaliação',`${approvalTargetLabel(db,a)} — solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});}
       if(authUser.role==='coordenador_curso' && !coordinatorMatrixIds(db,authUser).includes(String(x.key).split('|')[0]))return send(res,403,{error:'Oferta fora do curso coordenado.'});
       db.offers??={};db.offers[x.semester]??={};
-      const current=db.offers[x.semester][x.key]||{};const next=Object.assign({},current,x.changes);
-      // O turno de uma oferta regular é herdado da turma e não pode ser alterado manualmente.
-      { const parts=String(x.key).split('|'); const expected=classTurn(db,Number(parts[0]),Number(parts[1]),Number(parts[2])); if(expected && expected!=='A definir') next.turn=expected; }
+      const current=db.offers[x.semester][x.key]||{};const next=Object.assign({},current,x.changes);delete next.turnScope;
+      { const parts=String(x.key).split('|'); const requestedTurn=String(x.changes?.turn||'').trim(); const scope=String(x.changes?.turnScope||'offer'); const expected=classTurn(db,Number(parts[0]),Number(parts[1]),Number(parts[2])); if(requestedTurn) next.turn=requestedTurn; else if(scope!=='class' && expected && expected!=='A definir') next.turn=expected; if(scope==='class' && requestedTurn){const prefix=`${parts[0]}|${parts[1]}|${parts[2]}|`;Object.keys(db.offers[x.semester]||{}).filter(k=>String(k).startsWith(prefix)).forEach(k=>{db.offers[x.semester][k]={...db.offers[x.semester][k],turn:requestedTurn};});} }
       // teacherId may only point to a teacher belonging to the offer's resulting group.
       if(Object.prototype.hasOwnProperty.call(x.changes,'teacherId') && x.changes.teacherId!=null && x.changes.teacherId!==''){
         const parts=String(x.key).split('|');const matrix=String(parts[0]),di=Number(parts[3]);const d=db.data?.matrices?.[matrix]?.disciplines?.[di];
@@ -1055,7 +1449,13 @@ async function api(req,res){
       const semester=parsed.query.semester, key=parsed.query.key;
       if(!semester||!key)return send(res,400,{error:'Semestre e oferta são obrigatórios'});
       const db=readDB();
-      if(authUser.role==='coordenador_curso' && !coordinatorMatrixIds(db,authUser).includes(String(key).split('|')[0]))return send(res,403,{error:'Oferta fora do curso coordenado.'});
+      const previewDirector=String(req.headers['x-acha-preview']||'')==='director'&&(authUser.role==='diretor_geral'||authUser.role==='diretoria_academica');
+      if(previewDirector){
+        if(!semesterInAccessRange(db,authUser,semester))return send(res,400,{error:'Semestre não autorizado.'});
+        const resolved=resolvePreviewOffer(db,semester,{key,source:{}}); if(!resolved)return send(res,404,{error:'Oferta não encontrada.'});
+        delete db.offers[semester][resolved.key];writeDB(db);return send(res,200,{ok:true,preview:true,approved:true});
+      }
+      if(authUser.role==='coordenador_curso'){if(!coordinatorOwnsOffer(db,authUser,semester,key))return send(res,403,{error:'Oferta fora do curso coordenado ou semestre não autorizado.'});const current=db.offers?.[semester]?.[key];if(!current)return send(res,404,{error:'Oferta não encontrada.'});const a=createApproval(db,authUser,{type:'offer_change',semester,targetKey:key,action:'delete',changes:{},snapshot:current,targetLabel:approvalTargetLabel(db,{type:'offer_change',targetKey:key,semester})});notifyDirectors(db,'Nova correção em oferta para avaliação',`${approvalTargetLabel(db,a)} — exclusão solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});}
       if(db.offers?.[semester] && Object.prototype.hasOwnProperty.call(db.offers[semester],key)){
         delete db.offers[semester][key];
         writeDB(db);
@@ -1269,7 +1669,7 @@ const server=http.createServer(async(req,res)=>{
   // Força atualização da página de Docentes após deploy. O navegador/proxy não deve
   // reaproveitar uma cópia antiga dessa tela, que depende do editor embutido.
   if(pathname==='/docentes.html' && !url.parse(req.url,true).query.v){
-    res.writeHead(302,{'Location':'/docentes.html?v=1.0.48','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
+    res.writeHead(302,{'Location':'/docentes.html?v=1.0.95','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
     return res.end();
   }
   // Arquivos estáticos (CSS/JS/imagens) não são páginas protegidas.
@@ -1295,7 +1695,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.48'
+      'X-ACHA-Version':'1.0.95'
     });
     fs.createReadStream(file).pipe(res)
   })
@@ -1309,4 +1709,8 @@ server.on('error',(err)=>{
   console.error('ERRO ao iniciar o servidor:',err);
   process.exit(1);
 });
-server.listen(PORT,()=>console.log(`ACHA V75 — servidor: http://localhost:${PORT}`));
+(async()=>{
+  const ready=await initializeDatabase();
+  if(!ready){ process.exit(1); return; }
+  server.listen(PORT,()=>console.log(`ACHA 1.0.97 — servidor: http://localhost:${PORT}`));
+})();

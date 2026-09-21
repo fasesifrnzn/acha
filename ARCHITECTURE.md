@@ -1,53 +1,44 @@
-# Arquitetura do ACHA
+# ACHA — Arquitetura de dados
 
-## Visão geral
+## Versão 1.0.95
 
-O ACHA é uma aplicação web Node.js, sem framework backend adicional. O frontend é composto por HTML, CSS e JavaScript e é servido pelo `server.js`.
+### Fonte única
 
-A aplicação utiliza uma arquitetura simples de servidor HTTP + API JSON + frontend estático.
+O **MySQL é a fonte única de dados operacionais**. A aplicação carrega o estado do ACHA a partir do banco durante a inicialização e mantém esse estado em memória para atender as requisições.
 
-## Dados
+As gravações são persistidas no MySQL primeiro. Somente após uma transação bem-sucedida o snapshot JSON é atualizado como recuperação/compatibilidade.
 
-A fonte única de dados acadêmicos é `data/db.json`.
-
-As páginas não mantêm cópias embutidas do banco. O `server.js` fornece os dados por API e persiste as alterações no arquivo JSON.
-
-Em produção, `DB_FILE` deve apontar para armazenamento persistente.
-
-## Autenticação
-
-O SUAP autentica o usuário institucional. Após receber o `access_token`, o ACHA consulta:
+### Fluxo
 
 ```text
-GET /api/rh/meus-dados/
+                ┌──────────────┐
+                │     ACHA     │
+                └──────┬───────┘
+                       │
+              leitura / gravação
+                       │
+                       ▼
+                ┌──────────────┐
+                │    MySQL     │
+                │    acha      │
+                └──────────────┘
+                       │
+                 backup após
+                  sucesso
+                       ▼
+                ┌──────────────┐
+                │   db.json    │
+                │ recuperação  │
+                └──────────────┘
 ```
 
-O resultado é associado ao cadastro local por matrícula. A partir desse cadastro, o ACHA determina o perfil e, quando aplicável, o curso do coordenador.
+### Regra de operação
 
-O frontend recebe uma sessão do ACHA; o token OAuth não deve permanecer exposto na URL após o processamento do retorno.
+- Não editar `db.json` manualmente para alterar dados de produção.
+- Não usar `db.json` como fonte alternativa quando o MySQL estiver indisponível.
+- Se o MySQL não estiver acessível na inicialização, o ACHA não sobe.
+- O comando `npm run backup:mysql` exporta um snapshot do MySQL.
 
-## Autorização
+### Migração
 
-A autenticação e a autorização são responsabilidades distintas:
-
-1. SUAP confirma a identidade institucional;
-2. ACHA localiza o usuário pelo vínculo cadastrado;
-3. ACHA aplica o papel (`diretor_geral`, `diretoria_academica` ou `coordenador_curso`);
-4. coordenadores têm seus dados acadêmicos filtrados pelo curso associado.
-
-## Interface
-
-`app.js` concentra recursos compartilhados, incluindo navegação, identificação do usuário e utilitários de normalização e visualização.
-
-`style.css` contém o estilo global das páginas autenticadas. A tela `login.html` possui CSS isolado para evitar que o layout da aplicação autenticada afete o login.
-
-## Execução
-
-O acesso deve ocorrer pelo servidor HTTP. Abrir os arquivos diretamente via `file://` não é suportado.
-
-
-## POCV: cenários e modais
-
-O cenário Real é somente leitura. Alterações de oferta devem ocorrer em cenários de simulação criados em branco ou clonados. Os fluxos de criação de cenário, edição de oferta e configuração das variáveis são apresentados como modais sobre a página de Cenários. A persistência permanece no `data/db.json` por meio das rotas `/api/pocv/scenarios` e `/api/pocv/config`.
-
-As responsabilidades pedagógicas de área são dados de configuração em `pedagogicalAreaResponsibilities` e `groupDistributionResponsibility`, permitindo alterar áreas e grupos sem codificar essa relação na interface.
+Os scripts `migrate-json-to-mysql.js`, `validate-json-vs-mysql.js` e `test-mysql-read.js` permanecem no repositório para auditoria, recuperação e validação. Eles não fazem parte do fluxo operacional normal.

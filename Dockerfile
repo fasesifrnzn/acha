@@ -3,29 +3,25 @@ FROM node:20-alpine
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
-ENV DB_FILE=/app/data/db.json
+ENV PORT=5000
+ENV DB_FILE=/var/data/db.json
 
 COPY package.json ./
+RUN npm install --omit=dev
+
 COPY server.js ./
 COPY app.js ./
 COPY style.css ./
 COPY acha-logo.svg ./
 COPY *.html ./
-COPY data ./data
+COPY docentes-editor.js ./
+COPY database ./database
+COPY scripts ./scripts
 
-# A aplicação não possui dependências externas neste estágio.
-# O banco JSON faz parte do código versionado em /app/data/db.json.
-# Nesta fase, o Git é a fonte de verdade dos dados até a migração para MySQL.
-RUN mkdir -p /app/data
+RUN mkdir -p /var/data/backups
 
-EXPOSE 3000
+EXPOSE 5000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -q -O - http://127.0.0.1:3000/api/health >/dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3   CMD wget -q -O - http://127.0.0.1:5000/api/health >/dev/null || exit 1
 
 CMD ["node", "server.js"]
-
-# As redes Docker são associadas ao container no runtime.
-# O docker-compose.yml conecta o container principal às redes
-# externas database_network e proxy_network.

@@ -4,7 +4,7 @@ Aplicação web do IFRN Campus Natal-Zona Norte para apoiar o planejamento da of
 
 ## Estado desta versão
 
-**Versão: 1.0.6**
+**Versão: 1.0.99**
 
 Esta é a versão organizada para retomada do repositório após a última versão historicamente commitada (v17). O desenvolvimento posterior foi consolidado no projeto **ACHA**, atualmente na linha 1.0.x.
 
@@ -55,7 +55,7 @@ A autenticação do SUAP confirma a identidade institucional. A autorização de
 - `app.js` — recursos compartilhados da interface;
 - `style.css` — estilos globais;
 - `server.js` — servidor HTTP, API, autenticação e persistência;
-- `data/db.json` — base inicial da aplicação.
+- `data/db.json` — snapshot de recuperação/backup; não é a fonte operacional.
 
 ## Execução local
 
@@ -72,21 +72,29 @@ npm install
 npm start
 ```
 
-Depois acesse `http://localhost:3000`.
+Depois acesse `http://localhost:5002`.
 
 O ACHA é uma aplicação Node.js com HTML/CSS/JavaScript no frontend. Não é necessário Django.
 
 ## Banco de dados
 
-A fonte única de dados da aplicação é `data/db.json`, acessada pelas páginas por meio da API HTTP do `server.js`.
+A partir da versão 1.0.95, o **MySQL é a fonte única de dados operacionais** do ACHA. O servidor carrega o estado do banco antes de abrir a porta HTTP e não usa `db.json` como fallback operacional.
 
-Em produção, recomenda-se usar armazenamento persistente e definir:
+Configure no `.env`:
 
 ```text
-DB_FILE=/var/data/db.json
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DATABASE=acha
 ```
 
-O banco de produção deve ser preservado durante atualizações do container.
+O `data/db.json` é mantido apenas como snapshot de recuperação/compatibilidade após gravações bem-sucedidas. Para exportar o estado atual do MySQL:
+
+```bash
+npm run backup:mysql
+```
 
 ## Integração SUAP/IFRN
 
@@ -94,7 +102,7 @@ O login institucional utiliza o fluxo documentado pelo cliente JavaScript oficia
 
 - Authorization Grant Type: **Implicit**;
 - Client Type: **Public**;
-- Redirect URI local: `http://localhost:3000/login.html`;
+- Redirect URI local: `http://localhost:5002/login.html`;
 - `response_type=token`;
 - consulta à API do SUAP com `Bearer access_token`.
 
@@ -117,7 +125,7 @@ No cadastro da aplicação ACHA:
 - Name: `ACHA`;
 - Authorization grant type: `Implicit`;
 - Client type: `Public`;
-- Redirect URI: `http://localhost:3000/login.html`;
+- Redirect URI: `http://localhost:5002/login.html`;
 - Algorithm: `No OIDC support`;
 - Ativo: marcado.
 
@@ -136,16 +144,13 @@ Em produção, use armazenamento persistente para `/var/data` e defina `DB_FILE=
 Consulte `README-Docker.md` para o procedimento de implantação e atualização.
 
 
-## Versionamento dos dados — 1.0.20
+## Persistência e versionamento — 1.0.95
 
-Nesta versão, o `data/db.json` é tratado como **dado versionado do projeto**.
-
-- `data/db.json` permanece dentro do repositório Git e é copiado para a imagem Docker.
-- O servidor utiliza `/app/data/db.json` no ambiente Docker.
-- O volume `acha_data` foi removido do `docker-compose.yml` para evitar que um volume antigo sobrescreva os dados presentes no commit.
-- Assim, um novo deploy da imagem reproduz os dados que estão no commit.
-- Esta configuração é **temporária**, até a migração definitiva do ACHA para MySQL.
-- Durante esta fase, alterações feitas pela aplicação devem ser incorporadas ao `data/db.json` antes de um novo deploy, se quiserem preservá-las no Git.
+- Dados operacionais: **MySQL**.
+- `db.json`: snapshot de recuperação, não fonte de verdade.
+- Backups automáticos: `data/backups/` (ou `/var/data/backups` no Docker).
+- Não faça alterações manuais no `db.json` para modificar dados de produção.
+- Não é necessário versionar dados operacionais no Git.
 
 ## Saúde da aplicação
 
@@ -212,3 +217,52 @@ Depois:
 docker compose up -d --build
 ```
 
+
+
+## Migração seletiva de docentes — v1.0.98
+
+A versão 1.0.98 inclui uma migração específica para atualizar **somente a tabela `docentes`** a partir de um backup JSON:
+
+```bash
+npm run migrate:mysql:docentes
+```
+
+A fonte pode ser informada pela variável `DB_FILE`. O script atualiza docentes existentes pelo ID, insere novos e remove do MySQL os docentes que não existem no backup informado. As demais tabelas não são alteradas.
+
+Exemplo no Windows:
+
+```bat
+set DB_FILE=C:\caminho\acha-db-backup-2026-09-15T18-07-22-668Z.json
+npm run migrate:mysql:docentes
+```
+
+
+## Docker — inicialização do schema MySQL
+
+No Compose de produção existem dois serviços do projeto:
+
+- `acha-schema`: executa `database/schema.sql` uma vez para criar/verificar as tabelas;
+- `acha`: inicia somente depois que `acha-schema` termina com sucesso.
+
+O MySQL **não é criado pelo Compose**. Ele deve existir previamente e estar acessível pela `database_network`.
+
+Mapeamento de portas:
+
+```text
+host:5002 → container:5000
+```
+
+A inicialização do schema é idempotente e não apaga dados existentes.
+
+Para subir:
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+Para acompanhar a preparação do schema:
+
+```bash
+docker logs acha-schema
+```

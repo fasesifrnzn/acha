@@ -11124,7 +11124,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1932513",
+      "coordinatorCourseId": "MSI",
+      "coordinatorCourseName": "Manutenção e Suporte em Informática"
     },
     {
       "id": 17,
@@ -11295,7 +11298,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1281383",
+      "coordinatorCourseId": "ELETRONICA",
+      "coordinatorCourseName": "Eletrônica"
     },
     {
       "id": 28,
@@ -11601,7 +11607,10 @@
         "Inglês",
         "Português",
         "Sociologia"
-      ]
+      ],
+      "matricula": "2665422",
+      "coordinatorCourseId": null,
+      "coordinatorCourseName": null
     },
     {
       "id": 47,
@@ -11651,8 +11660,12 @@
       "distributionGroups": [
         "Biologia",
         "Física",
-        "Química"
-      ]
+        "Química",
+        "Matemática"
+      ],
+      "matricula": "1434282",
+      "coordinatorCourseId": null,
+      "coordinatorCourseName": null
     },
     {
       "id": 50,
@@ -11704,7 +11717,7 @@
       "name": "Marlene Medeiros",
       "discipline": "Logística",
       "group": "Gestão",
-      "degree": "Mestrado",
+      "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
       "leave": "Não se aplica",
@@ -11712,7 +11725,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1941298",
+      "coordinatorCourseId": "COMERCIO",
+      "coordinatorCourseName": "Comércio"
     },
     {
       "id": 54,
@@ -11742,7 +11758,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "2895668",
+      "coordinatorCourseId": "COMERCIO_EJA",
+      "coordinatorCourseName": "Comércio"
     },
     {
       "id": 56,
@@ -11843,7 +11862,7 @@
       "name": "Priscilla Suene de Santana Nogueira Silverio",
       "discipline": "Sistemas de Informação",
       "group": "Informática",
-      "degree": "",
+      "degree": "Doutorado",
       "regime": "DE",
       "regimePct": 1,
       "leave": "Não se aplica",
@@ -11851,7 +11870,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1919274",
+      "coordinatorCourseId": "INFORMATICA_INTERNET",
+      "coordinatorCourseName": "Informática para Internet"
     },
     {
       "id": 63,
@@ -11956,7 +11978,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1639770",
+      "coordinatorCourseId": "ESPECIALIZACAO_ENSINO",
+      "coordinatorCourseName": "Especialização em Ensino"
     },
     {
       "id": 70,
@@ -11986,7 +12011,10 @@
       "management": "Coordenação de Curso",
       "managementPct": 0.5,
       "classFactor": 0.5,
-      "vinculo": "Efetivo"
+      "vinculo": "Efetivo",
+      "matricula": "1990574",
+      "coordinatorCourseId": "MARKETING",
+      "coordinatorCourseName": "Marketing"
     },
     {
       "id": 72,
@@ -12294,6 +12322,103 @@
         "ch": 4,
         "group": "Informática",
         "turn": "Tarde"
+      },
+      "9|1|1|0": {
+        "name": "Matemática I",
+        "ch": 4,
+        "group": "Matemática",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)",
+        "optionalChoice": "",
+        "optionalChoices": [],
+        "validationStatus": "approved",
+        "validationSource": "coordinator_confirmation",
+        "confirmationCreatedAt": "2026-09-14T20:45:45.933Z",
+        "confirmationBy": "usr-30",
+        "confirmationPrevious": null
+      },
+      "9|1|1|1": {
+        "name": "Química: Geral e Inorgânica",
+        "ch": 4,
+        "group": "Química",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)",
+        "optionalChoice": "",
+        "optionalChoices": [],
+        "validationStatus": "approved",
+        "validationSource": "coordinator_confirmation",
+        "confirmationCreatedAt": "2026-09-14T20:45:47.141Z",
+        "confirmationBy": "usr-30",
+        "confirmationPrevious": null
+      },
+      "9|1|1|2": {
+        "name": "Geografia I",
+        "ch": 14,
+        "group": "Geografia",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)",
+        "notes": "",
+        "validationStatus": "approved",
+        "validationSource": "director_approval",
+        "validationApprovalId": "ap1789419882906-0akmm",
+        "validationUpdatedAt": "2026-09-15T11:38:46.459Z",
+        "validationBy": "usr-30"
+      },
+      "10|3|1|16": {
+        "name": "Inglês Instrumental",
+        "ch": 2,
+        "group": "Inglês",
+        "turn": "Tarde",
+        "course": "Licenciatura em Informática (2018)",
+        "optionalChoice": "",
+        "optionalChoices": [],
+        "validationStatus": "approved",
+        "validationSource": "coordinator_confirmation",
+        "confirmationCreatedAt": "2026-09-15T11:48:05.557Z",
+        "confirmationBy": "usr-30",
+        "confirmationPrevious": null
+      },
+      "9|1|1|4": {
+        "name": "Filosofia I",
+        "ch": 2,
+        "group": "Filosofia",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)",
+        "optionalChoice": "",
+        "optionalChoices": [],
+        "validationStatus": "approved",
+        "validationSource": "coordinator_confirmation",
+        "confirmationCreatedAt": "2026-09-15T11:55:26.798Z",
+        "confirmationBy": "usr-30",
+        "confirmationPrevious": null
+      },
+      "9|1|1|35": {
+        "name": "Educação em Tecnologias Digitais",
+        "ch": 2,
+        "group": "Informática",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)",
+        "optionalChoice": "",
+        "optionalChoices": [],
+        "validationStatus": "approved",
+        "validationSource": "coordinator_confirmation",
+        "confirmationCreatedAt": "2026-09-15T11:55:28.765Z",
+        "confirmationBy": "usr-30",
+        "confirmationPrevious": null
+      },
+      "9|1|1|36": {
+        "name": "Introdução à Lógica e Programação",
+        "ch": 4,
+        "group": "Informática",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)",
+        "optionalChoice": "",
+        "optionalChoices": [],
+        "validationStatus": "approved",
+        "validationSource": "coordinator_confirmation",
+        "confirmationCreatedAt": "2026-09-15T11:55:46.846Z",
+        "confirmationBy": "usr-30",
+        "confirmationPrevious": null
       }
     },
     "2026.2": {
@@ -21133,8 +21258,10 @@
       "role": "coordenador_curso",
       "passwordHash": "12d212f8cb9ea6b514b23ffe4923f8786e08058ee4bec20a6258aeaa9553b69d",
       "photoData": "",
-      "suapUsername": "",
-      "suapMatricula": ""
+      "suapUsername": "1281383",
+      "suapMatricula": "1281383",
+      "suapName": "Daniel Guerra",
+      "suapPhotoUrl": "https://suap.ifrn.edu.br/djtools/arquivo/comum/vinculo/598bb2ce-d5e0-4d17-ad72-d3e5919d3e3f/foto/150x200/"
     },
     {
       "id": "usr-30",
@@ -21192,8 +21319,10 @@
       "role": "coordenador_curso",
       "passwordHash": "ae35d30acb567d767f6804cb7efe344df6fd2c3542177fffcce6b9dc318086b1",
       "photoData": "",
-      "suapUsername": "",
-      "suapMatricula": ""
+      "suapUsername": "1919274",
+      "suapMatricula": "1919274",
+      "suapName": "Priscilla Silverio",
+      "suapPhotoUrl": "https://suap.ifrn.edu.br/djtools/arquivo/comum/vinculo/90ac5c30-150b-4e0b-b4cf-8a1e17e19010/foto/150x200/"
     },
     {
       "id": "usr-69",
@@ -21213,6 +21342,28 @@
       "displayName": "Tatiane Nunes Viana de Almeida",
       "role": "coordenador_curso",
       "passwordHash": "54e75fa9750ca9785496310044685ad40beacf0663e5ba187cf445aa3494d761",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-46",
+      "teacherId": 46,
+      "username": "luiz",
+      "displayName": "Luiz Henrique Felicio do Nascimento",
+      "role": "coordenador_area",
+      "passwordHash": "8ff4207121aa55ba770a1fa677a3baa8faed2eca463ff488cb5647e041fad0cc",
+      "photoData": "",
+      "suapUsername": "",
+      "suapMatricula": ""
+    },
+    {
+      "id": "usr-49",
+      "teacherId": 49,
+      "username": "manoel",
+      "displayName": "Manoel Prudente de Almeida Neto",
+      "role": "coordenador_area",
+      "passwordHash": "222be96d05403b25ec898fc17be43250894a6eb5ffdcb83dc4a3e8c6d04bb4d9",
       "photoData": "",
       "suapUsername": "",
       "suapMatricula": ""
@@ -21376,6 +21527,294 @@
         "semesterTo": "2027.1",
         "features": {
           "oferta.previsao": false
+        }
+      }
+    }
+  },
+  "approvals": [
+    {
+      "id": "ap1789419882906-0akmm",
+      "status": "approved",
+      "requesterId": "usr-30",
+      "requesterName": "Edmilson Barbalho Campos Neto",
+      "requesterRole": "coordenador_curso",
+      "createdAt": "2026-09-14T21:04:42.906Z",
+      "type": "offer_change",
+      "action": "change",
+      "semester": "2027.1",
+      "targetKey": "9|1|1|2",
+      "changes": {
+        "name": "Geografia I",
+        "group": "Geografia",
+        "ch": 14,
+        "turn": "Tarde",
+        "notes": ""
+      },
+      "snapshot": {
+        "name": "Geografia I",
+        "ch": 4,
+        "group": "Geografia",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)"
+      },
+      "targetLabel": "Técnico em Informática para Internet (2024) · Geografia I · 2027.1",
+      "decisionNote": "",
+      "decidedBy": "Edmilson Barbalho Campos Neto",
+      "decidedById": "usr-30",
+      "decidedAt": "2026-09-15T11:38:46.458Z"
+    },
+    {
+      "id": "ap1789472880356-ym2py",
+      "status": "approved",
+      "requesterId": "usr-30",
+      "requesterName": "Edmilson Barbalho Campos Neto",
+      "requesterRole": "coordenador_curso",
+      "createdAt": "2026-09-15T11:48:00.356Z",
+      "type": "offer_change",
+      "action": "delete",
+      "semester": "2027.1",
+      "targetKey": "10|3|1|14",
+      "changes": {
+        "notes": "ty"
+      },
+      "snapshot": {
+        "name": "Didática",
+        "ch": 4,
+        "group": "Educação",
+        "turn": "Tarde",
+        "course": "Licenciatura em Informática (2018)"
+      },
+      "targetLabel": "Licenciatura em Informática (2018) · Didática · 2027.1",
+      "decisionNote": "",
+      "decidedBy": "Edmilson Barbalho Campos Neto",
+      "decidedById": "usr-30",
+      "decidedAt": "2026-09-15T11:48:16.683Z"
+    },
+    {
+      "id": "ap1789473321785-zqhm7",
+      "status": "correction_requested",
+      "requesterId": "usr-30",
+      "requesterName": "Edmilson Barbalho Campos Neto",
+      "requesterRole": "coordenador_curso",
+      "createdAt": "2026-09-15T11:55:21.785Z",
+      "type": "offer_change",
+      "action": "delete",
+      "semester": "2027.1",
+      "targetKey": "9|1|1|3",
+      "changes": {
+        "notes": "hfghf"
+      },
+      "snapshot": {
+        "name": "Educação Física I",
+        "ch": 2,
+        "group": "Educação Física",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)"
+      },
+      "targetLabel": "Técnico em Informática para Internet (2024) · Educação Física I · 2027.1",
+      "decisionNote": "hjg",
+      "decidedBy": "Edmilson Barbalho Campos Neto",
+      "decidedById": "usr-30",
+      "decidedAt": "2026-09-15T11:56:12.992Z"
+    },
+    {
+      "id": "ap1789473333176-psak7",
+      "status": "approved",
+      "requesterId": "usr-30",
+      "requesterName": "Edmilson Barbalho Campos Neto",
+      "requesterRole": "coordenador_curso",
+      "createdAt": "2026-09-15T11:55:33.176Z",
+      "type": "offer_change",
+      "action": "delete",
+      "semester": "2027.1",
+      "targetKey": "9|1|1|5",
+      "changes": {
+        "notes": "hty"
+      },
+      "snapshot": {
+        "name": "Língua Portuguesa e Literatura I",
+        "ch": 4,
+        "group": "Português",
+        "turn": "Tarde",
+        "course": "Técnico em Informática para Internet (2024)"
+      },
+      "targetLabel": "Técnico em Informática para Internet (2024) · Língua Portuguesa e Literatura I · 2027.1",
+      "decisionNote": "",
+      "decidedBy": "Edmilson Barbalho Campos Neto",
+      "decidedById": "usr-30",
+      "decidedAt": "2026-09-15T11:55:56.854Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "nt1789419882906-84dhc",
+      "userId": "usr-19",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Geografia I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789419882906-0akmm",
+      "read": false,
+      "createdAt": "2026-09-14T21:04:42.906Z"
+    },
+    {
+      "id": "nt1789419882906-jan9x",
+      "userId": "usr-30",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Geografia I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789419882906-0akmm",
+      "read": false,
+      "createdAt": "2026-09-14T21:04:42.906Z"
+    },
+    {
+      "id": "nt1789419882906-xpvou",
+      "userId": "usr-33",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Geografia I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789419882906-0akmm",
+      "read": false,
+      "createdAt": "2026-09-14T21:04:42.906Z"
+    },
+    {
+      "id": "nt1789472326459-mf7em",
+      "userId": "usr-30",
+      "title": "Solicitação aprovada",
+      "message": "Técnico em Informática para Internet (2024) · Geografia I · 2027.1 — aprovada.",
+      "approvalId": "ap1789419882906-0akmm",
+      "read": false,
+      "createdAt": "2026-09-15T11:38:46.459Z"
+    },
+    {
+      "id": "nt1789472880356-1j412",
+      "userId": "usr-19",
+      "title": "Nova pendência para avaliação",
+      "message": "Licenciatura em Informática (2018) · Didática · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789472880356-ym2py",
+      "read": false,
+      "createdAt": "2026-09-15T11:48:00.356Z"
+    },
+    {
+      "id": "nt1789472880356-ttt1n",
+      "userId": "usr-30",
+      "title": "Nova pendência para avaliação",
+      "message": "Licenciatura em Informática (2018) · Didática · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789472880356-ym2py",
+      "read": false,
+      "createdAt": "2026-09-15T11:48:00.356Z"
+    },
+    {
+      "id": "nt1789472880356-67dup",
+      "userId": "usr-33",
+      "title": "Nova pendência para avaliação",
+      "message": "Licenciatura em Informática (2018) · Didática · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789472880356-ym2py",
+      "read": false,
+      "createdAt": "2026-09-15T11:48:00.356Z"
+    },
+    {
+      "id": "nt1789472896683-c3gcu",
+      "userId": "usr-30",
+      "title": "Solicitação aprovada",
+      "message": "Licenciatura em Informática (2018) · Didática · 2027.1 — aprovada.",
+      "approvalId": "ap1789472880356-ym2py",
+      "read": false,
+      "createdAt": "2026-09-15T11:48:16.683Z"
+    },
+    {
+      "id": "nt1789473321785-06t9h",
+      "userId": "usr-19",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Educação Física I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789473321785-zqhm7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:21.785Z"
+    },
+    {
+      "id": "nt1789473321785-mdyjr",
+      "userId": "usr-30",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Educação Física I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789473321785-zqhm7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:21.785Z"
+    },
+    {
+      "id": "nt1789473321785-92p1w",
+      "userId": "usr-33",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Educação Física I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789473321785-zqhm7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:21.785Z"
+    },
+    {
+      "id": "nt1789473333176-vi82y",
+      "userId": "usr-19",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Língua Portuguesa e Literatura I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789473333176-psak7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:33.176Z"
+    },
+    {
+      "id": "nt1789473333176-kycym",
+      "userId": "usr-30",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Língua Portuguesa e Literatura I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789473333176-psak7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:33.176Z"
+    },
+    {
+      "id": "nt1789473333176-w40ub",
+      "userId": "usr-33",
+      "title": "Nova pendência para avaliação",
+      "message": "Técnico em Informática para Internet (2024) · Língua Portuguesa e Literatura I · 2027.1 — solicitação cadastrada no modo de teste.",
+      "approvalId": "ap1789473333176-psak7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:33.176Z"
+    },
+    {
+      "id": "nt1789473356854-8y97x",
+      "userId": "usr-30",
+      "title": "Solicitação aprovada",
+      "message": "Técnico em Informática para Internet (2024) · Língua Portuguesa e Literatura I · 2027.1 — aprovada.",
+      "approvalId": "ap1789473333176-psak7",
+      "read": false,
+      "createdAt": "2026-09-15T11:55:56.854Z"
+    },
+    {
+      "id": "nt1789473372992-lwczz",
+      "userId": "usr-30",
+      "title": "Correção solicitada",
+      "message": "Técnico em Informática para Internet (2024) · Educação Física I · 2027.1 — devolvida para correção. hjg",
+      "approvalId": "ap1789473321785-zqhm7",
+      "read": false,
+      "createdAt": "2026-09-15T11:56:12.992Z"
+    }
+  ],
+  "offerDeletions": {
+    "2027.1": {
+      "10|3|1|14": {
+        "approvalId": "ap1789472880356-ym2py",
+        "deletedAt": "2026-09-15T11:48:16.683Z",
+        "deletedBy": "usr-30",
+        "snapshot": {
+          "name": "Didática",
+          "ch": 4,
+          "group": "Educação",
+          "turn": "Tarde",
+          "course": "Licenciatura em Informática (2018)"
+        }
+      },
+      "9|1|1|5": {
+        "approvalId": "ap1789473333176-psak7",
+        "deletedAt": "2026-09-15T11:55:56.854Z",
+        "deletedBy": "usr-30",
+        "snapshot": {
+          "name": "Língua Portuguesa e Literatura I",
+          "ch": 4,
+          "group": "Português",
+          "turn": "Tarde",
+          "course": "Técnico em Informática para Internet (2024)"
         }
       }
     }

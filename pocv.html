@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA — Cenários</title>
-<link rel="stylesheet" href="/style.css?v=1.0.0"><script src="/app.js?v=1.0.43"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.77"><script src="/app.js?v=1.0.77"></script>
 <style>
 .pocv-page{max-width:1500px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -1125,6 +1125,6 @@ $('modalOk').onclick=async()=>{
 };
 $('prevSemBtn').onclick=()=>{const w=$('timelineWrap');w.scrollBy({left:-Math.max(420,w.clientWidth*0.72),behavior:'smooth'})};
 $('nextSemBtn').onclick=()=>{const w=$('timelineWrap');w.scrollBy({left:Math.max(420,w.clientWidth*0.72),behavior:'smooth'})};
-load().catch(e=>{console.error(e);alert('Não foi possível carregar a POCV: '+e.message)});
+load().catch(e=>{alert('Não foi possível carregar a POCV: '+e.message)});
 </script>
 </body></html>
