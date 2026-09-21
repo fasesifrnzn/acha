@@ -1052,6 +1052,24 @@ async function api(req,res){
   const authUser=requireAuth(req,res,dbForAuth);
   if(!authUser)return;
 
+  // No modo de visualização da Direção, o comportamento deve respeitar exatamente
+  // o nível configurado para o perfil acadêmico simulado. Visualização não pode
+  // executar nenhuma mutação, mesmo que a sessão real seja de Diretor.
+  const previewRole=String(req.headers['x-acha-preview-role']||'');
+  const previewDirector=String(req.headers['x-acha-preview']||'')==='director' && (authUser.role==='diretor_geral'||authUser.role==='diretoria_academica');
+  const previewApiPageMap={
+    '/api/offer':'index.html','/api/extra-offer':'demandas.html','/api/demand':'demandas.html','/api/validation':'index.html',
+    '/api/matrix':'matrizes.html','/api/matrices':'matrizes.html','/api/teacher':'docentes.html','/api/teacher-link':'docentes.html',
+    '/api/group':'grupos.html','/api/variable':'variaveis.html','/api/turma':'turmas.html','/api/pocv':'pocv.html','/api/pocv/config':'pocv.html',
+    '/api/profile':'perfil.html','/api/access':'acessos.html','/api/backup':'backup.html'
+  };
+  if(previewDirector && previewRole && req.method!=='GET' && req.method!=='HEAD'){
+    const key=Object.keys(previewApiPageMap).sort((a,b)=>b.length-a.length).find(k=>p===k||p.startsWith(k+'/'));
+    const page=key?previewApiPageMap[key]:null;
+    const simulated=accessConfig(dbForAuth).profiles[previewRole];
+    if(page && simulated?.pages?.[page]!=='edit') return send(res,403,{error:'O perfil simulado possui apenas permissão de visualização nesta área.'});
+  }
+
   if(p==='/api/validation'&&req.method==='GET'){const db=readDB();const approvals=(authUser.role==='diretor_geral'||authUser.role==='diretoria_academica')?db.approvals:db.approvals.filter(a=>String(a.requesterId)===String(authUser.id));return send(res,200,{ok:true,approvals:approvals.slice().sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)))});}
   if(p==='/api/offer/undo-confirm'&&req.method==='POST'){
     try{const x=await body(req),db=readDB();const key=String(x.key||'');if(!x.semester||!key)return send(res,400,{error:'Semestre e oferta são obrigatórios.'});const isDir=['diretor_geral','diretoria_academica'].includes(authUser.role);if(!isDir&&!['coordenador_curso','coordenador_area'].includes(authUser.role))return send(res,403,{error:'Acesso restrito.'});const resolved=resolvePreviewOffer(db,x.semester,{key,source:x.source||{}});const resolvedKey=resolved?.key||key;const current=db.offers?.[x.semester]?.[resolvedKey];if(!current||current.validationStatus!=='approved'||current.validationSource!=='coordinator_confirmation')return send(res,409,{error:'Esta oferta não possui uma confirmação direta que possa ser desfeita.'});if(!isDir&&!coordinatorOwnsOffer(db,authUser,x.semester,resolvedKey))return send(res,403,{error:'Oferta fora da área/curso autorizado.'});const previous=current.confirmationPrevious;if(previous===null||previous===undefined)delete db.offers[x.semester][resolvedKey];else db.offers[x.semester][resolvedKey]=previous;writeDB(db);return send(res,200,{ok:true,undone:true});}catch(e){return send(res,500,{error:e.message})}

@@ -69,12 +69,20 @@
 
   window.fetch=function(input,init){
     const url=typeof input==='string'?input:(input?.url||'');
+    if(previewEnabled()){
+      const target=previewTarget();
+      const headers=new Headers(init?.headers||{});
+      headers.set('X-ACHA-Preview','director');
+      headers.set('X-ACHA-Preview-Role',target.type==='area'?'coordenador_area':'coordenador_curso');
+      init={...(init||{}),headers};
+    }
     if(previewEnabled() && /\/api\/session(?:\?|$)/.test(url)) return nativeFetch(input,init).then(async response=>{
       if(!response.ok)return response; const payload=await response.clone().json().catch(()=>null); if(!payload?.authenticated||!isDirectionRole(payload.user?.role))return response;
       const target=previewTarget(); let db=null; try{db=await nativeFetch('/api/db',{cache:'no-store'}).then(r=>r.json())}catch(e){}
       const area=target.type==='area', areaName=area?String(target.id||''):''; const areaTeacher=(db?.teachers||[]).find(t=>String(t.managementArea||'').trim()===areaName);
       const user=area?{...payload.user,role:'coordenador_area',coordinatorCourseId:'',coordinatorCourseName:'',managementArea:areaName,distributionGroups:[...(db?.pedagogicalAreaResponsibilities?.[areaName]?.groups||areaTeacher?.distributionGroups||[])]}:{...payload.user,role:'coordenador_curso',coordinatorCourseId:String(target.id||'')};
-      const previewAccess=area?{...areaAccess,pages:Object.fromEntries(Object.entries(areaAccess.pages).map(([k])=>[k,'edit']))}:coordinatorAccess;
+      const configuredAccess=db?.accessControl?.profiles?.[area?'coordenador_area':'coordenador_curso'];
+      const previewAccess=configuredAccess?JSON.parse(JSON.stringify(configuredAccess)):(area?areaAccess:coordinatorAccess);
       return new Response(JSON.stringify({...payload,user,access:previewAccess,__preview:true,__realRole:payload.user.role,__previewType:target.type}),{status:200,headers:{'Content-Type':'application/json'}});
     });
     if(previewEnabled() && /\/api\/db(?:\?|$)/.test(url)) return nativeFetch(input,init).then(async response=>{if(!response.ok)return response;const db=await response.clone().json().catch(()=>null);if(!db)return response;return new Response(JSON.stringify(filterPreviewDb(db,previewTarget())),{status:response.status,headers:{'Content-Type':'application/json'}})});
@@ -195,7 +203,7 @@
     document.body.classList.toggle('access-view-only',level==='view');
     if(level!=='view')return;
     const selectors={
-      'index.html':['#newDemandBtn','.edit-row','.delete-row','.row-actions','#saveEdit','#saveOptionalChoices','#saveDemand','#addOptionalChoice'],
+      'index.html':['#newDemandBtn','.edit-row','.delete-row','.row-actions','#saveEdit','#saveOptionalChoices','#saveDemand','#addOptionalChoice','.coordinator-batch','#batchConfirmOffers','#clearOfferSelection','#selectAllOffers','#headerSelectOffers','.coordinator-only-col'],
       'matrizes.html':['#newBtn','#saveBtn','#addOptionalCatalogBtn','#addDisciplineBtn','.optional-catalog-remove','.period-remove','.period-add','.row-remove'],
       'docentes.html':['#addTeacher','.edit-teacher','.delete-teacher','#deleteTeacher','#saveEdit','.add-substitute'],
       'grupos.html':['.teacher-edit'],
@@ -207,7 +215,7 @@
     if(page==='index.html')document.querySelectorAll('.group-cell').forEach(el=>el.style.pointerEvents='none');
   }
   function installAccessGuard(){
-    document.addEventListener('click',e=>{if(document.body.dataset.accessLevel!=='view')return;const b=e.target.closest('.edit,.delete,.edit-row,.delete-row,.edit-teacher,.delete-teacher,.teacher-edit,.row-remove,.period-add,.period-remove,[data-remove-row],[data-remove-optional],#newDemandBtn,#add,#save,#saveBtn,#saveEdit,#saveDemand,#saveOptionalChoices,#addDisciplineBtn,#addOptionalCatalogBtn,#addTeacher,#deleteTeacher,#newBtn,#cloneBtn,#realBtn,#variablesBtn,#clearBtn,#syncRealBtn,#addScenarioOfferBtn');if(b){e.preventDefault();e.stopImmediatePropagation();return;}if(location.pathname.endsWith('/index.html')&&e.target.closest('.group-cell')){e.preventDefault();e.stopImmediatePropagation();}if(location.pathname.endsWith('/matrizes.html')&&e.target.closest('tr[data-id]')){e.preventDefault();e.stopImmediatePropagation();}if(location.pathname.endsWith('/docentes.html')&&e.target.closest('tr[data-id]')){e.preventDefault();e.stopImmediatePropagation();}},true);
+    document.addEventListener('click',e=>{if(document.body.dataset.accessLevel!=='view')return;const b=e.target.closest('.edit,.delete,.edit-row,.delete-row,.edit-teacher,.delete-teacher,.teacher-edit,.row-remove,.period-add,.period-remove,[data-remove-row],[data-remove-optional],#newDemandBtn,#add,#save,#saveBtn,#saveEdit,#saveDemand,#saveOptionalChoices,#addDisciplineBtn,#addOptionalCatalogBtn,#addTeacher,#deleteTeacher,#newBtn,#cloneBtn,#realBtn,#variablesBtn,#clearBtn,#syncRealBtn,#addScenarioOfferBtn');if(b){e.preventDefault();e.stopImmediatePropagation();return;}if(location.pathname.endsWith('/index.html')&&e.target.closest('.group-cell,.discipline-cell')){e.preventDefault();e.stopImmediatePropagation();}if(location.pathname.endsWith('/matrizes.html')&&e.target.closest('tr[data-id]')){e.preventDefault();e.stopImmediatePropagation();}if(location.pathname.endsWith('/docentes.html')&&e.target.closest('tr[data-id]')){e.preventDefault();e.stopImmediatePropagation();}},true);
     document.addEventListener('dblclick',e=>{if(document.body.dataset.accessLevel==='view'){e.preventDefault();e.stopImmediatePropagation();}},true);
   }
   async function setupSidebar(){

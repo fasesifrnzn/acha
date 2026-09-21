@@ -30,7 +30,7 @@ th[data-col="actions"]{width:15%;min-width:190px;cursor:default}
 
 .projection-card{margin-bottom:16px}.projection-toggle{display:flex;align-items:center;gap:8px}.projection-toggle button{padding:6px 10px;font-size:12px}.projection-table{width:100%;table-layout:fixed}.projection-table th,.projection-table td{text-align:left}.projection-table td:nth-child(3),.projection-table td:nth-child(4),.projection-table td:nth-child(5),.projection-table td:nth-child(6){text-align:center}.projection-table th:nth-child(1){width:22%}.projection-table th:nth-child(2){width:18%}.projection-table th:nth-child(3){width:13%}.projection-table th:nth-child(4){width:13%}.projection-table th:nth-child(5){width:17%}.projection-table th:nth-child(6){width:17%}.projection-ch-cell{position:relative;overflow:hidden}.projection-ch-bg{position:absolute;left:7px;top:50%;height:12px;transform:translateY(-50%);border-radius:999px;opacity:.24;pointer-events:none;max-width:calc(100% - 14px);min-width:0}.projection-ch-content{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}.projection-good .projection-ch-bg{background:#16a34a}.projection-warn .projection-ch-bg{background:#f59e0b}.projection-bad .projection-ch-bg{background:#dc2626}.projection-good .projection-status{color:#15803d}.projection-warn .projection-status{color:#d97706}.projection-bad .projection-status{color:#dc2626}.projection-index-cell{cursor:pointer;font-weight:700}.projection-index-cell:hover{background:#f0fdfa}.projection-hidden{display:none!important}
 .offer-delete-box{padding:12px 14px;border:1px solid #fecaca;background:#fff7f7;border-radius:10px}.offer-delete-row{display:flex;align-items:flex-start;gap:10px}.offer-delete-row input{width:18px;height:18px;margin-top:1px;accent-color:#b91c1c}.offer-delete-row strong{display:block;color:#991b1b;font-size:13px}.offer-delete-row small{display:block;color:#7f1d1d;font-size:11px;margin-top:2px}.offer-delete-row input:checked + div{color:#991b1b}
-</style><link rel="stylesheet" href="/style.css?v=1.0.77"><script src="/app.js?v=1.0.77"></script></head>
+</style><link rel="stylesheet" href="/style.css?v=1.0.112"><script src="/app.js?v=1.0.112"></script></head>
 <script>if(location.protocol==='file:'){location.href='http://localhost:3000/login.html';}</script><body><header><h1>ACHA — Oferta Acadêmica | IFRN Campus Natal-Zona Norte</h1><p>Planejamento de turmas e disciplinas por semestre</p></header>
 <nav class="mainnav"><a href="index.html" class="active">📋 Oferta</a><a href="projecao-cenario.html">📊 Projeção</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls">
@@ -43,7 +43,7 @@ th[data-col="actions"]{width:15%;min-width:190px;cursor:default}
 <div><label>PERÍODO</label><select id="fPeriod"><option value="">Todos</option></select></div>
 <div><label>TURNO</label><select id="fTurn"><option value="">Todos</option></select></div>
 <div><label>GRUPO</label><select id="fGroup"><option value="">Todos</option></select></div>
-<div><label>STATUS</label><select id="fStatus"><option value="awaiting">Aguardando confirmação</option><option value="all">Todos</option><option value="confirmed">Confirmadas</option><option value="change_pending">Alterações pendentes</option><option value="correction_requested">Devolvidas para correção</option><option value="delete_pending">Exclusões pendentes</option><option value="deleted">Excluídas</option><option value="extra">Demandas avulsas</option></select></div>
+<div><label>STATUS</label><select id="fStatus"><option value="all">Todos</option><option value="awaiting">Aguardando confirmação</option><option value="confirmed">Confirmadas</option><option value="change_pending">Alterações pendentes</option><option value="correction_requested">Devolvidas para correção</option><option value="delete_pending">Exclusões pendentes</option><option value="deleted">Excluídas</option><option value="extra">Demandas avulsas</option></select></div>
 </div>
 <div style="margin-top:11px;display:flex;justify-content:space-between;align-items:center"><span class="count" id="filterStatus"></span><button class="secondary" id="clear">Limpar filtros</button></div>
 </section>
@@ -272,7 +272,7 @@ function build(){
 function applyUrlFilters(){const p=new URLSearchParams(location.search);if(p.get('approval')){const a=(DB?.approvals||[]).find(v=>String(v.id)===String(p.get('approval')));if(a){if(a.semester)semSel.value=a.semester;if(a.targetKey){const x=String(a.targetKey).split('|');if(x[0])filters.matrix.value=x[0];if(x[1])filters.period.value=x[1];}filters.status.value='all';}}const sem=p.get('semester');if(sem&&[...semSel.options].some(o=>o.value===sem))semSel.value=sem;const set=(el,v)=>{if(v&&[...el.options].some(o=>o.value===v))el.value=v};set(filters.group,p.get('group'));set(filters.matrix,p.get('matrix'));set(filters.course,p.get('course'));set(filters.period,p.get('period'));set(filters.turn,p.get('turn'));set(filters.status,p.get('status'));if(p.get('q'))search.value=p.get('q')}
 semSel.onchange=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');refreshFilterOptions(allRows());build()};search.oninput=build;Object.values(filters).forEach(s=>s.onchange=build);
 document.querySelectorAll('.sort').forEach(b=>b.onclick=()=>{let k=b.dataset.key;if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=1}build()});
-$('clear').onclick=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');filters.status.value='awaiting';build()};
+$('clear').onclick=()=>{search.value='';Object.values(filters).forEach(s=>s.value='');filters.status.value=isCoordinator?'all':'awaiting';build()};
 $('csv').onclick=()=>{if(!currentRows.length)return;let head=['Matriz','Curso','Período','Turno','Disciplina','CH','Grupo','Turma'];let csv=[head,...currentRows.map(r=>[r.matrix,r.course,r.period,r.turn,r.name,r.ch,r.group,r.turma])].map(a=>a.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(';')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:'text/csv;charset=utf-8'}));a.download='oferta_'+semSel.value+'.csv';a.click()};
 
 let editingRow=null;
@@ -355,7 +355,12 @@ async function openOptionalModal(row,opts={}){
     try{
       const payload={optionalChoices:selected.map(o=>o.name),optionalChoice:selected.length===1?selected[0].name:'',name:selected.length?selected.map(o=>o.name).join(' + '):row.optionalBaseName,ch:selected.length?total:row.optionalBaseCh,group:selected.length?selected[0].group||'':row.optionalBaseGroup||''};
       if(mode==='confirm'){modal.style.display='none';resolve({confirmed:true,optionalChoices:payload.optionalChoices,selected});return;}
-      await apiSave(semSel.value,baseKey,payload);
+      if(isCoordinator){
+        const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key:baseKey,changes:payload});
+        if(!ok){saveBtn.disabled=false;return;}
+      }else{
+        await apiSave(semSel.value,baseKey,payload);
+      }
       DB=await (await fetch('/api/db',{cache:'no-store'})).json();
       modal.style.display='none'; build(); resolve({confirmed:true,optionalChoices:payload.optionalChoices,selected});
     }catch(err){saveBtn.disabled=false;alert('Não foi possível salvar as optativas: '+err.message);}
@@ -455,7 +460,7 @@ $('saveEdit').onclick=async()=>{
   if(isCoordinator&&$('editModal').dataset.validationRequest==='1'){
     const changes={};document.querySelectorAll('#editFields [data-edit]').forEach(inp=>{const k=inp.dataset.edit;if(k==='ch')changes[k]=Number(inp.value);else changes[k]=inp.value});
     const pendingIdCheck=$('editModal').dataset.pendingApprovalId||'';const pendingBase=pendingIdCheck?JSON.parse($('editModal').dataset.pendingChanges||'{}'):null;const compareAgainst=pendingIdCheck?pendingBase:editingRow;
-    const changed=['name','group','ch','turn','notes'].some(k=>String(changes[k]??'')!==String(compareAgainst?.[k]??''));
+    const changed=['name','group','ch','turn','notes','optionalChoice','optionalChoices'].some(k=>JSON.stringify(changes[k]??'')!==JSON.stringify(compareAgainst?.[k]??''));
     if(!changed)return alert(pendingIdCheck?'Nenhuma nova alteração foi informada.':'Nenhuma alteração foi informada.');
     if(editingRow.optional){const catalog=editingRow.optionalCatalog||[];const chosen=String(changes.name||'');const opt=catalog.find(o=>String(o.name)===chosen);if(!opt)return alert('Selecione uma disciplina entre as optativas disponíveis.');changes.optionalChoice=chosen;changes.optionalChoices=[chosen];changes.ch=Number(changes.ch||opt.weekly||0);changes.group=changes.group||opt.group||'';}
     if(changes.turn&&changes.turn!==String(editingRow.turn||''))changes.turnScope=$('editModal').dataset.turnScope||'offer';
@@ -495,7 +500,7 @@ function openDemandModal(){
   delete $('demandModal').dataset.editId; $('demandModalTitle').textContent='Nova demanda avulsa'; $('saveDemand').textContent='Adicionar demanda'; $('demandName').value=''; $('demandCh').value='4'; $('demandGroup').value=''; $('demandType').value='Dependência'; $('demandTurn').value=''; $('demandCourse').value=''; $('demandNotes').value='';
   $('demandModal').style.display='flex'; $('demandName').focus();
 }
-$('newDemandBtn').onclick=openDemandModal;
+$('newDemandBtn').addEventListener('click',e=>{e.preventDefault();openDemandModal();});
 $('closeDemand').onclick=()=>$('demandModal').style.display='none';
 $('cancelDemand').onclick=()=>$('demandModal').style.display='none';
 $('demandModal').onclick=e=>{if(e.target===$('demandModal'))$('demandModal').style.display='none'};
@@ -519,7 +524,7 @@ $('saveDemand').onclick=async()=>{
     $('demandModal').style.display='none'; build();
   }catch(e){alert(e.message)}finally{btn.disabled=false}
 };
-async function init(){try{SESSION=await (await fetch('/api/session',{cache:'no-store'})).json();DB=await (await fetch('/api/db')).json();refreshFilterOptions(allRows());build();applyUrlFilters();build()}catch(e){build()}}
+async function init(){try{SESSION=await (await fetch('/api/session',{cache:'no-store'})).json();DB=await (await fetch('/api/db')).json();isCoordinator=['coordenador_curso','coordenador_area'].includes(SESSION?.user?.role)||SESSION?.__preview===true;if(isCoordinator&&!new URLSearchParams(location.search).has('status'))filters.status.value='all';refreshFilterOptions(allRows());build();applyUrlFilters();build()}catch(e){build()}}
 initForecastToggle();
 init();
 applyAccessFeatureVisibility();

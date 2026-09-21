@@ -1,3 +1,13 @@
+# ACHA v1.0.112
+
+## 1.0.112 — correções do fluxo do coordenador
+
+- Corrige a abertura da janela de demanda avulsa na visão do coordenador.
+- Permite solicitar alterações de oferta mesmo quando a única alteração é o turno.
+- Corrige o salvamento das optativas para coordenadores, registrando a solicitação para validação.
+- A visão do coordenador passa a iniciar com o filtro de status em “Todos”, mantendo as ofertas visíveis após confirmação, alteração ou exclusão.
+- Ajusta o botão de limpar filtros para preservar esse comportamento na visão do coordenador.
+
 # ACHA v1.0.111
 
 ## 1.0.111 — correção do menu lateral no celular
@@ -233,3 +243,10 @@
 - Em falha do MySQL, mantém o JSON e agenda nova tentativa.
 - Adiciona `/api/mysql/status` para diagnóstico do último estado de sincronização.
 - Adiciona `npm run test:mysql:sync` para verificar ofertas e confirmações no MySQL.
+
+## v1.0.113 — Permissões por configuração na visão Coordenador
+
+- A visualização de Coordenador pela Direção passa a usar a configuração real de acesso do perfil, sem forçar Edição.
+- Perfil com Visualização não exibe ações de cadastro, edição, exclusão, validação, seleção em lote ou salvamento.
+- Perfil com Edição mantém as ações e permite salvar normalmente.
+- O modo "Visualizar como" também respeita o nível configurado no backend, impedindo mutações quando o perfil simulado é somente leitura.
