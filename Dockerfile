@@ -3,7 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=3000
 ENV DB_FILE=/app/data/db.json
 
 COPY package.json ./
@@ -25,8 +25,8 @@ COPY docker-entrypoint.sh ./
 RUN chmod +x /app/docker-entrypoint.sh
 RUN mkdir -p /app/data/backups
 
-EXPOSE 5000
+EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3   CMD wget -q -O - http://127.0.0.1:5000/api/health >/dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3   CMD wget -q -O - http://127.0.0.1:3000/api/health >/dev/null || exit 1
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

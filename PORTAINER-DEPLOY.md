@@ -31,7 +31,7 @@ O MySQL `acha` já deve existir e estar acessível pela `database_network`.
 No Portainer, a Stack usa:
 
 ```text
-5002:5000
+3000 (sem publicação no host)
 ```
 
 e:

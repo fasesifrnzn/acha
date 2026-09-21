@@ -879,7 +879,7 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.95'
+      'X-ACHA-Version':'1.0.110'
     });
     return res.end(payload);
   }
@@ -1669,7 +1669,7 @@ const server=http.createServer(async(req,res)=>{
   // Força atualização da página de Docentes após deploy. O navegador/proxy não deve
   // reaproveitar uma cópia antiga dessa tela, que depende do editor embutido.
   if(pathname==='/docentes.html' && !url.parse(req.url,true).query.v){
-    res.writeHead(302,{'Location':'/docentes.html?v=1.0.95','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
+    res.writeHead(302,{'Location':'/docentes.html?v=1.0.110','Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate','Pragma':'no-cache','Expires':'0'});
     return res.end();
   }
   // Arquivos estáticos (CSS/JS/imagens) não são páginas protegidas.
@@ -1695,7 +1695,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.95'
+      'X-ACHA-Version':'1.0.110'
     });
     fs.createReadStream(file).pipe(res)
   })
@@ -1712,5 +1712,5 @@ server.on('error',(err)=>{
 (async()=>{
   const ready=await initializeDatabase();
   if(!ready){ process.exit(1); return; }
-  server.listen(PORT,()=>console.log(`ACHA 1.0.97 — servidor: http://localhost:${PORT}`));
+  server.listen(PORT,()=>console.log(`ACHA 1.0.110 — servidor: http://0.0.0.0:${PORT}`));
 })();

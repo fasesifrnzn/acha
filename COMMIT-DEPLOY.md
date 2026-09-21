@@ -142,5 +142,5 @@ O serviço `acha` só inicia após a conclusão bem-sucedida do `acha-schema`.
 Portas:
 
 ```text
-5002:5000
+3000 (sem publicação no host)
 ```

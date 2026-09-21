@@ -20,7 +20,7 @@ importa data/db.json
     ↓
 acha
     ↓
-porta 5002 → container 5000
+container:3000 (sem publicação de porta no host)
 ```
 
 ## Segurança da migração inicial

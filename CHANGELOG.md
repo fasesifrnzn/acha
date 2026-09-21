@@ -1,3 +1,13 @@
+# ACHA v1.0.110
+
+## 1.0.110 — porta interna 3000 e acesso via Nginx Proxy Manager
+
+- altera a porta HTTP interna do ACHA de 5000 para 3000;
+- remove a publicação da porta no host;
+- mantém a porta 3000 disponível na rede Docker para acesso pelo Nginx Proxy Manager;
+- atualiza o healthcheck para a porta 3000;
+- atualiza a identificação de versão exibida pelo servidor para 1.0.110.
+
 # ACHA v1.0.109
 
 ## Deploy Docker — migração inicial para MySQL
