@@ -45,6 +45,11 @@
 
 # Changelog
 
+## 1.0.115
+- Corrige os eventos dos botões de validar e do menu de ações do Coordenador.
+- Ativa abertura/fechamento do menu suspenso e execução das ações solicitar exclusão, alteração de nome, mudança de grupo e escolha de optativa.
+
+
 ## 1.0.107 — incluir schema.sql no build Git/Docker
 
 - corrigido o `.gitignore`, que estava ignorando `*.sql` e impedia o `database/schema.sql` de ser versionado no Git;

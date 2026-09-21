@@ -466,6 +466,40 @@ async function handleCoordinatorMenuAction(action,row){
     const r=await fetch('/api/offer/undo-delete',{method:'POST',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({semester:semSel.value,key:row._serverKey||row._baseKey||row._key})});const j=await r.json().catch(()=>({}));if(!r.ok)return alert(j.error||'Não foi possível desfazer a exclusão.');DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;
   }
 }
+tbody.addEventListener('click',async e=>{
+  const more=e.target.closest('.more-btn');
+  if(more){
+    e.preventDefault();
+    e.stopPropagation();
+    const menu=more.closest('.more-menu');
+    document.querySelectorAll('.more-menu.open').forEach(m=>{if(m!==menu)m.classList.remove('open')});
+    menu?.classList.toggle('open');
+    return;
+  }
+  const menuAction=e.target.closest('[data-menu-action]');
+  if(menuAction){
+    e.preventDefault();
+    e.stopPropagation();
+    const tr=menuAction.closest('tr');
+    const row=currentRows[Number(tr?.dataset.index)];
+    if(!row)return;
+    menuAction.closest('.more-menu')?.classList.remove('open');
+    await handleCoordinatorMenuAction(menuAction.dataset.menuAction,row);
+    return;
+  }
+  const validate=e.target.closest('.validate-offer[data-action="confirm"]');
+  if(validate){
+    e.preventDefault();
+    e.stopPropagation();
+    const tr=validate.closest('tr');
+    const row=currentRows[Number(tr?.dataset.index)];
+    if(!row)return;
+    await confirmCoordinatorRows([row]);
+  }
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.more-menu'))document.querySelectorAll('.more-menu.open').forEach(m=>m.classList.remove('open'));
+});
 function openCoordinatorRequestModal(kind,row){
   const modal=$('coordRequestModal'),body=$('coordRequestBody');if(!modal)return;
   modal.dataset.kind=kind;modal.dataset.key=row._serverKey||row._baseKey||row._key;
