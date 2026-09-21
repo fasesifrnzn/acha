@@ -6,10 +6,10 @@ services:
     container_name: acha
     restart: unless-stopped
     ports:
-      - "5001:5001"
+      - "5002:5000"
     environment:
       NODE_ENV: production
-      PORT: 5001
+      PORT: 5000
       MYSQL_HOST: ${MYSQL_HOST:-mysql}
       MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_USER: ${MYSQL_USER:-root}
