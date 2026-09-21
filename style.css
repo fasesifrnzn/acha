@@ -153,7 +153,8 @@ body{padding-left:232px;transition:padding-left .18s ease}
   body header h1{font-size:17px;line-height:1.25}
   body header p{font-size:12px}
   main{width:100%;margin:12px auto;padding:0 10px}
-  .mainnav{display:none!important}
+  .mainnav{display:block!important}
+  .mainnav.pocv-sidebar{display:flex!important}
   .pocv-sidebar{width:280px!important;max-width:88vw!important;transform:translateX(-105%);transition:transform .2s ease;box-shadow:10px 0 30px #0004;padding:0 12px!important}
   .mobile-nav-open .pocv-sidebar{transform:translateX(0)}
   .pocv-sidebar .sidebar-brand{height:64px;min-height:64px;justify-content:flex-start;padding:0 6px;gap:10px}

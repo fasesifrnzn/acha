@@ -1,3 +1,17 @@
+# ACHA v1.0.111 — commit/deploy
+
+## Commit
+
+```bash
+git add .
+git commit -m "fix: corrigir menu lateral no celular"
+git push
+```
+
+## Alteração
+
+Corrige o conflito de CSS que escondia o menu lateral em telas móveis. O botão já ativava o `mobile-nav-open` e o backdrop, mas `.mainnav { display:none!important; }` prevalecia sobre o menu lateral. A correção garante `display:flex!important` para `.mainnav.pocv-sidebar` no breakpoint móvel.
+
 # ACHA — commit e deploy
 
 ## 1. Antes do commit

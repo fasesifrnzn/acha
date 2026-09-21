@@ -1,3 +1,11 @@
+# ACHA v1.0.111
+
+## 1.0.111 — correção do menu lateral no celular
+
+- corrige o conflito de CSS que mantinha a barra lateral com `display: none` em telas móveis;
+- o menu lateral volta a ser exibido ao clicar no botão de menu;
+- mantém o backdrop/escurecimento e o fechamento ao clicar fora ou em um item do menu.
+
 # ACHA v1.0.110
 
 ## 1.0.110 — porta interna 3000 e acesso via Nginx Proxy Manager
