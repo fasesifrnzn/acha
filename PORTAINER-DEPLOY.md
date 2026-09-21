@@ -106,3 +106,8 @@ Se o arquivo estiver dentro do diretório de trabalho da própria Stack, pode de
 ACHA_DATA_PATH=./data
 ```
 
+
+
+### Importante: schema.sql no Git
+
+O arquivo `database/schema.sql` precisa estar versionado. O `.gitignore` não pode ignorar esse arquivo, pois o Dockerfile o copia para a imagem de produção.

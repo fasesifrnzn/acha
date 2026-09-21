@@ -21,7 +21,6 @@ acha-data/
 # Backups/exportações locais
 *.bak
 *.backup
-*.sql
 *.dump
 *.zip
 
@@ -35,3 +34,6 @@ Thumbs.db
 *.tmp
 *.temp
 *.swp
+
+# Schema oficial do banco — deve ser versionado
+!database/schema.sql

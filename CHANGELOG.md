@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.107 — incluir schema.sql no build Git/Docker
+
+- corrigido o `.gitignore`, que estava ignorando `*.sql` e impedia o `database/schema.sql` de ser versionado no Git;
+- `database/schema.sql` passa a ser explicitamente incluído na imagem Docker;
+- corrige `Schema não encontrado: /app/database/schema.sql` no primeiro deploy pelo Portainer;
+- mantém o fluxo schema → migração inicial → aplicação.
+
+
 ## 1.0.106 — correção do build no Portainer
 
 - removido `image: acha:...` do Compose;
@@ -109,6 +117,14 @@
 - Versão HTTP/terminal atualizada para 1.0.95.
 
 # Changelog
+
+## 1.0.107 — incluir schema.sql no build Git/Docker
+
+- corrigido o `.gitignore`, que estava ignorando `*.sql` e impedia o `database/schema.sql` de ser versionado no Git;
+- `database/schema.sql` passa a ser explicitamente incluído na imagem Docker;
+- corrige `Schema não encontrado: /app/database/schema.sql` no primeiro deploy pelo Portainer;
+- mantém o fluxo schema → migração inicial → aplicação.
+
 
 ## 1.0.106 — correção do build no Portainer
 

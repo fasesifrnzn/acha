@@ -16,6 +16,8 @@ COPY acha-logo.svg ./
 COPY *.html ./
 COPY docentes-editor.js ./
 COPY database ./database
+# O schema deve fazer parte da imagem de produção.
+COPY database/schema.sql ./database/schema.sql
 COPY scripts ./scripts
 COPY docker-entrypoint.sh ./
 
