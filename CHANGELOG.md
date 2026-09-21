@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.106 — correção do build no Portainer
+
+- removido `image: acha:...` do Compose;
+- Portainer volta a construir a imagem diretamente do repositório Git configurado na Stack;
+- elimina o erro `pull access denied for acha`;
+- mantém o primeiro deploy no mesmo container: schema → migração inicial → aplicação;
+- adicionada variável `ACHA_DATA_PATH` para disponibilizar o `db.json` sem versioná-lo no Git;
+- mantém `5002:5000` e as redes externas.
+
+
 ## 1.0.105 — Docker/Portainer: inicialização em container único
 
 - removidos os serviços `acha-schema` e `acha-migrate` do Compose;
@@ -99,6 +109,16 @@
 - Versão HTTP/terminal atualizada para 1.0.95.
 
 # Changelog
+
+## 1.0.106 — correção do build no Portainer
+
+- removido `image: acha:...` do Compose;
+- Portainer volta a construir a imagem diretamente do repositório Git configurado na Stack;
+- elimina o erro `pull access denied for acha`;
+- mantém o primeiro deploy no mesmo container: schema → migração inicial → aplicação;
+- adicionada variável `ACHA_DATA_PATH` para disponibilizar o `db.json` sem versioná-lo no Git;
+- mantém `5002:5000` e as redes externas.
+
 
 ## 1.0.105 — Docker/Portainer: inicialização em container único
 

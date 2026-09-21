@@ -6,7 +6,7 @@ O Portainer pode tentar fazer pull de imagens dos serviços auxiliares de uma St
 
 `pull access denied for acha-acha-migrate`
 
-Agora existe apenas um serviço/imagem: `acha`.
+Agora existe apenas um serviço: `acha`, construído diretamente a partir do repositório Git da Stack.
 
 A inicialização ocorre dentro do próprio container:
 
@@ -76,3 +76,33 @@ O script de migração em modo `initial` verifica o banco antes de limpar qualqu
 - banco vazio: migra;
 - banco já migrado: não limpa;
 - banco parcialmente preenchido: interrompe para evitar perda de dados.
+
+
+## Portainer usando repositório Git
+
+O Compose **não define `image:`**. Isso é intencional: o Portainer deve construir a imagem a partir do `Dockerfile` do repositório Git, como no deploy anterior que já funcionava.
+
+Não é necessário fazer `docker login` nem publicar a imagem em Docker Hub.
+
+## Arquivo da primeira migração
+
+Como `data/db.json` não deve ser versionado no Git, informe no Portainer a variável:
+
+```text
+ACHA_DATA_PATH=/caminho/no/servidor/onde/está/o/data
+```
+
+Esse diretório precisa conter:
+
+```text
+db.json
+```
+
+O Compose monta esse diretório em `/app/data` somente para leitura.
+
+Se o arquivo estiver dentro do diretório de trabalho da própria Stack, pode deixar:
+
+```text
+ACHA_DATA_PATH=./data
+```
+

@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: acha:1.0.105
     container_name: acha
     restart: unless-stopped
     ports:
@@ -19,7 +18,7 @@ services:
       DB_FILE: /app/data/db.json
       MIGRATION_MODE: initial
     volumes:
-      - ./data:/app/data:ro
+      - ${ACHA_DATA_PATH:-./data}:/app/data:ro
     networks:
       - database_network
       - proxy_network
