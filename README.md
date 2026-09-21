@@ -4,7 +4,7 @@ Aplicação web do IFRN Campus Natal-Zona Norte para apoiar o planejamento da of
 
 ## Estado desta versão
 
-**Versão: 1.0.99**
+**Versão: 1.0.98**
 
 Esta é a versão organizada para retomada do repositório após a última versão historicamente commitada (v17). O desenvolvimento posterior foi consolidado no projeto **ACHA**, atualmente na linha 1.0.x.
 
@@ -72,7 +72,7 @@ npm install
 npm start
 ```
 
-Depois acesse `http://localhost:5002`.
+Depois acesse `http://localhost:5001`.
 
 O ACHA é uma aplicação Node.js com HTML/CSS/JavaScript no frontend. Não é necessário Django.
 
@@ -102,7 +102,7 @@ O login institucional utiliza o fluxo documentado pelo cliente JavaScript oficia
 
 - Authorization Grant Type: **Implicit**;
 - Client Type: **Public**;
-- Redirect URI local: `http://localhost:5002/login.html`;
+- Redirect URI local: `http://localhost:5001/login.html`;
 - `response_type=token`;
 - consulta à API do SUAP com `Bearer access_token`.
 
@@ -125,7 +125,7 @@ No cadastro da aplicação ACHA:
 - Name: `ACHA`;
 - Authorization grant type: `Implicit`;
 - Client type: `Public`;
-- Redirect URI: `http://localhost:5002/login.html`;
+- Redirect URI: `http://localhost:5001/login.html`;
 - Algorithm: `No OIDC support`;
 - Ativo: marcado.
 
@@ -236,33 +236,3 @@ set DB_FILE=C:\caminho\acha-db-backup-2026-09-15T18-07-22-668Z.json
 npm run migrate:mysql:docentes
 ```
 
-
-## Docker — inicialização do schema MySQL
-
-No Compose de produção existem dois serviços do projeto:
-
-- `acha-schema`: executa `database/schema.sql` uma vez para criar/verificar as tabelas;
-- `acha`: inicia somente depois que `acha-schema` termina com sucesso.
-
-O MySQL **não é criado pelo Compose**. Ele deve existir previamente e estar acessível pela `database_network`.
-
-Mapeamento de portas:
-
-```text
-host:5002 → container:5000
-```
-
-A inicialização do schema é idempotente e não apaga dados existentes.
-
-Para subir:
-
-```bash
-docker compose build
-docker compose up -d
-```
-
-Para acompanhar a preparação do schema:
-
-```bash
-docker logs acha-schema
-```

@@ -26,21 +26,21 @@ git status --short
 git check-ignore -v .env data/db.json
 ```
 
-## 2. Commit da versão 1.0.99
+## 2. Commit da versão 1.0.98
 
 ```bash
 git add .
 git status
 git diff --cached
 git commit -m "feat: adicionar migração seletiva de docentes"
-git tag v1.0.99
+git tag v1.0.98
 ```
 
 Se o repositório remoto estiver configurado:
 
 ```bash
 git push origin main
-git push origin v1.0.99
+git push origin v1.0.98
 ```
 
 ## 3. Teste da migração de docentes
@@ -120,27 +120,3 @@ GET /api/mysql/status
 ```
 
 Não remova nem recrie o banco `acha` durante o deploy.
-
-
-## Inicialização do schema no Docker
-
-O `docker-compose.yml` possui o serviço `acha-schema`. Ele executa:
-
-```bash
-node scripts/init-mysql-schema.js
-```
-
-Esse serviço:
-- conecta ao MySQL externo;
-- executa o `database/schema.sql`;
-- usa `CREATE TABLE IF NOT EXISTS`;
-- não cria um servidor MySQL;
-- não apaga tabelas ou dados existentes.
-
-O serviço `acha` só inicia após a conclusão bem-sucedida do `acha-schema`.
-
-Portas:
-
-```text
-5002:5000
-```

@@ -1,21 +1,4 @@
 services:
-  acha-schema:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: acha-schema
-    restart: "no"
-    environment:
-      NODE_ENV: production
-      MYSQL_HOST: ${MYSQL_HOST:-mysql}
-      MYSQL_PORT: ${MYSQL_PORT:-3306}
-      MYSQL_USER: ${MYSQL_USER:-root}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-acha}
-    networks:
-      - database_network
-    command: ["node", "scripts/init-mysql-schema.js"]
-
   acha:
     build:
       context: .
@@ -23,10 +6,10 @@ services:
     container_name: acha
     restart: unless-stopped
     ports:
-      - "5002:5000"
+      - "5001:5001"
     environment:
       NODE_ENV: production
-      PORT: 5000
+      PORT: 5001
       MYSQL_HOST: ${MYSQL_HOST:-mysql}
       MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_USER: ${MYSQL_USER:-root}
@@ -35,11 +18,8 @@ services:
     networks:
       - database_network
       - proxy_network
-    depends_on:
-      acha-schema:
-        condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:5000/api/health"]
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:5001/api/health"]
       interval: 30s
       timeout: 5s
       retries: 3

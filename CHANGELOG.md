@@ -1,33 +1,5 @@
 # Changelog
 
-## 1.0.102 — compactação da tabela de projeção
-
-- grade de carga horária passa a ocupar toda a largura disponível;
-- colunas de semestre ficam compactadas para exibir o período completo em telas desktop;
-- rolagem horizontal é preservada apenas para telas menores, mantendo legibilidade;
-- tabela de ofertas recebe o mesmo comportamento de largura no desktop.
-
-
-## 1.0.100 — correção POCV/projeção
-
-- restauradas as funções auxiliares da POCV removidas durante a limpeza do pacote;
-- corrigidos `ensurePocvScenarios`, `buildInitialPocvScenario` e `normalizePocvScenario`;
-- restaurados `matrixDuration` e `cohortTurn` necessários à projeção;
-- corrige o erro `ensurePocvScenarios is not defined` na página de Cenários;
-- a Projeção volta a receber os cenários e ofertas reconstruídos do MySQL.
-
-
-## 1.0.99 — Docker + inicialização do schema MySQL
-
-- porta externa `5002` e porta interna `5000`;
-- serviço `acha-schema` para inicialização idempotente do schema;
-- MySQL continua sendo externo e compartilhado;
-- ACHA depende da conclusão bem-sucedida do inicializador de schema;
-- redes externas `database_network` e `proxy_network` mantidas;
-- nenhum dado é apagado pelo inicializador do schema;
-- adicionada documentação do fluxo de produção.
-
-
 ## 1.0.98 — migração seletiva de docentes
 
 - adicionada `npm run migrate:mysql:docentes`;
@@ -66,24 +38,7 @@
 - Docker/Compose passam a declarar `mysql2` e as variáveis `MYSQL_*` corretamente.
 - Versão HTTP/terminal atualizada para 1.0.95.
 
-# Changelog
-
-## 1.0.102 — compactação da tabela de projeção
-
-- grade de carga horária passa a ocupar toda a largura disponível;
-- colunas de semestre ficam compactadas para exibir o período completo em telas desktop;
-- rolagem horizontal é preservada apenas para telas menores, mantendo legibilidade;
-- tabela de ofertas recebe o mesmo comportamento de largura no desktop.
-
-
-## 1.0.100 — correção POCV/projeção
-
-- restauradas as funções auxiliares da POCV removidas durante a limpeza do pacote;
-- corrigidos `ensurePocvScenarios`, `buildInitialPocvScenario` e `normalizePocvScenario`;
-- restaurados `matrixDuration` e `cohortTurn` necessários à projeção;
-- corrige o erro `ensurePocvScenarios is not defined` na página de Cenários;
-- a Projeção volta a receber os cenários e ofertas reconstruídos do MySQL.
- — ACHA
+# Changelog — ACHA
 
 ## 1.0.93
 - Define o MySQL como fonte primária de persistência.
