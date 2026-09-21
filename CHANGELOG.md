@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.105 — Docker/Portainer: inicialização em container único
+
+- removidos os serviços `acha-schema` e `acha-migrate` do Compose;
+- schema e migração inicial passam a ser executados pelo entrypoint do próprio ACHA;
+- evita que Portainer tente fazer pull de imagens intermediárias como `acha-acha-migrate`;
+- mantém MySQL externo;
+- mantém `5002:5000`;
+- primeira inicialização: schema → migração segura → aplicação;
+- redeploy: se o banco já estiver populado, a migração inicial não limpa nem recarrega os dados.
+
+
 ## 1.0.104 — primeiro deploy MySQL: schema + migração inicial
 
 - o Compose passa a executar três etapas na ordem: `acha-schema` → `acha-migrate` → `acha`;
@@ -88,6 +99,17 @@
 - Versão HTTP/terminal atualizada para 1.0.95.
 
 # Changelog
+
+## 1.0.105 — Docker/Portainer: inicialização em container único
+
+- removidos os serviços `acha-schema` e `acha-migrate` do Compose;
+- schema e migração inicial passam a ser executados pelo entrypoint do próprio ACHA;
+- evita que Portainer tente fazer pull de imagens intermediárias como `acha-acha-migrate`;
+- mantém MySQL externo;
+- mantém `5002:5000`;
+- primeira inicialização: schema → migração segura → aplicação;
+- redeploy: se o banco já estiver populado, a migração inicial não limpa nem recarrega os dados.
+
 
 ## 1.0.104 — primeiro deploy MySQL: schema + migração inicial
 
