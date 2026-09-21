@@ -1,3 +1,11 @@
+# CHANGELOG
+
+## 1.0.114
+- Reformulação das ações da visão do Coordenador: validar + menu de opções por linha.
+- Solicitação de alteração de nome e mudança de grupo com modais específicos.
+- Escolha de optativa disponível no menu e atualização imediata do nome exibido enquanto aguarda aprovação.
+- Permissões de visualização bloqueiam ações também no backend.
+
 # ACHA v1.0.112
 
 ## 1.0.112 — correções do fluxo do coordenador
