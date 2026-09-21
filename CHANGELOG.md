@@ -1,4 +1,7 @@
-- v1.0.116 — Corrige ações do Coordenador no menu suspenso, posicionamento do menu e identidade do coordenador simulado ao desistir de solicitações.
+## 1.0.117
+- Corrige cache de assets da interface do Coordenador para garantir carregamento das correções de menu e solicitações.
+
+- v1.0.117 — Corrige ações do Coordenador no menu suspenso, posicionamento do menu e identidade do coordenador simulado ao desistir de solicitações.
 # CHANGELOG
 
 ## 1.0.114
