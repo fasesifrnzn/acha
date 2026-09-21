@@ -80,7 +80,9 @@
       if(!response.ok)return response; const payload=await response.clone().json().catch(()=>null); if(!payload?.authenticated||!isDirectionRole(payload.user?.role))return response;
       const target=previewTarget(); let db=null; try{db=await nativeFetch('/api/db',{cache:'no-store'}).then(r=>r.json())}catch(e){}
       const area=target.type==='area', areaName=area?String(target.id||''):''; const areaTeacher=(db?.teachers||[]).find(t=>String(t.managementArea||'').trim()===areaName);
-      const user=area?{...payload.user,role:'coordenador_area',coordinatorCourseId:'',coordinatorCourseName:'',managementArea:areaName,distributionGroups:[...(db?.pedagogicalAreaResponsibilities?.[areaName]?.groups||areaTeacher?.distributionGroups||[])]}:{...payload.user,role:'coordenador_curso',coordinatorCourseId:String(target.id||'')};
+      const courseTeacher=area?null:(db?.teachers||[]).find(t=>String(t.coordinatorCourseId||'').trim()===String(target.id||'').trim());
+      const simulatedTeacher=area?areaTeacher:courseTeacher;
+      const user=area?{...payload.user,id:simulatedTeacher?.id||payload.user.id,teacherId:simulatedTeacher?.id||payload.user.teacherId,displayName:simulatedTeacher?.name||area,role:'coordenador_area',coordinatorCourseId:'',coordinatorCourseName:'',managementArea:areaName,distributionGroups:[...(db?.pedagogicalAreaResponsibilities?.[areaName]?.groups||areaTeacher?.distributionGroups||[])]}:{...payload.user,id:simulatedTeacher?.id||payload.user.id,teacherId:simulatedTeacher?.id||payload.user.teacherId,displayName:simulatedTeacher?.name||payload.user.displayName,role:'coordenador_curso',coordinatorCourseId:String(target.id||'')};
       const configuredAccess=db?.accessControl?.profiles?.[area?'coordenador_area':'coordenador_curso'];
       const previewAccess=configuredAccess?JSON.parse(JSON.stringify(configuredAccess)):(area?areaAccess:coordinatorAccess);
       return new Response(JSON.stringify({...payload,user,access:previewAccess,__preview:true,__realRole:payload.user.role,__previewType:target.type}),{status:200,headers:{'Content-Type':'application/json'}});

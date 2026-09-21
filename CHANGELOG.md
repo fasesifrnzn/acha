@@ -1,3 +1,4 @@
+- v1.0.116 — Corrige ações do Coordenador no menu suspenso, posicionamento do menu e identidade do coordenador simulado ao desistir de solicitações.
 # CHANGELOG
 
 ## 1.0.114
