@@ -11,7 +11,7 @@ node scripts/init-mysql-schema.js
 echo "[2/3] Verificando migração inicial..."
 if [ ! -f "${DB_FILE:-/app/data/db.json}" ]; then
   echo "ERRO: arquivo ${DB_FILE:-/app/data/db.json} não encontrado."
-  echo "Disponibilize o backup db.json no diretório data/ do servidor."
+  echo "O db.json deve estar incluído na imagem Docker durante o build."
   exit 1
 fi
 

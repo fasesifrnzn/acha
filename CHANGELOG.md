@@ -1,3 +1,12 @@
+# ACHA v1.0.109
+
+## Deploy Docker — migração inicial para MySQL
+- `db.json` passa a ser empacotado na imagem Docker e deixa de depender de volume externo no primeiro deploy.
+- Removido o volume `./data:/app/data` do `docker-compose.yml`, que sobrescrevia o `db.json` presente na imagem.
+- Removida a exclusão de `data/db.json` do `.dockerignore`, garantindo que o arquivo seja incluído no build.
+- Mantida a migração em modo `initial`: o `db.json` é usado como fonte somente quando o banco MySQL ainda não contém dados.
+- O MySQL continua sendo a fonte de dados de produção após a migração.
+
 # Changelog
 
 ## 1.0.107 — incluir schema.sql no build Git/Docker

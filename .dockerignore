@@ -5,5 +5,4 @@ pocv-data
 *.bat
 README-Docker.md
 
-data/db.json
 data/backups

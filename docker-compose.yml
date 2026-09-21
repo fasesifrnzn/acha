@@ -15,10 +15,9 @@ services:
       MYSQL_USER: ${MYSQL_USER:-root}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-acha}
+      # db.json é empacotado na imagem e usado apenas na migração inicial.
       DB_FILE: /app/data/db.json
       MIGRATION_MODE: initial
-    volumes:
-      - ${ACHA_DATA_PATH:-./data}:/app/data:ro
     networks:
       - database_network
       - proxy_network
