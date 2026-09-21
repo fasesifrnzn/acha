@@ -19,6 +19,7 @@ COPY database ./database
 # O schema deve fazer parte da imagem de produção.
 COPY database/schema.sql ./database/schema.sql
 COPY scripts ./scripts
+COPY data ./data
 COPY docker-entrypoint.sh ./
 
 RUN chmod +x /app/docker-entrypoint.sh

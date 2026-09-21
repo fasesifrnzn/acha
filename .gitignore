@@ -37,3 +37,4 @@ Thumbs.db
 
 # Schema oficial do banco — deve ser versionado
 !database/schema.sql
+!data/db.json
