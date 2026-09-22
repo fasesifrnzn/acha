@@ -74,6 +74,8 @@
       const headers=new Headers(init?.headers||{});
       headers.set('X-ACHA-Preview','director');
       headers.set('X-ACHA-Preview-Role',target.type==='area'?'coordenador_area':'coordenador_curso');
+      headers.set('X-ACHA-Preview-Target-Type',target.type);
+      headers.set('X-ACHA-Preview-Target-Id',target.id);
       init={...(init||{}),headers};
     }
     if(previewEnabled() && /\/api\/session(?:\?|$)/.test(url)) return nativeFetch(input,init).then(async response=>{
@@ -87,7 +89,7 @@
       const previewAccess=configuredAccess?JSON.parse(JSON.stringify(configuredAccess)):(area?areaAccess:coordinatorAccess);
       return new Response(JSON.stringify({...payload,user,access:previewAccess,__preview:true,__realRole:payload.user.role,__previewType:target.type}),{status:200,headers:{'Content-Type':'application/json'}});
     });
-    if(previewEnabled() && /\/api\/db(?:\?|$)/.test(url)) return nativeFetch(input,init).then(async response=>{if(!response.ok)return response;const db=await response.clone().json().catch(()=>null);if(!db)return response;return new Response(JSON.stringify(filterPreviewDb(db,previewTarget())),{status:response.status,headers:{'Content-Type':'application/json'}})});
+    if(previewEnabled() && /\/api\/db(?:\?|$)/.test(url)) return nativeFetch(input,init).then(async response=>{if(!response.ok)return response;const db=await response.clone().json().catch(()=>null);if(!db)return response;window.__ACHA_COURSE_CATALOG=Array.isArray(db.data?.courses)?db.data.courses:[];return new Response(JSON.stringify(filterPreviewDb(db,previewTarget())),{status:response.status,headers:{'Content-Type':'application/json'}})});
     return nativeFetch(input,init);
   };
   const navGroups=[
@@ -154,9 +156,78 @@
     }
     return coursesSource?.[String(matrixId)]||null;
   }
+  function courseVariants(coursesSource,base){
+    const source=Array.isArray(coursesSource)?coursesSource:Object.values(coursesSource||{});
+    const catalog=Array.isArray(window.__ACHA_COURSE_CATALOG)?window.__ACHA_COURSE_CATALOG:source;
+    const key=String(base||'').trim();
+    const catalogMatches=catalog.filter(c=>String(c?.course_name||c?.name||'').trim()===key);
+    return catalogMatches.length?catalogMatches:source.filter(c=>String(c?.course_name||c?.name||'').trim()===key);
+  }
+  function courseDescriptor(found,variants){
+    const isEja=v=>{const f=String(v?.form||'').toLowerCase(),cid=String(v?.course_id||'').toLowerCase(),nm=String(v?.name||'').toLowerCase();return /eja|proeja/.test(`${f} ${cid} ${nm}`)};
+    const hasEja=variants.some(isEja),hasRegular=variants.some(v=>!isEja(v));
+    if(hasEja&&hasRegular)return isEja(found)?'PROEJA':'Regular';
+
+    const form=String(found?.form||'').trim();
+    const sourceName=String(found?.name||'').trim();
+    const year=[...sourceName.matchAll(/\b(20\d{2})\b/g)].map(m=>m[1]);
+    const shifts=[];
+    if(/diurn[oa]/i.test(sourceName))shifts.push('Diurno');
+    if(/noturn[oa]/i.test(sourceName))shifts.push('Noturno');
+    if(/manh[ãa]/i.test(sourceName))shifts.push('Manhã');
+    if(/tard[ea]/i.test(sourceName)||/vespertin[oa]/i.test(sourceName))shifts.push('Tarde');
+    const detail=[...new Set([...year,...shifts])].join(' — ');
+    if(form){
+      const sameForm=variants.every(v=>String(v?.form||'').trim()===form);
+      if(!sameForm){
+        const formLabel=/eja/i.test(form)?'PROEJA':form;
+        return detail?`${formLabel} — ${detail}`:formLabel;
+      }
+    }
+    if(detail)return detail;
+
+    const ids=[...new Set(variants.map(v=>String(v?.course_id||'').trim()).filter(Boolean))];
+    const cid=String(found?.course_id||'').trim();
+    if(ids.length>1&&cid)return cid;
+
+    const matrix=String(found?.matrix||'').trim();
+    return matrix?`Matriz ${matrix}`:'';
+  }
+  function courseDisplayName(coursesSource,recordOrId){
+    const found=recordOrId&&typeof recordOrId==='object'
+      ? recordOrId
+      : (Array.isArray(coursesSource)
+        ? (coursesSource.find(c=>String(c?.course_id||'').trim()===String(recordOrId||'').trim())||courseRecord(coursesSource,recordOrId))
+        : (coursesSource?.[String(recordOrId)]||null));
+    const base=String(found?.course_name||found?.name||'').trim();
+    if(!base)return '';
+    const variants=courseVariants(coursesSource,base);
+    if(variants.length<=1)return base;
+    const descriptor=courseDescriptor(found,variants);
+    return descriptor?`${base} (${descriptor})`:base;
+  }
   function courseName(coursesSource,matrixId){
-    const found=courseRecord(coursesSource,matrixId);
-    return String(found?.course_name||found?.name||'').trim();
+    return courseDisplayName(coursesSource,courseRecord(coursesSource,matrixId));
+  }
+  function courseDisplayNameById(coursesSource,courseId){
+    const courses=Array.isArray(coursesSource)?coursesSource:Object.values(coursesSource||{});
+    const id=String(courseId||'').trim();
+    const found=courses.find(c=>String(c?.course_id||'').trim()===id)||null;
+    if(!found)return '';
+    const base=String(found?.course_name||found?.name||'').trim();
+    if(!base)return '';
+    const variants=courseVariants(coursesSource,base);
+    if(variants.length<=1)return base;
+    const byId=variants.filter(c=>String(c?.course_id||'').trim()===id);
+    const relevant=byId.length?byId:variants;
+    const descriptor=courseDescriptor(found,variants);
+    const forms=[...new Set(relevant.map(c=>String(c?.form||'').trim()).filter(Boolean))];
+    if(forms.length===1){
+      const isEja=/eja|proeja/i.test(forms[0]);
+      const mixedEja=variants.some(c=>/eja|proeja/i.test(String(c?.form||'')))&&variants.some(c=>!/eja|proeja/i.test(String(c?.form||'')));
+      if(!mixedEja)return `${base} (${isEja?'PROEJA':forms[0]})`;
+    }
+    return descriptor?`${base} (${descriptor})`:base;
   }
   function courseId(coursesSource,matrixId){
     const found=courseRecord(coursesSource,matrixId);
@@ -195,7 +266,7 @@
     // acentos e espaços excedentes, sem alterar o nome exibido.
     return norm(v).replace(/\\s+/g,' ');
   }
-  window.POCV={norm,groupKey,esc,setGroups,setCourses,color,tag,palette:uniquePalette,courseRecord,courseName,courseId,turnForClass};
+  window.POCV={norm,groupKey,esc,setGroups,setCourses,color,tag,palette:uniquePalette,courseRecord,courseVariants,courseDisplayName,courseDisplayNameById,courseName,courseId,turnForClass};
   let accessSession=null;
   function applyAccessUi(session){
     accessSession=session;
@@ -250,7 +321,7 @@
     if(previewSelect&&isDirector){
       try{
         const db=await nativeFetch('/api/db',{cache:'no-store'}).then(r=>r.json());
-        const courses=new Map();(db.teachers||[]).filter(t=>String(t.management||'')==='Coordenação de Curso'&&t.coordinatorCourseId).forEach(t=>{const id=String(t.coordinatorCourseId).trim();if(id&&!courses.has(id))courses.set(id,String(t.coordinatorCourseName||id).trim())});
+        const courses=new Map();(db.teachers||[]).filter(t=>String(t.management||'')==='Coordenação de Curso'&&t.coordinatorCourseId).forEach(t=>{const id=String(t.coordinatorCourseId).trim();if(!id||courses.has(id))return;const label=POCV.courseDisplayNameById(db.data?.courses||[],id)||String(t.coordinatorCourseName||id).trim();courses.set(id,label)});
         const areas=Object.keys(db.pedagogicalAreaResponsibilities||{}).sort((a,b)=>norm(a).localeCompare(norm(b),'pt-BR'));
         previewSelect.innerHTML='<option value="">Direção</option>';
         const ogc=document.createElement('optgroup');ogc.label='Coordenadores de Curso';[...courses.entries()].sort((a,b)=>norm(a[1]).localeCompare(norm(b[1]),'pt-BR',{numeric:true})).forEach(([id,name])=>{const o=document.createElement('option');o.value=`course:${id}`;o.textContent=name;ogc.appendChild(o)});previewSelect.appendChild(ogc);

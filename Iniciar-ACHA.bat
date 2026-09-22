@@ -18,6 +18,28 @@ if not defined NODE (
 )
 
 cd /d "%PROJECT%"
+
+echo Verificando dependencias do ACHA...
+if not exist "%PROJECT%node_modules\mysql2\package.json" (
+  echo mysql2 nao encontrado. Instalando dependencias...
+  set "NPM="
+  for /f "delims=" %%N in ('where npm 2^>nul') do if not defined NPM set "NPM=%%N"
+  if not defined NPM if exist "%ProgramFiles%\nodejs\npm.cmd" set "NPM=%ProgramFiles%\nodejs\npm.cmd"
+  if not defined NPM if exist "%LocalAppData%\Programs\nodejs\npm.cmd" set "NPM=%LocalAppData%\Programs\nodejs\npm.cmd"
+  if not defined NPM (
+    echo ERRO: nao foi encontrado o npm para instalar as dependencias.
+    pause
+    exit /b 1
+  )
+  call "%NPM%" install --no-audit --no-fund
+  if errorlevel 1 (
+    echo.
+    echo ERRO: falha ao instalar as dependencias do ACHA.
+    pause
+    exit /b 1
+  )
+)
+
 echo ==========================================
 echo ACHA - iniciando servidor...
 echo Pasta: %PROJECT%

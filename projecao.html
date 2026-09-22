@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA — Projeção de carga horária</title>
-<link rel="stylesheet" href="/style.css?v=1.0.77"><script src="/app.js?v=1.0.77"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.130"><script src="/app.js?v=1.0.130"></script>
 <style>
 .proj-page{max-width:1500px}
 .proj-controls{display:grid;grid-template-columns:150px 150px 150px minmax(170px,1fr) 170px auto;gap:10px;align-items:end}
@@ -206,7 +206,7 @@ function workloadDetailsForSemester(scenario,sem,group){
   (scenario?.placements||[]).forEach(p=>{
     if(!activePlacement(p,sem))return;
     const period=si-semIndex(p.startSemester)+1,m=matrix(p.matrix),q=Math.max(1,Number(p.quantity)||1);
-    const c=course(p.matrix),name=c.course_name||c.name||p.courseId||`Matriz ${p.matrix}`;
+    const c=course(p.matrix),name=POCV?.courseName?POCV.courseName(DB?.data?.courses||[],p.matrix):(c.course_name||c.name||p.courseId||`Matriz ${p.matrix}`);
     const codes=placementClassCodes(p,sem);
     (m.disciplines||[]).forEach(d=>{
       const g=groupKey(d.group),ch=Number(d.periods?.[String(period)]);
@@ -247,7 +247,7 @@ function rawWorkloadForSemester(scenario,sem){
       if(!Number.isFinite(ch)||ch<=0)return;
       const raw=String(d.group||'').trim(),key=groupKey(raw),value=ch*q;
       if(key)out.groups[key]=(out.groups[key]||0)+value;
-      else {out.unclassified+=value;out.unclassifiedRows.push({name:String(d.name||d.discipline||d.component||'Disciplina'),ch:value,course:course(p.matrix)?.course_name||course(p.matrix)?.name||p.courseId||''});}
+      else {out.unclassified+=value;out.unclassifiedRows.push({name:String(d.name||d.discipline||d.component||'Disciplina'),ch:value,course:POCV?.courseName?POCV.courseName(DB?.data?.courses||[],p.matrix):(course(p.matrix)?.course_name||course(p.matrix)?.name||p.courseId||'')});}
     });
   });
   return out;

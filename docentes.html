@@ -31,7 +31,7 @@ table th[data-col="actions"], table td[data-col="actions"]{
 table td[data-col="actions"]{z-index:10;background:#fff!important}
 table th[data-col="actions"]{z-index:11;background:#f8fafc!important}
 </style>
-<script src="/app.js?v=1.0.77"></script><link rel="stylesheet" href="/style.css?v=1.0.77"></head>
+<script src="/app.js?v=1.0.130"></script><link rel="stylesheet" href="/style.css?v=1.0.130"></head>
 <body>
   <header><h1>Docentes</h1><p>Relação de docentes utilizada na projeção de ofertas.</p></header>
   <nav class="mainnav"><a href="index.html">📋 Oferta</a><a href="projecao.html">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html" class="active">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav>
@@ -139,10 +139,13 @@ table th[data-col="actions"]{z-index:11;background:#f8fafc!important}
       const name=String(c.course_name||c.name||'').trim();
       if(!id || !name || seen.has(id)) return;
       seen.add(id);
-      rows.push({id,name});
+      const label=window.POCV?.courseDisplayNameById
+        ? window.POCV.courseDisplayNameById(courses,id)
+        : name;
+      rows.push({id,name,label:label||name});
     });
-    rows.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}));
-    return `<option value="">Selecione o curso</option>` + rows.map(c=>`<option value="${escapeHtml(c.id)}" ${String(c.id)===String(selected)?'selected':''}>${escapeHtml(c.name)}</option>`).join('');
+    rows.sort((a,b)=>a.label.localeCompare(b.label,'pt-BR',{sensitivity:'base'}));
+    return `<option value="">Selecione o curso</option>` + rows.map(c=>`<option value="${escapeHtml(c.id)}" ${String(c.id)===String(selected)?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
   }
 
   function coordinatorCourseField(t) {
@@ -225,7 +228,7 @@ table th[data-col="actions"]{z-index:11;background:#f8fafc!important}
         <td data-col="degree" class="editable" data-field="degree">${escapeHtml(t.degree||'—')}</td>
         <td data-col="vinculo" class="editable" data-field="vinculo">${escapeHtml(t.vinculo||'—')}</td>
         <td data-col="regime" class="editable" data-field="regime">${escapeHtml(t.regime||'—')}<span class="secondary">${Math.round((Number(t.regimePct)||0)*100)}% do regime</span></td>
-        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseName?`<span class="secondary">Coordena: ${escapeHtml(t.coordinatorCourseName)}</span>`:''}${t.managementArea?`<span class="secondary">Área de apoio: ${escapeHtml(t.managementArea)}</span>`:''}</td>
+        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseId?`<span class="secondary">Coordena: ${escapeHtml(window.POCV?.courseDisplayNameById?window.POCV.courseDisplayNameById(courses,t.coordinatorCourseId):(t.coordinatorCourseName||''))}</span>`:''}${t.managementArea?`<span class="secondary">Área de apoio: ${escapeHtml(t.managementArea)}</span>`:''}</td>
         <td data-col="actions" class="actions-cell"><div class="row-actions">
           <button type="button" class="icon-btn edit-teacher" title="Alterar dados" aria-label="Alterar dados">✎</button>
           <button type="button" class="icon-btn delete delete-teacher" title="Excluir" aria-label="Excluir">🗑</button>

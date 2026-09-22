@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA | Indicadores</title>
-<link rel="stylesheet" href="/style.css?v=1.0.77">
-<script src="/app.js?v=1.0.77"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.134">
+<script src="/app.js?v=1.0.134"></script>
 <style>
 .ind-page{max-width:1500px}
 .page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:16px}
@@ -93,7 +93,7 @@ function vagas(p){ return qty(p)*Math.max(0,Number(p.vacancies)||0); }
 function meta(p){
   const m=matrix(p.matrix), c=course(p.matrix);
   return {
-    name:c.course_name || c.name || m.name || '—',
+    name:POCV?.courseName?POCV.courseName(DB?.data?.courses||[],p.matrix):(c.course_name || c.name || m.name || '—'),
     form:m.offerForm || c.form || '—',
     type:c.type || '',
     level:c.level || m.offerLevel || '',
@@ -103,7 +103,15 @@ function meta(p){
 function meq(p){ return vagas(p)*meta(p).ch/800; }
 
 function offerForm(p){ return norm(meta(p).form); }
-function isTechnical(p){ return meta(p).type==='Técnico'; }
+function isFicEja(p){
+  const f=offerForm(p);
+  return f.includes('fic') && f.includes('eja');
+}
+function isTechnical(p){
+  // PROEJA FIC é qualificação profissional/FIC articulada à EJA, não curso técnico.
+  // Mesmo quando a matriz histórica estiver cadastrada com type='Técnico', não entra no indicador % Técnico.
+  return meta(p).type==='Técnico' && !isFicEja(p);
+}
 function isTeacher(p){
   const m=meta(p);
   const n=norm(m.name);
@@ -155,7 +163,6 @@ function calcularIndicadoresAno(ano){
     technicalConcurrentEja:0,
     technicalSub:0,
     technicalConcurrentRegular:0,
-    technicalFicEjaFundamental:0
   };
   const proCats={
     technicalIntegratedEja:0,
@@ -173,9 +180,6 @@ function calcularIndicadoresAno(ano){
     if(pc) proCats[pc]+=meq(p);
   });
 
-  entradas.forEach(p=>{
-    if(isTechnical(p) && offerForm(p).includes('fic') && offerForm(p).includes('eja') && norm(meta(p).level).includes('fundamental')) techCats.technicalFicEjaFundamental+=meq(p);
-  });
 
   const tech=Object.values(techCats).reduce((s,v)=>s+v,0);
   const pro=Object.values(proCats).reduce((s,v)=>s+v,0);
@@ -383,7 +387,6 @@ function render(){
           <tr><td>Técnico concomitante EJA</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalConcurrentEja,1)}</td>`).join('')}</tr>
           <tr><td>Técnico subsequente</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalSub,1)}</td>`).join('')}</tr>
           <tr><td>Técnico concomitante "regular"</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalConcurrentRegular,1)}</td>`).join('')}</tr>
-          <tr><td>FIC PROEJA — EJA fundamental</td>${all.map(([y,m])=>`<td>${fmt(m.techCats.technicalFicEjaFundamental,1)}</td>`).join('')}</tr>
           <tr class="total"><td>TOTAL TÉCNICO</td>${all.map(([y,m])=>`<td>${fmt(m.tech,1)}</td>`).join('')}</tr>
         </tbody>
       </table></div>
@@ -403,7 +406,7 @@ function render(){
           <tr class="total"><td>TOTAL PROEJA</td>${all.map(([y,m])=>`<td>${fmt(m.pro,1)}</td>`).join('')}</tr>
         </tbody>
       </table></div>
-      <div class="note">A mesma oferta EJA pode aparecer na tabela de Técnicos e na tabela de PROEJA porque PROEJA é um recorte da oferta técnica. Não se soma as duas tabelas para formar o total geral.</div>
+      <div class="note">Os cursos técnicos integrados/concomitantes em EJA entram no indicador Técnico e também no recorte PROEJA. Os cursos PROEJA FIC são qualificação profissional/FIC e <strong>não entram no total Técnico</strong>; entram somente no recorte de EJA/PROEJA. Não se soma as tabelas para formar o total geral.</div>
     </section>
   </div>`;
 

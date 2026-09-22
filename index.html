@@ -19,18 +19,18 @@ td{padding:9px 10px}tr:hover td{background:#f8fafc}.badge{display:inline-block;p
 .empty{padding:35px;text-align:center;color:var(--muted)}.count{font-size:12px;color:var(--muted)}
 @media(max-width:900px){.controls,.filtergrid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
 th[data-col="select"]{width:42px;min-width:42px;text-align:center}th[data-col="turma"]{width:9%}th[data-col="matrix"]{width:6%}th[data-col="course"]{width:16%}th[data-col="period"]{width:6%}th[data-col="turn"]{width:8%}th[data-col="name"]{width:19%}th[data-col="ch"]{width:5%}th[data-col="group"]{width:8%}.dragging{opacity:.45}th{cursor:grab}.mainnav{max-width:1500px;margin:14px auto 0;padding:0 18px;display:flex;gap:8px;flex-wrap:wrap}.mainnav a{padding:9px 13px;border-radius:9px;background:#e2e8f0;color:#334155;text-decoration:none;font-weight:700}.mainnav a.active,.mainnav a:hover{background:#0f766e;color:#fff}
-.actions-cell{width:15%;min-width:190px;text-align:center!important;overflow:visible}.row-actions{min-width:0}
-.row-actions{display:flex;gap:6px;justify-content:center;align-items:center}.row-actions .icon-action{width:32px;height:32px;padding:0;border:1px solid var(--line);background:#fff;color:#334155;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px}.row-actions .icon-action:hover{background:#f0fdfa;color:#0f766e}.row-actions .more-menu{position:relative}.row-actions .more-btn{font-weight:900;font-size:18px;line-height:1}.row-actions .more-dropdown{position:absolute;right:0;top:38px;z-index:30;min-width:230px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 28px #0002;padding:5px;display:none;text-align:left}.row-actions .more-menu.open .more-dropdown{display:block}.row-actions .more-dropdown button{display:block;width:100%;text-align:left;background:#fff;color:#334155;border-radius:7px;padding:9px 10px;font-weight:650}.row-actions .more-dropdown button:hover{background:#f1f5f9;color:#0f766e}.row-actions .more-dropdown button.danger:hover{background:#fef2f2;color:#b91c1c}
+.actions-cell{width:12%;min-width:108px;text-align:center!important;overflow:visible}.row-actions{min-width:0}
+.row-actions{display:flex;gap:6px;justify-content:center;align-items:center}.row-actions .icon-action{width:34px;height:34px;padding:0;border:1px solid #0f766e;background:#0f766e;color:#fff;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 1px 2px #0002}.row-actions .icon-action:hover{background:#115e59;color:#fff;border-color:#115e59}.row-actions .validate-offer:disabled{opacity:.75;cursor:wait}.row-actions .validate-offer.is-validating{box-shadow:0 0 0 2px #99f6e4}.row-actions .more-menu{position:relative}.row-actions .more-btn{font-weight:900;font-size:18px;line-height:1;background:#334155;border-color:#334155;color:#fff}.row-actions .more-dropdown{display:none!important}.coordinator-floating-menu{position:fixed!important;z-index:2147483647!important;width:280px!important;min-width:280px!important;max-width:calc(100vw - 16px)!important;max-height:calc(100vh - 16px)!important;overflow-y:auto!important;overflow-x:hidden!important;background:#fff!important;border:1px solid var(--line)!important;border-radius:10px!important;box-shadow:0 12px 28px #0003!important;padding:5px!important;text-align:left!important}.coordinator-floating-menu button{display:block!important;width:100%!important;height:auto!important;min-height:38px!important;text-align:left!important;background:#fff!important;color:#334155!important;border:0!important;border-radius:7px!important;padding:10px 12px!important;font:650 12px/1.3 system-ui,-apple-system,Segoe UI,Roboto,Arial!important;white-space:normal!important}.coordinator-floating-menu button:hover{background:#e2e8f0!important;color:#0f172a!important}.coordinator-floating-menu button[data-menu-action="request-delete"]{color:#991b1b!important}.coordinator-floating-menu button[data-menu-action="request-delete"]:hover{background:#fee2e2!important;color:#991b1b!important}.coordinator-floating-menu button[data-menu-action="cancel-pending"]{color:#92400e!important}.coordinator-floating-menu button[data-menu-action="cancel-pending"]:hover{background:#fef3c7!important;color:#78350f!important}
 .icon-btn{width:30px;height:30px;padding:0!important;border:1px solid var(--line);background:#fff!important;color:#334155!important;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer}
 .icon-btn:hover{background:#f0fdfa!important;color:#0f766e!important}
 .icon-btn.delete:hover{background:#fef2f2!important;color:#b91c1c!important}
-th[data-col="actions"]{width:15%;min-width:190px;cursor:default}
+th[data-col="actions"]{width:12%;min-width:108px;cursor:default}
 .drag-over{box-shadow:inset 3px 0 0 var(--accent)}
-.inline-editor{width:100%;min-width:0;padding:6px 7px;border:1px solid var(--accent);border-radius:7px;background:#fff;font:inherit}.discipline-cell{cursor:pointer}.discipline-cell:hover{background:#f0fdfa}
+.inline-editor{width:100%;min-width:0;padding:6px 7px;border:1px solid var(--accent);border-radius:7px;background:#fff;font:inherit}.discipline-cell{cursor:pointer}.discipline-cell:hover{background:#f0fdfa}.pending-change-summary{display:block;margin-top:3px;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.2;font-size:10.5px;font-weight:800;color:#92400e}.pending-change-summary .pending-label{display:inline-flex;align-items:center;padding:2px 5px;margin-right:4px;border-radius:999px;background:#fef3c7;color:#92400e;border:1px solid #f59e0b}.pending-change-summary.delete{color:#991b1b}.pending-change-summary.delete .pending-label{background:#fee2e2;color:#991b1b;border-color:#ef4444}.pending-change-summary.correction{color:#991b1b}.pending-change-summary.correction .pending-label{background:#fee2e2;color:#991b1b;border-color:#ef4444}
 
 .projection-card{margin-bottom:16px}.projection-toggle{display:flex;align-items:center;gap:8px}.projection-toggle button{padding:6px 10px;font-size:12px}.projection-table{width:100%;table-layout:fixed}.projection-table th,.projection-table td{text-align:left}.projection-table td:nth-child(3),.projection-table td:nth-child(4),.projection-table td:nth-child(5),.projection-table td:nth-child(6){text-align:center}.projection-table th:nth-child(1){width:22%}.projection-table th:nth-child(2){width:18%}.projection-table th:nth-child(3){width:13%}.projection-table th:nth-child(4){width:13%}.projection-table th:nth-child(5){width:17%}.projection-table th:nth-child(6){width:17%}.projection-ch-cell{position:relative;overflow:hidden}.projection-ch-bg{position:absolute;left:7px;top:50%;height:12px;transform:translateY(-50%);border-radius:999px;opacity:.24;pointer-events:none;max-width:calc(100% - 14px);min-width:0}.projection-ch-content{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}.projection-good .projection-ch-bg{background:#16a34a}.projection-warn .projection-ch-bg{background:#f59e0b}.projection-bad .projection-ch-bg{background:#dc2626}.projection-good .projection-status{color:#15803d}.projection-warn .projection-status{color:#d97706}.projection-bad .projection-status{color:#dc2626}.projection-index-cell{cursor:pointer;font-weight:700}.projection-index-cell:hover{background:#f0fdfa}.projection-hidden{display:none!important}
 .offer-delete-box{padding:12px 14px;border:1px solid #fecaca;background:#fff7f7;border-radius:10px}.offer-delete-row{display:flex;align-items:flex-start;gap:10px}.offer-delete-row input{width:18px;height:18px;margin-top:1px;accent-color:#b91c1c}.offer-delete-row strong{display:block;color:#991b1b;font-size:13px}.offer-delete-row small{display:block;color:#7f1d1d;font-size:11px;margin-top:2px}.offer-delete-row input:checked + div{color:#991b1b}
-</style><link rel="stylesheet" href="/style.css?v=1.0.117"><script src="/app.js?v=1.0.117"></script></head>
+</style><link rel="stylesheet" href="/style.css?v=1.0.135"><script src="/app.js?v=1.0.135"></script></head>
 <script>if(location.protocol==='file:'){location.href='http://localhost:3000/login.html';}</script><body><header><h1>ACHA — Oferta Acadêmica | IFRN Campus Natal-Zona Norte</h1><p>Planejamento de turmas e disciplinas por semestre</p></header>
 <nav class="mainnav"><a href="index.html" class="active">📋 Oferta</a><a href="projecao-cenario.html">📊 Projeção</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls">
@@ -157,7 +157,7 @@ function turnCode(t){const x=String(t||'').toLowerCase();if(x.includes('manh'))r
 function makeTurmaCode(cl){return `${cl.period}.${courseCode(cl)}.${cl.seq}${turnCode(turn(cl.matrix,cl.period,cl.seq))}`}
 function allRows(){
   let rows=[];const semSource=DB?.data?.semesters||semesters,courseSource=DB?.data?.courses||courses,matrixSource=DB?.data?.matrices||matrix;
-  (semSource[semSel.value]||[]).forEach(cl=>{const course=POCV.courseName(courseSource,cl.matrix),m=matrixSource[String(cl.matrix)]||{};(m?.disciplines||[]).forEach((d,di)=>{let ch=d.periods?.[String(cl.period)];if(ch==null)return;let key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB?.offers?.[semSel.value]?.[key]||{};const isOptional=d?.optional===true; const mCatalog=Array.isArray(m?.optionalCatalog)?m.optionalCatalog:[]; const choice=ov.optionalChoice||''; const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(choice?[choice]:[]); const catChoices=choices.map(n=>mCatalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean); const selectedNames=catChoices.map(o=>o.name); const selectedCh=catChoices.reduce((s,o)=>s+Number(o.weekly||0),0); const serverKey=DB?.__previewOfferKeyMap?.[key]||key; const baseRow={_key:key,_baseKey:key,_serverKey:serverKey,matrix:cl.matrix,course:ov.course??course,period:cl.period,turn:ov.turn??turn(cl.matrix,cl.period,cl.seq),name:ov.name??d.name,ch:Number(ov.ch??ch),group:ov.group??(d.group||''),turma:makeTurmaCode(cl),extra:false,optional:isOptional,optionalBaseName:d.name,optionalBaseGroup:d.group||'',optionalBaseCh:Number(ch),optionalCatalog:mCatalog,optionalChoice:choice,optionalChoices:selectedNames,validationStatus:ov.validationStatus||'',validationSource:ov.validationSource||'',validationApprovalId:ov.validationApprovalId||'',confirmationBy:ov.confirmationBy||''}; if(isOptional&&catChoices.length){catChoices.forEach((o,oi)=>rows.push({...baseRow,_key:`${key}::opt::${oi}`,name:o.name,ch:Number(o.weekly||0),group:o.group||'',optionalOption:true,optionalOptionIndex:oi,optionalSelectedTotal:selectedCh})); const remaining=Math.max(0,Number(ch)-selectedCh); if(remaining>0)rows.push({...baseRow,_key:`${key}::generic`,name:d.name,ch:remaining,group:d.group||'',optionalOption:true,optionalGenericRemainder:true,optionalSelectedTotal:selectedCh});}else{rows.push(baseRow)}});});
+  (semSource[semSel.value]||[]).forEach(cl=>{const course=POCV.courseName(courseSource,cl.matrix),m=matrixSource[String(cl.matrix)]||{};(m?.disciplines||[]).forEach((d,di)=>{let ch=d.periods?.[String(cl.period)];if(ch==null)return;let key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB?.offers?.[semSel.value]?.[key]||{};const isOptional=d?.optional===true; const mCatalog=Array.isArray(m?.optionalCatalog)?m.optionalCatalog:[]; const choice=ov.optionalChoice||''; const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(choice?[choice]:[]); const catChoices=choices.map(n=>mCatalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean); const selectedNames=catChoices.map(o=>o.name); const selectedCh=catChoices.reduce((s,o)=>s+Number(o.weekly||0),0); const serverKey=DB?.__previewOfferKeyMap?.[key]||key; const baseRow={_key:key,_baseKey:key,_serverKey:serverKey,matrix:cl.matrix,course:course,period:cl.period,turn:ov.turn??turn(cl.matrix,cl.period,cl.seq),name:ov.name??d.name,ch:Number(ov.ch??ch),group:ov.group??(d.group||''),turma:makeTurmaCode(cl),extra:false,optional:isOptional,optionalBaseName:d.name,optionalBaseGroup:d.group||'',optionalBaseCh:Number(ch),optionalCatalog:mCatalog,optionalChoice:choice,optionalChoices:selectedNames,validationStatus:ov.validationStatus||'',validationSource:ov.validationSource||'',validationApprovalId:ov.validationApprovalId||'',confirmationBy:ov.confirmationBy||''}; if(isOptional&&catChoices.length){catChoices.forEach((o,oi)=>rows.push({...baseRow,_key:`${key}::opt::${oi}`,name:o.name,ch:Number(o.weekly||0),group:o.group||'',optionalOption:true,optionalOptionIndex:oi,optionalSelectedTotal:selectedCh})); const remaining=Math.max(0,Number(ch)-selectedCh); if(remaining>0)rows.push({...baseRow,_key:`${key}::generic`,name:d.name,ch:remaining,group:d.group||'',optionalOption:true,optionalGenericRemainder:true,optionalSelectedTotal:selectedCh});}else{rows.push(baseRow)}});});
   Object.entries(DB?.offerDeletions?.[semSel.value]||{}).forEach(([k,del])=>{const snap=del?.snapshot||{};const parts=String(k).split('|'),matrix=String(parts[0]||''),period=String(parts[1]||''),seq=String(parts[2]||''),di=Number(String(parts[3]||'').split('::')[0]);const cl=(semSource[semSel.value]||[]).find(c=>String(c.matrix)===matrix&&String(c.period)===period&&String(c.seq)===seq),m=matrixSource[matrix]||{},d=(m.disciplines||[])[di];if(!cl||!d)return;rows.push({_key:k,_baseKey:k,_serverKey:k,matrix,course:snap.course??courseSource.find(c=>String(c.matrix)===matrix)?.name??m.name,period:cl.period,turn:snap.turn??turn(cl.matrix,cl.period,cl.seq),name:snap.name??d.name,ch:Number(snap.ch??d.periods?.[String(cl.period)]??0),group:snap.group??d.group??'',turma:makeTurmaCode(cl),extra:false,deleted:true,validationStatus:'deleted'});});
   (DB?.extraOffers?.[semSel.value]||[]).forEach(x=>rows.push({_key:`extra:${x.id}`,_extra:true,matrix:'—',course:x.course||'Demanda reprimida',period:x.period||'—',turn:x.turn||'—',name:x.name,ch:Number(x.ch||0),group:x.group||'',turma:'AVULSA',type:x.type||'Dependência',notes:x.notes||''}));
   return rows
@@ -196,8 +196,8 @@ function workflowInfo(r){
   if(deleteCorrection)return {kind:'offer',status:'awaiting',approval:deleteCorrection};
   if(change)return {kind:'offer',status:change.status==='correction_requested'?'correction_requested':'change_pending',approval:change};
   const approved=related.filter(a=>a.status==='approved').sort((a,b)=>String(b.decidedAt||b.updatedAt||b.createdAt).localeCompare(String(a.decidedAt||a.updatedAt||a.createdAt)))[0];
-  if(approved && ['offer_confirm','offer_change'].includes(String(approved.type)))return {kind:'offer',status:'confirmed',approval:approved};
-  if(String(stored?.validationStatus||r.validationStatus||'')==='approved')return {kind:'offer',status:'confirmed',approval:approved||null};
+  if(approved && ['offer_confirm','offer_change'].includes(String(approved.type)))return {kind:'offer',status:'confirmed',approval:approved,validationSource:String(stored?.validationSource||'')};
+  if(String(stored?.validationStatus||r.validationStatus||'')==='approved')return {kind:'offer',status:'confirmed',approval:approved||null,validationSource:String(stored?.validationSource||r.validationSource||'')};
   return {kind:'offer',status:'awaiting'};
 }
 function getFiltered(rows){
@@ -242,7 +242,7 @@ function preparePocvTags(){
   const gs=[];const cs=[];Object.values(DB?.data?.matrices||matrix||{}).forEach(m=>{if(m?.name)cs.push(m.name);(m?.disciplines||[]).forEach(d=>{if(d?.group)gs.push(d.group)})});Object.values(DB?.data?.courses||courses||{}).forEach(c=>{if(c?.name)cs.push(c.name)});POCV.setGroups(gs);POCV.setCourses(cs);
 }
 function projectionTurn(id,p,seq){return POCV.turnForClass(DB,id,p,seq)}
-function projectionRows(s){let rows=[];const sem=DB?.data?.semesters?.[s]||[];sem.forEach(cl=>{const course=POCV.courseName(DB.data.courses,cl.matrix),m=DB.data.matrices[String(cl.matrix)]||{};(m.disciplines||[]).forEach((d,di)=>{const baseCh=d.periods?.[String(cl.period)];if(baseCh==null)return;const key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB.offers?.[s]?.[key]||{};const catalog=Array.isArray(m.optionalCatalog)?m.optionalCatalog:[];const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(ov.optionalChoice?[ov.optionalChoice]:[]);const selected=choices.map(n=>catalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean);if(d.optional===true&&selected.length){selected.forEach(o=>rows.push({name:o.name,course:ov.course||course||m.name||'',ch:Number(o.weekly||0),group:o.group||d.group||'',turn:projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)}));return;}const ch=Number(ov.ch??baseCh),group=String(ov.group??d.group??'').trim();if(!Number.isFinite(ch)||!group)return;rows.push({name:ov.name||d.name,course:ov.course||course||m.name||'',ch,group,turn:projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)});});});(DB?.extraOffers?.[s]||[]).forEach(x=>{if(x.group&&Number(x.ch||0)>0)rows.push({name:x.name,course:x.course||'Demanda avulsa',ch:Number(x.ch||0),group:String(x.group).trim(),turn:x.turn||'A definir',period:Number(x.period||0)});});return rows}
+function projectionRows(s){let rows=[];const sem=DB?.data?.semesters?.[s]||[];sem.forEach(cl=>{const course=POCV.courseName(DB.data.courses,cl.matrix),m=DB.data.matrices[String(cl.matrix)]||{};(m.disciplines||[]).forEach((d,di)=>{const baseCh=d.periods?.[String(cl.period)];if(baseCh==null)return;const key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB.offers?.[s]?.[key]||{};const catalog=Array.isArray(m.optionalCatalog)?m.optionalCatalog:[];const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(ov.optionalChoice?[ov.optionalChoice]:[]);const selected=choices.map(n=>catalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean);if(d.optional===true&&selected.length){selected.forEach(o=>rows.push({name:o.name,course:course||m.name||'',ch:Number(o.weekly||0),group:o.group||d.group||'',turn:projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)}));return;}const ch=Number(ov.ch??baseCh),group=String(ov.group??d.group??'').trim();if(!Number.isFinite(ch)||!group)return;rows.push({name:ov.name||d.name,course:course||m.name||'',ch,group,turn:projectionTurn(cl.matrix,cl.period,cl.seq),period:Number(cl.period)});});});(DB?.extraOffers?.[s]||[]).forEach(x=>{if(x.group&&Number(x.ch||0)>0)rows.push({name:x.name,course:x.course||'Demanda avulsa',ch:Number(x.ch||0),group:String(x.group).trim(),turn:x.turn||'A definir',period:Number(x.period||0)});});return rows}
 function projectionIndex(g){return (DB.teachers||[]).filter(t=>t.group===g).reduce((sum,t)=>sum+Number(t.classFactor||0),0)}
 function projectionAvg(total,index){return index>=1?total/index:total}
 function projectionAnnualAvg(year,g){const a=projectionRows(year+'.1').filter(r=>r.group===g).reduce((s,r)=>s+r.ch,0),b=projectionRows(year+'.2').filter(r=>r.group===g).reduce((s,r)=>s+r.ch,0);const i=projectionIndex(g);return (projectionAvg(a,i)+projectionAvg(b,i))/2}
@@ -251,20 +251,49 @@ function buildForecast(){const s=semSel.value,year=s.split('.')[0],rows=projecti
 function initForecastToggle(){const key='acha_forecast_visible';const body=$('forecastBody'),btn=$('toggleForecast');if(!body||!btn)return;const apply=v=>{body.classList.toggle('projection-hidden',!v);btn.textContent=v?'Ocultar':'Exibir';localStorage.setItem(key,v?'1':'0')};apply(localStorage.getItem(key)!=='0');btn.onclick=()=>apply(body.classList.contains('projection-hidden'))}
 function applyAccessFeatureVisibility(){const el=$('forecastCard');if(!el)return;fetch('/api/session',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(s=>{const ok=s?.access?.features?.['oferta.previsao']!==false;el.style.display=ok?'':'none';}).catch(()=>{});}
 function coordinatorMenuHtml(r,wf){
-  const disabledPending=['change_pending','delete_pending'].includes(wf.status);
   const key=esc(r._serverKey||r._baseKey||r._key);
   let items='';
-  if(!disabledPending && wf.status!=='deleted'){
-    items+=`<button type="button" data-menu-action="request-delete" data-key="${key}">Solicitar exclusão</button>`;
-    items+=`<button type="button" data-menu-action="request-name" data-key="${key}">Informar alteração de nome</button>`;
-    items+=`<button type="button" data-menu-action="request-group" data-key="${key}">Solicitar mudança de grupo</button>`;
-    if(r.optional) items+=`<button type="button" data-menu-action="choose-optional" data-key="${key}">Escolher optativa</button>`;
+  // Oferta já aprovada: a única operação permitida é desfazer a aprovação.
+  if(wf.status==='confirmed'){
+    // Somente uma confirmação direta feita pelo Coordenador pode ser desfeita
+    // pelo próprio fluxo do Coordenador. Confirmações aplicadas pela Direção
+    // ficam sob responsabilidade da Direção, evitando oferecer uma ação que
+    // terminará no erro de "confirmação direta".
+    if(String(wf.validationSource||'')==='coordinator_confirmation') items=`<button type="button" data-menu-action="undo-confirm" data-key="${key}">Desfazer aprovação</button>`;
+    else items=`<span class="muted" style="display:block;padding:9px 10px">Confirmada pela Direção</span>`;
+  }else{
+    const disabledPending=['change_pending','delete_pending'].includes(wf.status);
+    if(!disabledPending && wf.status!=='deleted'){
+      items+=`<button type="button" data-menu-action="request-delete" data-key="${key}">Solicitar exclusão</button>`;
+      items+=`<button type="button" data-menu-action="request-name" data-key="${key}">Informar alteração de nome</button>`;
+      items+=`<button type="button" data-menu-action="request-group" data-key="${key}">Solicitar mudança de grupo</button>`;
+      if(r.optional) items+=`<button type="button" data-menu-action="choose-optional" data-key="${key}">Escolher optativa</button>`;
+    }
+    if(wf.status==='change_pending'||wf.status==='correction_requested'||wf.status==='delete_pending') items+=`<button type="button" data-menu-action="cancel-pending" data-key="${key}">Desistir da solicitação</button>`;
+    if(wf.status==='deleted') items+=`<button type="button" data-menu-action="undo-delete" data-key="${key}">Desfazer exclusão</button>`;
   }
-  if(wf.status==='change_pending'||wf.status==='correction_requested'||wf.status==='delete_pending') items+=`<button type="button" data-menu-action="cancel-pending" data-key="${key}">Desistir da solicitação</button>`;
-  if(wf.status==='deleted') items+=`<button type="button" data-menu-action="undo-delete" data-key="${key}">Desfazer exclusão</button>`;
   if(!items) items='<span class="muted" style="display:block;padding:9px 10px">Nenhuma ação disponível</span>';
   return `<div class="more-menu"><button type="button" class="icon-action more-btn" data-action="more" aria-label="Mais opções" title="Mais opções">…</button><div class="more-dropdown">${items}</div></div>`;
 }
+function pendingChangeSummary(r,wf){
+  const a=wf?.approval;if(!a||!['change_pending','delete_pending','correction_requested'].includes(wf?.status))return '';
+  const ch=a.changes||{},snap=a.snapshot||r||{};
+  if(a.action==='delete'||wf.status==='delete_pending')return '<span class="pending-change-summary delete"><span class="pending-label">Pendente</span>Exclusão solicitada</span>';
+  const parts=[];
+  const oldName=String(snap.name??r.name??'').trim(),newName=String(ch.name??'').trim();
+  if(newName&&newName!==oldName)parts.push(`Nome: ${esc(oldName||'—')} → ${esc(newName)}`);
+  const oldGroup=String(snap.group??r.group??'').trim(),newGroup=String(ch.group??'').trim();
+  if(newGroup!==''&&newGroup!==oldGroup)parts.push(`Grupo: ${esc(oldGroup||'—')} → ${esc(newGroup)}`);
+  const oldTurn=String(snap.turn??r.turn??'').trim(),newTurn=String(ch.turn??'').trim();
+  if(newTurn&&newTurn!==oldTurn)parts.push(`Turno: ${esc(oldTurn||'—')} → ${esc(newTurn)}`);
+  if(ch.ch!==undefined&&Number(ch.ch)!==Number(snap.ch??r.ch??0))parts.push(`CH: ${Number(snap.ch??r.ch??0)} → ${Number(ch.ch)} h/a`);
+  const choices=Array.isArray(ch.optionalChoices)?ch.optionalChoices.filter(Boolean):(ch.optionalChoice?[ch.optionalChoice]:[]);
+  if(choices.length&&!(newName&&newName!==oldName))parts.push(`Optativa: ${esc(choices.join(' + '))}`);
+  if(!parts.length)parts.push('Alteração solicitada');
+  const cls=wf.status==='correction_requested'?' correction':'';
+  return `<span class="pending-change-summary${cls}"><span class="pending-label">${wf.status==='correction_requested'?'Correção pendente':'Pendente'}</span>${parts.join(' · ')}</span>`;
+}
+
 function build(){
   let base=allRows();isCoordinator=['coordenador_curso','coordenador_area'].includes(SESSION?.user?.role)||SESSION?.__preview===true;
   const pageLevel=SESSION?.access?.pages?.['index.html']||'none';
@@ -283,9 +312,9 @@ function build(){
       if(!canEditCoordinator){
         actionHtml='';
       }else if(wf.status==='awaiting'&&!r._extra){
-        actionHtml=`<button type="button" class="icon-action validate-offer" data-action="confirm" title="Validar oferta" aria-label="Validar oferta">✓</button>${coordinatorMenuHtml(r,wf)}`;
+        actionHtml=`<button type="button" class="icon-action validate-offer" data-action="confirm" data-index="${i}" title="Validar oferta" aria-label="Validar oferta">✓</button>${coordinatorMenuHtml(r,wf)}`;
       }else if(wf.status==='correction_requested'){
-        actionHtml=`<button type="button" class="icon-action validate-offer" data-action="confirm" title="Validar oferta" aria-label="Validar oferta">✓</button>${coordinatorMenuHtml(r,wf)}`;
+        actionHtml=`<button type="button" class="icon-action validate-offer" data-action="confirm" data-index="${i}" title="Validar oferta" aria-label="Validar oferta">✓</button>${coordinatorMenuHtml(r,wf)}`;
       }else if(wf.status==='change_pending'||wf.status==='delete_pending'){
         actionHtml=coordinatorMenuHtml(r,wf);
       }else if(wf.status==='confirmed'){
@@ -295,9 +324,25 @@ function build(){
       }else if(wf.status==='extra'){
         actionHtml=`<span class="status-inline extra-status" title="Demanda avulsa">Demanda avulsa</span>`;
       }
-    } else actionHtml=`<button type="button" class="icon-btn delete delete-row" title="Excluir" aria-label="Excluir">🗑</button>`;
-    return `<tr class="${rowClass}" data-index="${i}" title="${isCoordinator?'Selecione para confirmação em lote':'Duplo clique para editar'}"><td data-col="select" class="coordinator-only-col">${canConfirm?`<input type="checkbox" class="row-select offer-select" data-index="${i}">`:''}</td><td data-col="turma">${esc(r.turma)}</td><td data-col="matrix"><span class="badge">${r.matrix}</span></td><td data-col="course">${POCV.tag(r.course,'course')}</td><td data-col="period">${r.period}º</td><td data-col="turn">${esc(r.turn)}</td><td data-col="name" class="discipline-cell" title="${r.optional?(r.optionalChoice?'Clique para alterar a optativa ofertada':'Clique para escolher a optativa a ser ofertada'):'Duplo clique para alterar a disciplina/área'}">${r.optional?'<span class="badge" style="margin-right:5px">Optativa</span>':''}${esc(displayName)}</td><td data-col="ch">${Math.round(Number(r.ch)||0)}</td><td data-col="group" class="group-cell" title="Clique para alterar o grupo">${displayGroup?POCV.tag(displayGroup,'group'):'<span class="muted">—</span>'}</td><td data-col="actions" class="actions-cell"><div class="row-actions">${actionHtml}</div></td></tr>`;
+    } else {
+      const directorCanUndo=!!wf.approval&&wf.approval.status==='approved'&&['offer_confirm','offer_change','offer_duplicate'].includes(String(wf.approval.type));
+      actionHtml=directorCanUndo
+        ? `<button type="button" class="icon-action undo-director-action" data-action="undo-director-action" data-index="${i}" title="Desfazer ação da Direção" aria-label="Desfazer ação da Direção">↶</button>`
+        : `<button type="button" class="icon-btn delete delete-row" title="Excluir" aria-label="Excluir">🗑</button>`;
+    }
+    return `<tr class="${rowClass}" data-index="${i}" title="${isCoordinator?'Selecione para confirmação em lote':'Duplo clique para editar'}"><td data-col="select" class="coordinator-only-col">${canConfirm?`<input type="checkbox" class="row-select offer-select" data-index="${i}">`:''}</td><td data-col="turma">${esc(r.turma)}</td><td data-col="matrix"><span class="badge">${r.matrix}</span></td><td data-col="course">${POCV.tag(r.course,'course')}</td><td data-col="period">${r.period}º</td><td data-col="turn">${esc(r.turn)}</td><td data-col="name" class="discipline-cell" title="${r.optional?(r.optionalChoice?'Clique para alterar a optativa ofertada':'Clique para escolher a optativa a ser ofertada'):'Duplo clique para alterar a disciplina/área'}">${r.optional?'<span class="badge" style="margin-right:5px">Optativa</span>':''}${esc(displayName)}${pendingChangeSummary(r,wf)}</td><td data-col="ch">${Math.round(Number(r.ch)||0)}</td><td data-col="group" class="group-cell" title="Clique para alterar o grupo">${displayGroup?POCV.tag(displayGroup,'group'):'<span class="muted">—</span>'}</td><td data-col="actions" class="actions-cell"><div class="row-actions">${actionHtml}</div></td></tr>`;
   }).join('');
+  tbody.querySelectorAll('.validate-offer[data-action="confirm"]').forEach(btn=>{
+    btn.onclick=async e=>{
+      e.preventDefault(); e.stopPropagation();
+      const idx=Number(btn.dataset.index), row=currentRows[idx];
+      if(!row) return;
+      if(btn.disabled) return;
+      btn.disabled=true; btn.classList.add('is-validating'); btn.textContent='…';
+      try{ await confirmCoordinatorRows([row]); }
+      finally{ if(btn.isConnected){btn.disabled=false;btn.classList.remove('is-validating');btn.textContent='✓';} }
+    };
+  });
   $('empty').style.display=currentRows.length?'none':'block';$('nTurmas').textContent=(semesters[semSel.value]||[]).length;$('nOfertas').textContent=currentRows.length;$('ch').textContent=currentRows.reduce((a,r)=>a+Number(r.ch||0),0).toLocaleString('pt-BR');$('nCursos').textContent=new Set(currentRows.map(r=>r.matrix)).size;$('title').textContent='Oferta acadêmica — '+semSel.value;document.querySelectorAll('.coordinator-only-col').forEach(el=>el.style.display=isCoordinator?'':'none');updateBatchSelection();$('filterStatus').textContent=`${currentRows.length} registros exibidos`;updateSortLabels();applyColumnOrder();const tw=document.querySelector('.tablewrap');if(tw)tw.scrollLeft=0;
 }
 function applyUrlFilters(){const p=new URLSearchParams(location.search);if(p.get('approval')){const a=(DB?.approvals||[]).find(v=>String(v.id)===String(p.get('approval')));if(a){if(a.semester)semSel.value=a.semester;if(a.targetKey){const x=String(a.targetKey).split('|');if(x[0])filters.matrix.value=x[0];if(x[1])filters.period.value=x[1];}filters.status.value='all';}}const sem=p.get('semester');if(sem&&[...semSel.options].some(o=>o.value===sem))semSel.value=sem;const set=(el,v)=>{if(v&&[...el.options].some(o=>o.value===v))el.value=v};set(filters.group,p.get('group'));set(filters.matrix,p.get('matrix'));set(filters.course,p.get('course'));set(filters.period,p.get('period'));set(filters.turn,p.get('turn'));set(filters.status,p.get('status'));if(p.get('q'))search.value=p.get('q')}
@@ -460,46 +505,45 @@ async function handleCoordinatorMenuAction(action,row){
   const wf=workflowInfo(row);
   if(action==='cancel-pending'){
     const id=wf.approval?.id;if(!id)return;
-    const r=await fetch('/api/validation',{method:'PUT',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({operation:'cancel_pending',id,previewRequester:SESSION?.__preview?{id:SESSION.user.id,name:SESSION.user.displayName,role:SESSION.user.role}:undefined})});const j=await r.json().catch(()=>({}));if(!r.ok)return alert(j.error||'Não foi possível cancelar a solicitação.');DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;
+    const r=await fetch('/api/validation',{method:'PUT',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({operation:'cancel_pending',id,previewRequester:SESSION?.__preview?{id:SESSION.user.id,name:SESSION.user.displayName,role:SESSION.user.role}:undefined,previewTarget:SESSION?.__preview?{type:localStorage.getItem('acha_preview_type')||'',id:localStorage.getItem('acha_preview_id')||''}:undefined})});const j=await r.json().catch(()=>({}));if(!r.ok)return alert(j.error||'Não foi possível cancelar a solicitação.');DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;
+  }
+  if(action==='undo-confirm'){
+    if(!confirm('Desfazer a aprovação desta oferta?'))return;
+    const r=await fetch('/api/offer/undo-confirm',{method:'POST',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({semester:semSel.value,key:row._serverKey||row._baseKey||row._key,source:{matrix:row.matrix,period:row.period,seq:String(row.turma||'').split('-').pop(),disciplineIndex:String(row._baseKey||row._key).split('|')[3]?.split('::')[0]||''}})});const j=await r.json().catch(()=>({}));if(!r.ok)return alert(j.error||'Não foi possível desfazer a aprovação.');DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;
   }
   if(action==='undo-delete'){
     const r=await fetch('/api/offer/undo-delete',{method:'POST',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({semester:semSel.value,key:row._serverKey||row._baseKey||row._key})});const j=await r.json().catch(()=>({}));if(!r.ok)return alert(j.error||'Não foi possível desfazer a exclusão.');DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;
   }
 }
+function closeCoordinatorFloatingMenu(){document.querySelectorAll('.coordinator-floating-menu').forEach(el=>el.remove());}
 tbody.addEventListener('click',async e=>{
   const more=e.target.closest('.more-btn');
   if(more){
-    e.preventDefault();
-    e.stopPropagation();
-    const menu=more.closest('.more-menu');
-    document.querySelectorAll('.more-menu.open').forEach(m=>{if(m!==menu)m.classList.remove('open')});
-    menu?.classList.toggle('open');
-    return;
-  }
-  const menuAction=e.target.closest('[data-menu-action]');
-  if(menuAction){
-    e.preventDefault();
-    e.stopPropagation();
-    const tr=menuAction.closest('tr');
-    const row=currentRows[Number(tr?.dataset.index)];
-    if(!row)return;
-    menuAction.closest('.more-menu')?.classList.remove('open');
-    await handleCoordinatorMenuAction(menuAction.dataset.menuAction,row);
+    e.preventDefault();e.stopPropagation();
+    const tr=more.closest('tr');const idx=Number(tr?.dataset.index);
+    const source=more.closest('.more-menu')?.querySelector('.more-dropdown');
+    closeCoordinatorFloatingMenu();
+    if(!source||!Number.isFinite(idx))return;
+    const floating=document.createElement('div');
+    floating.className='coordinator-floating-menu';floating.dataset.index=String(idx);floating.innerHTML=source.innerHTML;
+    document.body.appendChild(floating);
+    const rect=more.getBoundingClientRect(),gap=6,margin=8,dw=floating.offsetWidth,dh=floating.offsetHeight;
+    let left=Math.max(margin,Math.min(rect.right-dw,window.innerWidth-dw-margin));
+    let top=rect.bottom+gap;if(top+dh>window.innerHeight-margin)top=rect.top-dh-gap;
+    top=Math.max(margin,Math.min(top,window.innerHeight-dh-margin));
+    floating.style.left=`${Math.round(left)}px`;floating.style.top=`${Math.round(top)}px`;
     return;
   }
   const validate=e.target.closest('.validate-offer[data-action="confirm"]');
-  if(validate){
-    e.preventDefault();
-    e.stopPropagation();
-    const tr=validate.closest('tr');
-    const row=currentRows[Number(tr?.dataset.index)];
-    if(!row)return;
-    await confirmCoordinatorRows([row]);
-  }
+  if(validate){e.preventDefault();e.stopPropagation();const tr=validate.closest('tr');const row=currentRows[Number(tr?.dataset.index)];if(row)await confirmCoordinatorRows([row]);}
 });
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.more-menu'))document.querySelectorAll('.more-menu.open').forEach(m=>m.classList.remove('open'));
+document.addEventListener('click',async e=>{
+  const actionEl=e.target.closest('.coordinator-floating-menu [data-menu-action]');
+  if(actionEl){e.preventDefault();e.stopPropagation();const menu=actionEl.closest('.coordinator-floating-menu');const row=currentRows[Number(menu?.dataset.index)];const action=actionEl.dataset.menuAction;closeCoordinatorFloatingMenu();if(row)await handleCoordinatorMenuAction(action,row);return;}
+  if(!e.target.closest('.coordinator-floating-menu')&&!e.target.closest('.more-btn'))closeCoordinatorFloatingMenu();
 });
+window.addEventListener('scroll',closeCoordinatorFloatingMenu,true);
+window.addEventListener('resize',closeCoordinatorFloatingMenu);
 function openCoordinatorRequestModal(kind,row){
   const modal=$('coordRequestModal'),body=$('coordRequestBody');if(!modal)return;
   modal.dataset.kind=kind;modal.dataset.key=row._serverKey||row._baseKey||row._key;
@@ -516,6 +560,19 @@ function openCoordinatorRequestModal(kind,row){
 $('coordRequestClose').onclick=()=>$('coordRequestModal').style.display='none';$('coordRequestCancel').onclick=()=>$('coordRequestModal').style.display='none';$('coordRequestModal').onclick=e=>{if(e.target===$('coordRequestModal'))$('coordRequestModal').style.display='none'};
 $('coordRequestSave').onclick=async()=>{const modal=$('coordRequestModal'),kind=modal.dataset.kind,key=modal.dataset.key,val=$('coordRequestValue')?.value.trim();if(!val)return alert(kind==='name'?'Informe o novo nome.':'Selecione o grupo de destino.');const row=currentRows.find(r=>String(r._serverKey||r._baseKey||r._key)===String(key)||String(r._baseKey||r._key)===String(key));if(!row)return;const changes=kind==='name'?{name:val}:{group:val};const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key,changes});if(ok){modal.style.display='none';}};
 tbody.addEventListener('click',async e=>{
+  const undo=e.target.closest('.undo-director-action[data-action="undo-director-action"]');
+  if(undo){
+    e.preventDefault();e.stopPropagation();
+    const tr=undo.closest('tr'),row=currentRows[Number(tr?.dataset.index)],wf=row?workflowInfo(row):null;
+    const a=wf?.approval;
+    if(!row||!a)return;
+    const actionLabel=a.type==='offer_change'&&a.action==='delete'?'exclusão':a.type==='offer_change'?'alteração':a.type==='offer_duplicate'?'duplicação':'confirmação';
+    if(!confirm(`Desfazer a ${actionLabel} realizada pela Direção? A oferta será restaurada ao estado anterior à ação.`))return;
+    const r=await fetch('/api/offer/undo-director-action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({semester:semSel.value,key:row._serverKey||row._baseKey||row._key,approvalId:a.id})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)return alert(j.error||'Não foi possível desfazer a ação da Direção.');
+    DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;
+  }
   const action=e.target.closest('.edit-pending,.cancel-pending,.undo-confirm,.undo-delete'); if(!action)return;
   const tr=action.closest('tr'),row=currentRows[Number(tr?.dataset.index)]; if(!row)return; const wf=workflowInfo(row);
   if(action.dataset.action==='undo'){
@@ -527,7 +584,7 @@ tbody.addEventListener('click',async e=>{
   }
   if(action.dataset.action==='cancel-pending'){
     if(!confirm('Desistir desta alteração e manter a oferta original?'))return;
-    const id=wf.approval?.id; const r=await fetch('/api/validation',{method:'PUT',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({operation:'cancel_pending',id,previewRequester:SESSION?.__preview?{id:SESSION.user.id,name:SESSION.user.displayName,role:SESSION.user.role}:undefined})}); const j=await r.json().catch(()=>({})); if(!r.ok)return alert(j.error||'Não foi possível cancelar a alteração.'); DB=await (await fetch('/api/db',{cache:'no-store'})).json(); build(); return;
+    const id=wf.approval?.id; const r=await fetch('/api/validation',{method:'PUT',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({operation:'cancel_pending',id,previewRequester:SESSION?.__preview?{id:SESSION.user.id,name:SESSION.user.displayName,role:SESSION.user.role}:undefined,previewTarget:SESSION?.__preview?{type:localStorage.getItem('acha_preview_type')||'',id:localStorage.getItem('acha_preview_id')||''}:undefined})}); const j=await r.json().catch(()=>({})); if(!r.ok)return alert(j.error||'Não foi possível cancelar a alteração.'); DB=await (await fetch('/api/db',{cache:'no-store'})).json(); build(); return;
   }
   openCoordinatorOfferChange(row,wf.approval);
 });
@@ -563,7 +620,7 @@ $('saveEdit').onclick=async()=>{
     if(editingRow.optional){const catalog=editingRow.optionalCatalog||[];const chosen=String(changes.name||'');const opt=catalog.find(o=>String(o.name)===chosen);if(!opt)return alert('Selecione uma disciplina entre as optativas disponíveis.');changes.optionalChoice=chosen;changes.optionalChoices=[chosen];changes.ch=Number(changes.ch||opt.weekly||0);changes.group=changes.group||opt.group||'';}
     if(changes.turn&&changes.turn!==String(editingRow.turn||''))changes.turnScope=$('editModal').dataset.turnScope||'offer';
     const pendingId=$('editModal').dataset.pendingApprovalId||'';$('editModal').dataset.validationRequest='';$('editModal').style.display='none';
-    if(pendingId){const r=await fetch('/api/validation',{method:'PUT',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({operation:'edit_pending',id:pendingId,changes,previewRequester:SESSION?.__preview?{id:SESSION.user.id,name:SESSION.user.displayName,role:SESSION.user.role}:undefined})});const j=await r.json().catch(()=>({}));if(!r.ok){alert(j.error||'Não foi possível atualizar a alteração pendente.');return;}DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;}
+    if(pendingId){const r=await fetch('/api/validation',{method:'PUT',headers:{'Content-Type':'application/json',...(SESSION?.__preview?{'X-ACHA-Preview':'director'}:{})},body:JSON.stringify({operation:'edit_pending',id:pendingId,changes,previewRequester:SESSION?.__preview?{id:SESSION.user.id,name:SESSION.user.displayName,role:SESSION.user.role}:undefined,previewTarget:SESSION?.__preview?{type:localStorage.getItem('acha_preview_type')||'',id:localStorage.getItem('acha_preview_id')||''}:undefined})});const j=await r.json().catch(()=>({}));if(!r.ok){alert(j.error||'Não foi possível atualizar a alteração pendente.');return;}DB=await (await fetch('/api/db',{cache:'no-store'})).json();build();return;}
     await submitValidation({kind:'offer',action:'change',semester:semSel.value,key:editingRow._serverKey||editingRow._baseKey||editingRow._key,changes});return;
   }
   const changes={};

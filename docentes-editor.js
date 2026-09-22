@@ -98,10 +98,13 @@
       const name=String(c.course_name||c.name||'').trim();
       if(!id || !name || seen.has(id)) return;
       seen.add(id);
-      rows.push({id,name});
+      const label=window.POCV?.courseDisplayNameById
+        ? window.POCV.courseDisplayNameById(courses,id)
+        : name;
+      rows.push({id,name,label:label||name});
     });
-    rows.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}));
-    return `<option value="">Selecione o curso</option>` + rows.map(c=>`<option value="${escapeHtml(c.id)}" ${String(c.id)===String(selected)?'selected':''}>${escapeHtml(c.name)}</option>`).join('');
+    rows.sort((a,b)=>a.label.localeCompare(b.label,'pt-BR',{sensitivity:'base'}));
+    return `<option value="">Selecione o curso</option>` + rows.map(c=>`<option value="${escapeHtml(c.id)}" ${String(c.id)===String(selected)?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
   }
 
   function coordinatorCourseField(t) {
@@ -184,7 +187,7 @@
         <td data-col="degree" class="editable" data-field="degree">${escapeHtml(t.degree||'—')}</td>
         <td data-col="vinculo" class="editable" data-field="vinculo">${escapeHtml(t.vinculo||'—')}</td>
         <td data-col="regime" class="editable" data-field="regime">${escapeHtml(t.regime||'—')}<span class="secondary">${Math.round((Number(t.regimePct)||0)*100)}% do regime</span></td>
-        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseName?`<span class="secondary">Coordena: ${escapeHtml(t.coordinatorCourseName)}</span>`:''}${t.managementArea?`<span class="secondary">Área de apoio: ${escapeHtml(t.managementArea)}</span>`:''}</td>
+        <td data-col="situation" class="editable" data-field="situation"><span class="badge ${restrictedClass}">${escapeHtml(situationText(t))}</span><span class="secondary">Fator de aula: ${Math.round((Number(t.classFactor)||0)*100)}%</span>${associationText(t)?`<span class="secondary">${escapeHtml(associationText(t))}</span>`:''}${t.management==='Coordenação de Curso'&&t.coordinatorCourseId?`<span class="secondary">Coordena: ${escapeHtml(window.POCV?.courseDisplayNameById?window.POCV.courseDisplayNameById(courses,t.coordinatorCourseId):(t.coordinatorCourseName||''))}</span>`:''}${t.managementArea?`<span class="secondary">Área de apoio: ${escapeHtml(t.managementArea)}</span>`:''}</td>
         <td data-col="actions" class="actions-cell"><div class="row-actions">
           <button type="button" class="icon-btn edit-teacher" title="Alterar dados" aria-label="Alterar dados">✎</button>
           <button type="button" class="icon-btn delete delete-teacher" title="Excluir" aria-label="Excluir">🗑</button>

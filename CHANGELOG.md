@@ -1,3 +1,82 @@
+
+## 1.0.143 — Otimização efetiva do modal de detalhes
+- Modal de detalhes reorganizado em grade de 4 colunas para desktop.
+- Campos compactados em linha (rótulo + valor), reduzindo drasticamente a altura.
+- Curso, semestre, turma, turno, disciplina e demais metadados passam a ocupar múltiplas colunas conforme o conteúdo.
+- Justificativas e alterações longas permanecem em largura integral.
+- Modal dimensionado para a viewport sem rolagem interna para o conjunto normal de dados.
+- Layout responsivo: 2 colunas em telas médias e 1 em telas pequenas.
+## 1.0.141
+- Desfazer decisão da Direção retorna a solicitação para pendente.
+- Mantido histórico do desfazimento.
+- Coordenador pode desistir da solicitação enquanto pendente.
+
+## 1.0.140
+- Ajuste fino dos botões da coluna Decisão da Direção para o mesmo tamanho visual compacto da coluna Ações do Coordenador.
+- Botões de validação e menu padronizados em 32px, com tipografia e espaçamento equivalentes.
+
+# v1.0.138
+
+- Corrigida abertura de detalhes pelo menu da Direção.
+- Reorganizada a tabela de pendências com data/solicitante, turma, turno e curso.
+- Removida a coluna Tipo.
+- Reduzida a tipografia dos botões/menu da Direção para o padrão do Coordenador.
+
+# v1.0.138
+
+- Corrigida abertura de detalhes no menu da Direção.
+- Redesenhada a tabela de pendências: data/solicitante unificados; removido tipo; adicionadas turma, turno e curso.
+- Ações da Direção permanecem exclusivamente no menu, com tipografia compacta.
+
+## 1.0.136
+- Padroniza a coluna Decisão da Direção com o mesmo layout visual da coluna Ações do Coordenador.
+- Ajusta larguras, alinhamento, tipografia, espaçamento e comportamento responsivo da tabela de Pendências.
+
+# v1.0.135
+
+- Corrige o menu do Coordenador para não oferecer desfazer quando a confirmação foi realizada pela Direção.
+- Retorna mensagem explícita quando uma confirmação da Direção é enviada ao endpoint de desfazer do Coordenador.
+
+# v1.0.132 — Decisão da Direção no padrão das ações do Coordenador
+
+- Coluna **Decisão** da Direção redesenhada no mesmo padrão visual dos controles de ação do Coordenador: botão `✓`, botão `✕` e menu `…`.
+- Ações concluídas passam a oferecer **Desfazer** dentro do menu suspenso, sem ocupar espaço com botão textual.
+- `Ver detalhes` também foi incorporado ao menu de ações.
+- Menu flutuante usa o mesmo comportamento do menu do Coordenador, escapando de clipping da tabela.
+- Layout da coluna de decisão permanece contido na largura disponível.
+
+# ACHA — Changelog
+
+## 1.0.130
+- Permite à Direção desfazer ações aprovadas sobre ofertas: confirmação, alteração, exclusão e duplicação.
+- A reversão restaura o snapshot anterior da oferta e registra quem/quando desfez a ação.
+- A ação desfeita deixa de ser considerada aprovação vigente no fluxo.
+
+v1.0.129
+- Ajustado o Panorama de validação por cursos para consolidar matrizes diferentes do mesmo curso.
+- Matrizes vigentes do mesmo curso passam a aparecer como uma única linha, por exemplo, Marketing.
+- Cursos que possuem simultaneamente oferta Regular e PROEJA continuam separados como `Curso (Regular)` e `Curso (PROEJA)`.
+- Filtros de curso passam a usar exatamente essa mesma regra de agrupamento.
+## 1.0.126
+- Padroniza a identificação visual de cursos com mesmo nome em todo o sistema.
+- Comércio passa a aparecer como **Comércio (Regular)** e **Comércio (PROEJA)** quando aplicável.
+- Diferencia matrizes/variantes com mesmo nome por modalidade, ano e turno quando necessário.
+- Atualiza seletores de curso, Visualizar como, Docentes, Matrizes, POCV, Projeções, Indicadores, Pendências e demais telas que exibem cursos.
+- Ignora o nome bruto persistido na oferta quando a matriz permite obter a identificação correta do curso.
+- Atualiza cache-busting para 1.0.126.
+
+## v1.0.123 — Restringe alterações após aprovação
+- Ofertas aprovadas pelo Coordenador passam a permitir exclusivamente "Desfazer aprovação".
+- Interface e backend bloqueiam novas alterações/exclusões em ofertas já aprovadas.
+- A mesma regra é aplicada ao modo Direção → Visualizar como Coordenador.
+
+# CHANGELOG
+
+- v1.0.121 — Identifica visualmente alterações pendentes nas ofertas (nome, grupo, optativa, turno, CH e exclusão), mantendo o resumo dentro da largura da página; reduz a largura da coluna de ações e aumenta o contraste dos botões e menus do Coordenador.
+
+## 1.0.119
+- Corrige definitivamente o menu de ações do coordenador, renderizando-o fora da tabela para evitar corte e barras de rolagem.
+
 ## 1.0.117
 - Corrige cache de assets da interface do Coordenador para garantir carregamento das correções de menu e solicitações.
 
@@ -48,6 +127,8 @@
 - O MySQL continua sendo a fonte de dados de produção após a migração.
 
 # Changelog
+
+- v1.0.122 — Corrige a ação Validar do Coordenador com acionamento direto do botão e usa a identidade do Coordenador simulado nas operações em modo de visualização da Direção.
 
 ## 1.0.115
 - Corrige os eventos dos botões de validar e do menu de ações do Coordenador.
@@ -267,3 +348,22 @@
 - Perfil com Visualização não exibe ações de cadastro, edição, exclusão, validação, seleção em lote ou salvamento.
 - Perfil com Edição mantém as ações e permite salvar normalmente.
 - O modo "Visualizar como" também respeita o nível configurado no backend, impedindo mutações quando o perfil simulado é somente leitura.
+
+## 1.0.125
+- Dashboard da Direção: Panorama de validação filtrado por semestre.
+- Percentuais de validação passam a considerar as ofertas efetivamente aprovadas/confirmadas e são recalculados automaticamente.
+- Dashboard atualiza os dados do panorama periodicamente sem exigir recarregamento manual.
+- Tabela do panorama exibe somente o semestre selecionado, mantendo a largura da página.
+
+## v1.0.133
+- Padronizada a coluna Decisão da Direção com o mesmo componente visual de ações do Coordenador.
+- Aprovação usa o botão ✓ no padrão teal; demais ações ficam no menu ⋯.
+- Removido o botão X direto da coluna para evitar diferença de interação.
+- Notas de decisão deixam de ocupar a coluna; detalhes e correção ficam no menu.
+- Ajustadas larguras da tabela para evitar estouro horizontal.
+
+## 1.0.144
+- Corrigido o fluxo de desfazimento das decisões da Direção: confirmação, exclusão, alteração e duplicação retornam a solicitação para `pending`.
+- Mantido o vínculo com o coordenador solicitante para permitir nova avaliação ou desistência.
+- Adicionada normalização de registros legados que estavam marcados como `undone`, convertendo-os para `pending` quando decorrentes de desfazimento da Direção.
+- Removido o status visual legado "Desfeitas" da página de Pendências.

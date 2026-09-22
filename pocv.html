@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ACHA — Cenários</title>
-<link rel="stylesheet" href="/style.css?v=1.0.77"><script src="/app.js?v=1.0.77"></script>
+<link rel="stylesheet" href="/style.css?v=1.0.130"><script src="/app.js?v=1.0.130"></script>
 <style>
 .pocv-page{max-width:1500px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -502,7 +502,7 @@ function variantKeyOfMatrix(id){
 }
 function variantLabel(id){
   const c=course(id);
-  const name=String(c.course_name||c.name||courseKeyOf(id)||`Matriz ${id}`).trim();
+  const name=POCV?.courseName?POCV.courseName(DB?.data?.courses||[],id):String(c.course_name||c.name||courseKeyOf(id)||`Matriz ${id}`).trim();
   const form=String(c.form||'').trim();
   const level=String(c.level||'').trim();
   return {name,form,level,key:variantKeyOfMatrix(id)};
@@ -1027,11 +1027,11 @@ function populateScenarioModal(){
   renderScenarioExistingOffers();
 }
 function scenarioCourseOptions(){
-  const seen=new Set();
-  return (DB?.data?.courses||[])
+  const source=DB?.data?.courses||[],seen=new Set();
+  return source
     .map(c=>({
       id:String(c.course_id||c.course_name||c.name||'').trim(),
-      label:String(c.course_name||c.name||c.course_id||'').trim()
+      label:POCV?.courseDisplayNameById?POCV.courseDisplayNameById(source,String(c.course_id||'').trim()):String(c.course_name||c.name||c.course_id||'').trim()
     }))
     .filter(c=>c.id&&!seen.has(c.id)&&(seen.add(c.id),true))
     .sort((a,b)=>norm(a.label).localeCompare(norm(b.label),'pt-BR',{numeric:true}));
@@ -1064,7 +1064,7 @@ function renderScenarioExistingOffersInto(el){
   const sems=semsBetween(current.startSemester,current.endSemester);
   el.innerHTML=entries.map(([key,ps])=>{
     const starts=[...new Set(ps.map(p=>p.startSemester))].sort((a,b)=>semIndex(a)-semIndex(b));
-    const label=((DB?.data?.courses||[]).find(c=>String(c.course_id||'')===String(key))?.course_name)||key;
+    const label=POCV?.courseDisplayNameById?POCV.courseDisplayNameById(DB?.data?.courses||[],key):((DB?.data?.courses||[]).find(c=>String(c.course_id||'')===String(key))?.course_name)||key;
      return `<div class="existing-offer-row"><div><strong>${esc(label)}</strong><div class="muted">${esc(key)} · Inícios: ${starts.join(', ')||'—'} · ${ps.length} coorte(s)</div></div><div><select class="remove-from-sem" data-course="${esc(key)}">${sems.map(v=>`<option value="${v}">${v}</option>`).join('')}</select></div><button type="button" class="btn danger remove-course-from" data-course="${esc(key)}">Excluir a partir</button></div>`;
   }).join('');
   el.querySelectorAll('.remove-course-from').forEach(btn=>btn.onclick=async()=>{

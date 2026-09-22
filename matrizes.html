@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Matrizes | ACHA</title>
-<link rel="stylesheet" href="/style.css?v=1.0.77">
+<link rel="stylesheet" href="/style.css?v=1.0.130">
 <style>
 .matrix-list .matrix-name{font-weight:800;color:#0f172a}
 .matrix-list tr{cursor:pointer}
@@ -54,7 +54,7 @@
 .optional-label{display:inline-flex;align-items:center;justify-content:center;gap:5px;font-size:11px;font-weight:700;color:#475569;cursor:pointer}.optional-catalog-body{padding:12px 16px;display:grid;gap:8px}.optional-catalog-row{display:grid;grid-template-columns:minmax(260px,1.7fr) 1fr 90px 90px 34px;gap:8px;align-items:center}.optional-catalog-row input{padding:7px 9px}.optional-catalog-remove{background:#fff!important;color:#b91c1c!important;border:1px solid var(--line)!important;width:34px;height:34px;padding:0!important}.optional-catalog-empty{padding:10px;color:var(--muted);font-size:13px}@media(max-width:800px){.optional-catalog-row{grid-template-columns:1fr 1fr}.optional-catalog-row input:nth-child(3),.optional-catalog-row input:nth-child(4){width:100%}}
 
 </style>
-<script src="/app.js?v=1.0.77"></script>
+<script src="/app.js?v=1.0.130"></script>
 </head>
 <body>
 <nav class="mainnav"></nav>
@@ -262,8 +262,16 @@ function allDisciplines(){
   return unique(out);
 }
 function courseOptions(){
-  return unique((state.db?.data?.courses||[]).map(c=>c.course_name||c.name));
+  const courses=state.db?.data?.courses||[],seen=new Set(),rows=[];
+  courses.forEach(c=>{
+    const id=String(c?.course_id||c?.course_name||c?.name||'').trim(),name=String(c?.course_name||c?.name||'').trim();
+    if(!id||!name||seen.has(id))return;
+    seen.add(id);
+    rows.push({value:id,label:POCV?.courseDisplayNameById?POCV.courseDisplayNameById(courses,id):name,name});
+  });
+  return rows.sort((a,b)=>norm(a.label).localeCompare(norm(b.label),'pt-BR',{numeric:true}));
 }
+
 function courseRecord(id){
   return (state.db?.data?.courses||[]).find(c=>String(c.matrix)===String(id))||{};
 }
@@ -281,6 +289,7 @@ function periodsFor(m){
 function courseMetaForMatrix(id){
   const c=courseRecord(id);
   return {
+    course_id:String(c.course_id||''),
     course_name:String(c.course_name||c.name||''),
     type:String(c.type||''),
     level:String(c.level||''),
@@ -288,13 +297,13 @@ function courseMetaForMatrix(id){
   };
 }
 function renderList(){
-  if(window.POCV){POCV.setCourses(courseOptions());POCV.setGroups(allGroups());}
+  if(window.POCV){POCV.setCourses(courseOptions().map(x=>x.label));POCV.setGroups(allGroups());}
   const q=norm($('search').value);
   const entries=Object.entries(state.db?.data?.matrices||{}).map(([id,m])=>{
     const c=courseRecord(id);
     const periods=periodsFor(m);
     const year=m.year||yearFrom(m)||yearFrom(c);
-    return {id,m,c,course:String(c.course_name||c.name||''),name:String(m.name||c.name||''),year,disc:(m.disciplines||[]).length,periods:periods.length};
+    return {id,m,c,course:POCV?.courseName?POCV.courseName(state.db?.data?.courses||[],id):String(c.course_name||c.name||''),name:String(m.name||c.name||''),year,disc:(m.disciplines||[]).length,periods:periods.length};
   }).filter(r=>!q||norm([r.id,r.course,r.name,r.year].join(' ')).includes(q))
     .sort((a,b)=>norm(a.course).localeCompare(norm(b.course),'pt-BR',{numeric:true})||Number(a.id)-Number(b.id));
   $('listCount').textContent=entries.length+' matr'+(entries.length===1?'iz':'izes');
@@ -323,13 +332,17 @@ function markSaving(){ $('saveState').className='save-state saving'; $('saveStat
 
 function fillSelect(select,value,options,emptyLabel='Não informado'){
   const current=String(value??'');
-  select.innerHTML=`<option value="">${esc(emptyLabel)}</option>`+options.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
+  select.innerHTML=`<option value="">${esc(emptyLabel)}</option>`+options.map(x=>{
+    const option=typeof x==='object'?x:{value:x,label:x};
+    return `<option value="${esc(option.value)}">${esc(option.label)}</option>`;
+  }).join('');
   select.value=current;
   if(select.value!==current && current)select.insertAdjacentHTML('beforeend',`<option value="${esc(current)}">${esc(current)}</option>`),select.value=current;
 }
+
 function populateMeta(){
   const c=courseMetaForMatrix(state.currentId);
-  fillSelect($('courseName'),c.course_name,courseOptions(),'Não informado');
+  fillSelect($('courseName'),c.course_id||c.course_name,courseOptions(),'Não informado');
   const m=state.editing||{};
   $('matrixYear').value=m.year??yearFrom(m)??yearFrom(c);
   $('matrixCode').value=m.code??'';
@@ -523,7 +536,8 @@ function readMeta(){
   state.editing.notes=$('matrixNotes').value.trim();
   state.editing.disciplines=state.editing.disciplines||[];
   state.coursePatch={
-    course_name:$('courseName').value,
+    course_id:$('courseName').value,
+    course_name:(state.db?.data?.courses||[]).find(x=>String(x.course_id||'')===String($('courseName').value||''))?.course_name||c.course_name||'',
     level:$('matrixLevel').value,
     form:$('matrixForm').value,
     type:$('matrixType').value,
@@ -574,17 +588,17 @@ async function openEditor(id){
   $('listView').hidden=true;$('editorView').hidden=false;
   $('pageTitle').textContent='Editar matriz';
   $('pageSubtitle').textContent='Estrutura curricular e dados gerais da matriz.';
-  $('editorHeading').textContent=(data.course?.course_name||data.course?.name||data.matrix.name||'Matriz')+' — edição';
+  $('editorHeading').textContent=(POCV?.courseName?POCV.courseName(state.db?.data?.courses||[],data.matrixId):data.course?.course_name||data.course?.name||data.matrix.name||'Matriz')+' — edição';
   $('editorDescription').textContent='Matriz '+id+' · '+(data.matrix.disciplines||[]).length+' disciplinas';
   populateMeta();renderOptionalCatalog();renderCurriculum();
   $('saveState').className='save-state saved';$('saveState').textContent='✓ Carregado';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 async function createMatrix(){
-  const course=courseOptions()[0]||'';
+  const first=courseOptions()[0]||{}; const course=first.name||''; const courseId=first.value||'';
   const r=await fetch('/api/matrix',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     matrix:{name:course?course+' — nova matriz':'Nova matriz',year:new Date().getFullYear(),level:'',form:'',modality:'Presencial',duration:1,disciplines:[]},
-    course:{course_name:course,name:course,type:'',level:'',form:''}
+    course:{course_id:courseId,course_name:course,name:course,type:'',level:'',form:''}
   })});
   const data=await r.json();
   if(!r.ok){alert(data.error||'Não foi possível criar a matriz');return}
