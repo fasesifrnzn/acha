@@ -1,3 +1,19 @@
+# ACHA 1.0.164 — Correção definitiva da Redirect URI do SUAP
+
+- Removido o parâmetro `redirect_uri` do botão de login no navegador.
+- A Redirect URI passa a ser determinada exclusivamente pelo servidor.
+- Evita divergências causadas por URL antiga/cacheada no cliente.
+- Em produção, usa a origem pública recebida pelo proxy ou `SUAP_REDIRECT_URI` explícita.
+- Em desenvolvimento, usa `http://localhost:3000/login.html` quando o acesso é feito localmente.
+
+# Changelog
+
+## 1.0.163
+- Corrigido o fluxo de login SUAP para preservar exatamente a origem pública aberta no navegador.
+- Adicionado fallback por `Origin`/`Referer` quando os headers do proxy reverso não estiverem disponíveis.
+- O botão de login informa ao servidor a Redirect URI do navegador, com validação de origem e caminho `/login.html`.
+- Mantida a configuração explícita por `SUAP_REDIRECT_URI` quando definida.
+
 # ACHA 1.0.162 — Correção do logo no Docker
 
 - Corrigido o empacotamento da pasta `assets/` na imagem Docker.

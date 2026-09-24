@@ -38,8 +38,21 @@ const SUAP_OAUTH={
 };
 function suapConfigured(){return !!SUAP_OAUTH.clientId}
 function requestOrigin(req){
-  const proto=String(req.headers['x-forwarded-proto']||'').split(',')[0].trim() || (req.socket.encrypted?'https':'http');
-  const host=String(req.headers['x-forwarded-host']||req.headers.host||'localhost:3000').split(',')[0].trim();
+  // Preferência: origem/referer enviados pelo navegador, pois refletem o
+  // endereço público efetivamente aberto pelo usuário. Depois usamos os
+  // headers do proxy reverso e, por fim, o host local.
+  const origin=String(req.headers.origin||'').trim();
+  if(origin){try{return new URL(origin).origin}catch(_){}}
+
+  const referer=String(req.headers.referer||'').trim();
+  if(referer){try{return new URL(referer).origin}catch(_){}}
+
+  const forwardedProto=String(req.headers['x-forwarded-proto']||'').split(',')[0].trim();
+  const forwardedHost=String(req.headers['x-forwarded-host']||'').split(',')[0].trim();
+  if(forwardedProto && forwardedHost) return `${forwardedProto}://${forwardedHost}`;
+
+  const proto=req.socket.encrypted?'https':'http';
+  const host=String(req.headers.host||'localhost:3000').split(',')[0].trim();
   return `${proto}://${host}`;
 }
 function suapRedirectUri(req){
@@ -968,7 +981,7 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.162'
+      'X-ACHA-Version':'1.0.163'
     });
     return res.end(payload);
   }
@@ -1000,15 +1013,17 @@ async function api(req,res){
     });
   }
 
-  // Compatibilidade com o botão antigo: o redirecionamento agora segue
-  // o mesmo fluxo do cliente JavaScript oficial do IFRN.
   if(p==='/api/suap/login' && req.method==='GET'){
     if(!suapConfigured())return send(res,503,{error:'Integração SUAP não configurada. Verifique o Client ID e a Redirect URI.'});
+
+    // A Redirect URI é definida exclusivamente no servidor. Isso impede que
+    // um parâmetro antigo/cacheado do navegador altere o destino do OAuth.
+    const redirectUri=suapRedirectUri(req);
     const q=new URLSearchParams({
       response_type:'token',
       grant_type:'implicit',
       client_id:SUAP_OAUTH.clientId,
-      redirect_uri:suapRedirectUri(req),
+      redirect_uri:redirectUri,
       scope:SUAP_OAUTH.scope
     });
     return redirect(res,302,`${SUAP_OAUTH.baseUrl}/o/authorize/?${q.toString()}`);
@@ -1924,7 +1939,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.162'
+      'X-ACHA-Version':'1.0.163'
     });
     fs.createReadStream(file).pipe(res)
   })

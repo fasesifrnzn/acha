@@ -116,6 +116,9 @@ async function completeSuapLogin(){
 }
 
 (async()=>{
+  // O servidor determina a Redirect URI com base no domínio da requisição.
+  // O navegador não envia uma Redirect URI própria para evitar divergências
+  // entre ambiente local e produção.
   $('suapButton').href='/api/suap/login';
 
   try{
