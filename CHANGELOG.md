@@ -1,3 +1,9 @@
+# ACHA 1.0.162 — Correção do logo no Docker
+
+- Corrigido o empacotamento da pasta `assets/` na imagem Docker.
+- O logo preto do IFRN usado na tela de login agora é copiado para `/app/assets`, evitando erro `404 Not Found` após publicação.
+- Mantido o espaçamento entre o logo institucional e o texto do rodapé.
+
 # v1.0.161
 
 - Login: substituído o logo do Campus Natal-Zona Norte pelo logo institucional preto do IFRN.

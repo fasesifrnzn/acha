@@ -15,6 +15,7 @@ COPY style.css ./
 COPY acha-logo.svg ./
 COPY *.html ./
 COPY docentes-editor.js ./
+COPY assets ./assets
 COPY database ./database
 # O schema deve fazer parte da imagem de produção.
 COPY database/schema.sql ./database/schema.sql
