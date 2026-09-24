@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Projeção — IFRN ZN</title><link rel="stylesheet" href="/style.css?v=1.0.130"><style>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Projeção — IFRN ZN</title><link rel="stylesheet" href="/style.css?v=1.0.148"><style>
 .proj-summary td,.proj-summary th{text-align:left}.proj-summary td:nth-child(3),.proj-summary td:nth-child(4),.proj-summary td:nth-child(5),.proj-summary td:nth-child(6){text-align:center}
 th[data-col="group"]{width:22%}th[data-col="type"]{width:18%}th[data-col="total"]{width:13%}th[data-col="index"]{width:13%}th[data-col="semavg"]{width:17%}th[data-col="annual"]{width:17%}
 .semester-box{display:flex;align-items:end}.semester-box select{min-width:150px}
@@ -13,7 +13,7 @@ th[data-col="group"]{width:22%}th[data-col="type"]{width:18%}th[data-col="total"
  font-weight:900;white-space:nowrap;box-sizing:border-box
 }
 
-</style><script src="/app.js?v=1.0.130"></script></head><body><header><h1>ACHA — Projeção por semestre | IFRN Campus Natal-Zona Norte</h1><p>Projeção de carga-horária por grupo e semestre</p></header>
+</style><script src="/app.js?v=1.0.148"></script></head><body><header><h1>ACHA — Projeção por semestre | IFRN Campus Natal-Zona Norte</h1><p>Projeção de carga-horária por grupo e semestre</p></header>
 <nav class="mainnav"><a href="index.html">📋 Oferta</a><a href="projecao.html" class="active">📊 Projeção por turno</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls"><div class="semester-box"><div style="width:100%"><label>SEMESTRE</label><select id="semester"></select></div></div><div><label>BUSCA LIVRE</label><input id="search" placeholder="Grupo ou tipo..."></div><div><button id="refresh">Atualizar</button></div></div></section>
 <section class="card"><div class="head"><h2>Previsão de carga-horária</h2><span class="muted">Duplo clique no índice de docentes para editar</span></div><div class="tablewrap"><table class="proj-summary"><thead><tr><th data-col="group"><button class="sort" data-key="group">Grupo ↕</button></th><th data-col="type"><button class="sort" data-key="type">Tipo ↕</button></th><th data-col="total"><button class="sort" data-key="total">CH total ↕</button></th><th data-col="index"><button class="sort" data-key="index">Índice docentes ↕</button></th><th data-col="semavg"><button class="sort" data-key="semavg">Média semestral ↕</button></th><th data-col="annual"><button class="sort" data-key="annual">Média anual ↕</button></th></tr></thead><tbody id="summary"></tbody></table></div></section>

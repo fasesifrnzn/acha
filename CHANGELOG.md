@@ -1,3 +1,51 @@
+# v1.0.156
+
+- Corrigida a associação visual e de status de cada pendência de disciplina optativa à sua própria solicitação.
+- Pendências optativas independentes agora não reutilizam a última aprovação/pendência da mesma oferta-base.
+
+# v1.0.154
+
+- Corrige múltiplas pendências independentes de disciplinas optativas na mesma oferta, inclusive no modo de visualização do Diretor.
+- O bloqueio de solicitação duplicada passa a considerar a disciplina optativa específica, não a oferta-base.
+- Linhas pendentes de optativas também são reconhecidas quando a solicitação é do tipo offer_confirm.
+- Impede selecionar duas vezes a mesma disciplina optativa no modal.
+
+# v1.0.153
+
+- Reimplementado o fluxo de demandas avulsas sem Oferta especial, com curso obrigatório nos tipos aplicáveis e lista somente de cursos em oferta no semestre.
+- Devoluções permanecem consultáveis sem bloquear a nova validação.
+- Cada optativa selecionada gera pendência independente para a Direção.
+- Alterações de nome, grupo e curso aprovadas pela Direção retornam para validação final do Coordenador.
+
+# v1.0.152
+
+- Corrigido o layout da tabela Oferta Acadêmica.
+- Restaurada a permissão de Edição da Oferta para Coordenador de Curso, recuperando validação e seleção em lote.
+- Corrigida a tabela para usar distribuição explícita de colunas e evitar compressão do Curso/Disciplina e espaço vazio.
+- Corrigido o alvo da ordenação de colunas para a tabela de ofertas.
+
+# v1.0.148
+
+- Corrige a criação de solicitações independentes para cada disciplina optativa selecionada, permitindo à Direção validar uma, algumas ou todas separadamente.
+- Cada pendência de optativa passa a exibir a disciplina optativa individual no item da tela de Pendências.
+
+# v1.0.147
+
+- Cada disciplina optativa selecionada gera uma solicitação independente para validação da Direção.
+- A Direção pode aprovar individualmente uma, algumas ou todas as optativas selecionadas.
+- Aprovações de optativas são acumuladas na mesma oferta, sem uma aprovação substituir outra.
+- Desfazimento de uma aprovação optativa remove apenas aquela disciplina da oferta e retorna sua solicitação para Pendente.
+
+# v1.0.146
+
+- Atualização do tutorial dos Coordenadores com seção completa sobre disciplinas optativas, seleção de múltiplas disciplinas, carga-horária mínima, salvamento e validação pela Direção.
+
+
+## 1.0.145
+- Disponibiliza o tutorial do Coordenador de Curso diretamente no menu lateral do ACHA.
+- O tutorial é aberto em nova aba em PDF.
+- Acesso ao tutorial liberado para Coordenador de Curso, Coordenação de Área e Direção.
+- Incluído o PDF atualizado do Tutorial ACHA para Coordenadores.
 
 ## 1.0.143 — Otimização efetiva do modal de detalhes
 - Modal de detalhes reorganizado em grade de 4 colunas para desktop.

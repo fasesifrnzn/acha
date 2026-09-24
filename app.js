@@ -97,7 +97,7 @@
     {label:'Planejamento',items:[['pocv.html','timeline','Cenários'],['projecao-cenario.html','timeline','Projeção'],['indicadores.html','chart','Indicadores'],['matrizes.html','book','Matrizes']]},
     {label:'Cadastros',items:[['docentes.html','person','Docentes'],['grupos.html','tag','Grupos'],['regras.html','gear','Regras'],['variaveis.html','gear','Variáveis']]},
     {label:'Acompanhamento',items:[['demandas.html','note','Demandas avulsas'],['pendencias.html','note','Pendências']]},
-    {label:'Sistema',items:[['backup.html','download','Backup'],['acessos.html','gear','Acessos'],['perfil.html','person','Meu perfil']]}
+    {label:'Sistema',items:[['TutorialACHA-Coordenadores.pdf','book','Tutorial do Coordenador'],['backup.html','download','Backup'],['acessos.html','gear','Acessos'],['perfil.html','person','Meu perfil']]}
   ];
   const navItems=navGroups.flatMap(g=>g.items);
   const iconSvg={
@@ -301,14 +301,14 @@
       location.replace('dashboard.html');
       return;
     }
-    const coordinatorOnly=new Set(['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html']);
+    const coordinatorOnly=new Set(['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html','TutorialACHA-Coordenadores.pdf']);
     const isDirector=isDirectionRole(session?.user?.role)||isDirectionRole(session?.__realRole);
     const previewTargetNow=previewTarget();
     const previewSwitch=isDirector?`<div class="preview-selector" id="coordinatorPreviewSelector"><label for="coordinatorPreviewSelect">Visualizar como</label><select id="coordinatorPreviewSelect" aria-label="Escolher perfil para visualização de teste"><option value="">Direção</option></select></div>`:'';
-    const previewPages=new Set(['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html','demandas.html','perfil.html','notificacoes.html']);
+    const previewPages=new Set(['dashboard.html','index.html','alocacao.html','matrizes.html','turmas.html','demandas.html','perfil.html','notificacoes.html','TutorialACHA-Coordenadores.pdf']);
     const visible=navItems.filter(([href])=>{if(!session?.user)return false;if(session?.__preview){return previewPages.has(href);}if(href==='acessos.html'||href==='pendencias.html')return isDirectionRole(session.user.role);const access=session.access?.pages?.[href];if(access!==undefined)return access!=='none';return session.user.role!=='coordenador_curso'&&!['coordenador_area'].includes(session.user.role)||coordinatorOnly.has(href)});
     const visibleSet=new Set(visible.map(x=>x[0]));
-    const groupsHtml=navGroups.map(g=>{const items=g.items.filter(([href])=>visibleSet.has(href));if(!items.length)return '';return `<div class="nav-section"><div class="nav-section-title">${g.label}</div>${items.map(([href,icon,label])=>`<a href="${href}" title="${label}" aria-label="${label}"><span class="nav-icon">${iconSvg[icon]}</span><span class="nav-label">${label}</span></a>`).join('')}</div>`}).join('');
+    const groupsHtml=navGroups.map(g=>{const items=g.items.filter(([href])=>visibleSet.has(href));if(!items.length)return '';return `<div class="nav-section"><div class="nav-section-title">${g.label}</div>${items.map(([href,icon,label])=>`<a href="${href}" title="${label}" aria-label="${label}"${href.endsWith('.pdf')?' target="_blank" rel="noopener"':''}><span class="nav-icon">${iconSvg[icon]}</span><span class="nav-label">${label}</span></a>`).join('')}</div>`}).join('');
     old.innerHTML=`<div class="sidebar-brand"><span class="sidebar-logo"><img src="acha-logo.svg" alt="ACHA"></span><span class="sidebar-title">ACHA</span><button type="button" class="sidebar-toggle" aria-label="Recolher menu" title="Recolher menu"><span class="toggle-glyph">‹</span></button></div>${previewSwitch}<div class="sidebar-scroll">${groupsHtml}</div>`+(session?.user?`<div class="sidebar-user" title="${esc(session.user.displayName)}"><a href="perfil.html" class="sidebar-profile-link"><span class="sidebar-user-name">${esc(session.user.displayName.split(' ')[0])}</span><small>Meu perfil</small></a><button type="button" class="sidebar-logout" id="pocvLogout">Sair</button></div>`:'')+`<a class="top-notification-link" href="notificacoes.html" title="Notificações" aria-label="Notificações"><span class="top-bell">${iconSvg.bell}</span><span class="top-notification-badge" hidden>0</span></a>`;
     old.classList.add('pocv-sidebar');
     const current=location.pathname.split('/').pop()||'dashboard.html';old.querySelectorAll('a').forEach(a=>{if(a.getAttribute('href')===current)a.classList.add('active')});

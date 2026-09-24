@@ -76,7 +76,7 @@ const DB_FILE=process.env.DB_FILE || path.join(ROOT,'data','db.json');
 let dbCache=null;
 let dbReady=false;
 const PORT=process.env.PORT||3000;
-const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
+const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.pdf':'application/pdf'};
 
 function ensureDB(){
   const dir=path.dirname(DB_FILE);
@@ -187,6 +187,24 @@ const ACCESS_DEFAULTS={
   coordenador_curso:{label:'Coordenador de Curso',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'none'])),semesterFrom:'2026.1',semesterTo:'2030.2',features:{'oferta.previsao':false}},
   coordenador_area:{label:'Coordenação de Área',pages:Object.fromEntries(PAGE_CATALOG.map(([p])=>[p,'none'])),semesterFrom:'2024.1',semesterTo:'2034.2',features:{'oferta.previsao':false}}
 };
+
+// ACHA v1.0.153 — Oferta Acadêmica do Coordenador deve operar em Edição.
+// Esta correção restaura as ações de validação/solicitação e o seletor em lote
+// quando uma configuração persistida de versões anteriores deixou index.html em view.
+function ensureCoordinatorOfferEditAccess(db){
+  db.accessControl=db.accessControl||{version:1,profiles:{}};
+  db.accessControl.profiles=db.accessControl.profiles||{};
+  const base=ACCESS_DEFAULTS.coordenador_curso;
+  const cur=db.accessControl.profiles.coordenador_curso||{};
+  const pages={...base.pages,...(cur.pages||{})};
+  if(pages['index.html']!=='edit'){
+    pages['index.html']='edit';
+    db.accessControl.profiles.coordenador_curso={...cur,label:cur.label||base.label,pages,semesterFrom:cur.semesterFrom||base.semesterFrom,semesterTo:cur.semesterTo||base.semesterTo,features:{...base.features,...(cur.features||{})}};
+    return true;
+  }
+  return false;
+}
+
 ACCESS_DEFAULTS.coordenador_curso.pages['dashboard.html']='edit';
 ACCESS_DEFAULTS.coordenador_curso.pages['index.html']='edit';
 ACCESS_DEFAULTS.coordenador_curso.pages['alocacao.html']='edit';
@@ -584,7 +602,21 @@ function filterDbForUserWithAccess(db,user){const out=filterDbByAccessWindow(fil
 
 function ensureWorkflow(db){db.approvals=Array.isArray(db.approvals)?db.approvals:[];db.notifications=Array.isArray(db.notifications)?db.notifications:[];}
 function userDisplay(db,id){return (db.authUsers||[]).find(x=>String(x.id)===String(id))?.displayName||'Usuário';}
-function coordinatorOwnsOffer(db,user,semester,key){return semesterInAccessRange(db,user,semester)&&coordinatorMatrixIds(db,user).includes(String(key).split('|')[0]);}
+function coordinatorOwnsOffer(db,user,semester,key){return semesterInAccessRange(db,user,semester)&&coordinatorMatrixIds(db,user).includes(String(key).split('|')[0]);}function offeredCourseIds(db,semester){
+  const matrices=new Set((db.data?.semesters?.[String(semester)]||[]).map(c=>String(c.matrix)));
+  return new Set((db.data?.courses||[]).filter(c=>matrices.has(String(c.matrix))).map(c=>String(c.course_id||c.course_name||c.name||c.matrix)).filter(Boolean));
+}
+function validateExtraDemand(db,semester,type,course,role,coordinatorCourseId=''){
+  const allowed=['Dependência','Demanda reprimida','Outro'];
+  const kind=String(type||'Dependência').trim();
+  if(!allowed.includes(kind))return 'Tipo de demanda avulsa inválido.';
+  if(kind==='Dependência')return null;
+  const cid=String(course||'').trim();
+  if(!cid)return 'Para este tipo de demanda, o curso é obrigatório.';
+  if(!offeredCourseIds(db,semester).has(cid))return 'O curso selecionado não possui oferta no semestre informado.';
+  if(role==='coordenador_curso'&&String(coordinatorCourseId||'')!==cid)return 'A demanda deve pertencer ao curso coordenado.';
+  return null;
+}
 function previewCoordinatorUser(db,req){
   const role=String(req.headers['x-acha-preview-role']||'');
   const type=String(req.headers['x-acha-preview-target-type']||'');
@@ -670,7 +702,7 @@ function resolvePreviewOffer(db,semester,x){
   if(srcKey){const generated=synthesizeOfferFromKey(db,semester,srcKey);if(generated)return {key:srcKey,current:generated};}
   return null;
 }
-function approvalTargetLabel(db,a){if(String(a.type||'').startsWith('offer_')){const raw=String(a.targetKey||'').split('|'),p3=String(raw[3]||'').split('::')[0],m=db.data?.matrices?.[raw[0]]||{},d=m.disciplines?.[Number(p3)],course=(db.data?.courses||[]).find(c=>String(c.matrix)===String(raw[0]))?.name||a.snapshot?.course||a.course||'Oferta';return `${course} · ${d?.name||a.snapshot?.name||a.targetKey||'Oferta'} · ${a.semester}`;}return `${a.proposed?.name||a.snapshot?.name||'Demanda avulsa'} · ${a.semester}`;}
+function approvalTargetLabel(db,a){if(String(a.type||'').startsWith('offer_')){const raw=String(a.targetKey||'').split('|'),p3=String(raw[3]||'').split('::')[0],m=db.data?.matrices?.[raw[0]]||{},d=m.disciplines?.[Number(p3)],course=(db.data?.courses||[]).find(c=>String(c.matrix)===String(raw[0]))?.name||a.snapshot?.course||a.course||'Oferta';const opt=Array.isArray(a.changes?.optionalChoices)?a.changes.optionalChoices.filter(Boolean):(a.changes?.optionalChoice?[a.changes.optionalChoice]:[]);return `${course} · ${opt.length?opt.join(' + '):(d?.name||a.snapshot?.name||a.targetKey||'Oferta')} · ${a.semester}`;}return `${a.proposed?.name||a.snapshot?.name||'Demanda avulsa'} · ${a.semester}`;}
 function createApproval(db,user,fields){const a={id:`ap${Date.now()}-${Math.random().toString(36).slice(2,7)}`,status:'pending',requesterId:user.id,requesterName:user.displayName,requesterRole:user.role,createdAt:new Date().toISOString(),...fields};db.approvals.push(a);return a;}
 function pushNotification(db,userId,title,message,approvalId){db.notifications.push({id:`nt${Date.now()}-${Math.random().toString(36).slice(2,7)}`,userId,title,message,approvalId:String(approvalId||''),read:false,createdAt:new Date().toISOString()});}
 function notifyDirectors(db,title,message,approvalId){ensureWorkflow(db);(db.authUsers||[]).filter(u=>u.role==='diretor_geral'||u.role==='diretoria_academica').forEach(u=>pushNotification(db,u.id,title,message,approvalId));}
@@ -693,16 +725,31 @@ function applyApproval(db,a){
           a.appliedSnapshots[key]=existed?JSON.parse(JSON.stringify(db.offers[a.semester][key])):null;
         }
         const base=db.offers[a.semester]?.[key]||a.snapshot||synthesizeOfferFromKey(db,a.semester,key)||{};
-        const next={...base,...(a.changes||{})};
+        const requestedOptional=Array.isArray(a.changes?.optionalChoices)?a.changes.optionalChoices.filter(Boolean):(a.changes?.optionalChoice?[a.changes.optionalChoice]:[]);
+        let applyChanges={...(a.changes||{})};
+        if(requestedOptional.length){
+          const currentOptional=Array.isArray(base.optionalChoices)?base.optionalChoices.filter(Boolean):(base.optionalChoice?[base.optionalChoice]:[]);
+          const merged=[...currentOptional,...requestedOptional].filter((v,i,arr)=>arr.indexOf(v)===i);
+          const matrixData=db.data?.matrices?.[String(String(key).split('|')[0])]||{};
+          const catalog=Array.isArray(matrixData.optionalCatalog)?matrixData.optionalCatalog:[];
+          const selected=merged.map(n=>catalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean);
+          applyChanges.optionalChoices=merged;
+          applyChanges.optionalChoice=merged.length===1?merged[0]:'';
+          applyChanges.name=merged.join(' + ');
+          if(selected.length)applyChanges.ch=selected.reduce((sum,o)=>sum+Number(o.weekly||0),0);
+          if(selected.length)applyChanges.group=selected[0].group||base.group||'';
+        }
+        const next={...base,...applyChanges};
+        if(Object.prototype.hasOwnProperty.call(a.changes||{},'course')){const cid=String(a.changes.course||'').trim();const offered=(db.data?.courses||[]).filter(c=>offeredCourseIds(db,a.semester).has(String(c.course_id||c.course_name||c.name||c.matrix)));const dest=offered.find(c=>String(c.course_id||c.course_name||c.name||c.matrix)===cid);if(dest){next.course=String(a.changes.courseLabel||dest.course_name||dest.name||cid);next.courseId=cid;}}
         delete next.turnScope;
         const p=String(key).split('|'),expected=classTurn(db,Number(p[0]),Number(p[1]),Number(p[2]));
         if(scope!=='class' && expected&&expected!=='A definir' && !requestedTurn) next.turn=expected;
         if(requestedTurn) next.turn=requestedTurn;
         const canonicalCourse=(db.data?.courses||[]).find(c=>String(c.matrix)===String(p[0]))?.name;
-        if(canonicalCourse) next.course=canonicalCourse;
+        if(canonicalCourse && !Object.prototype.hasOwnProperty.call(a.changes||{},'course')) next.course=canonicalCourse;
         const optChoices=Array.isArray(next.optionalChoices)?next.optionalChoices.filter(Boolean):(next.optionalChoice?[next.optionalChoice]:[]);
         if(optChoices.length){ next.name=optChoices.join(' + '); next.optionalChoices=optChoices; next.optionalChoice=optChoices.length===1?optChoices[0]:''; }
-        next.validationStatus='approved';next.validationSource='director_approval';next.validationApprovalId=a.id;next.validationUpdatedAt=new Date().toISOString();next.validationBy=a.decidedById;
+        const explicitNameChange=Object.prototype.hasOwnProperty.call(a.changes||{},'name')&&!requestedOptional.length;const requiresCoordinatorRevalidation=!!a.changes&&(explicitNameChange||Object.prototype.hasOwnProperty.call(a.changes,'group')||Object.prototype.hasOwnProperty.call(a.changes,'course'));a.requiresCoordinatorRevalidation=requiresCoordinatorRevalidation;next.requiresCoordinatorRevalidation=requiresCoordinatorRevalidation;next.validationStatus=requiresCoordinatorRevalidation?'awaiting_coordinator':'approved';next.validationSource='director_approval';next.validationApprovalId=a.id;next.validationUpdatedAt=new Date().toISOString();next.validationBy=a.decidedById;
         db.offers[a.semester][key]=next;
       };
       const target=String(a.targetKey), parts=target.split('|');
@@ -867,6 +914,7 @@ async function persistDBAndSync(db){
 async function initializeDatabase(){
   try{
     const loaded=await readMySQLDatabase();
+    if(ensureCoordinatorOfferEditAccess(loaded)) await syncMySQLDatabase(cloneDb(loaded));
     dbCache=loaded;
     (dbCache.teachers||[]).forEach(applyTeacherFactor);
     dbReady=true;
@@ -912,7 +960,7 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.110'
+      'X-ACHA-Version':'1.0.145'
     });
     return res.end(payload);
   }
@@ -1172,18 +1220,36 @@ async function api(req,res){
           if(db.offerDeletions?.[semester])delete db.offerDeletions[semester][target];
         }
       }else{
-        const snapshots=a.appliedSnapshots||{};
-        if(Object.keys(snapshots).length){
-          for(const [k,snap] of Object.entries(snapshots)){
-            if(snap===null||snap===undefined)delete db.offers[semester][k];
-            else db.offers[semester][k]=JSON.parse(JSON.stringify(snap));
-          }
+        const requestedOptional=Array.isArray(a.changes?.optionalChoices)?a.changes.optionalChoices.filter(Boolean):(a.changes?.optionalChoice?[a.changes.optionalChoice]:[]);
+        if(requestedOptional.length){
+          const current=db.offers[semester]?.[target]||a.snapshot||{};
+          const currentOptional=Array.isArray(current.optionalChoices)?current.optionalChoices.filter(Boolean):(current.optionalChoice?[current.optionalChoice]:[]);
+          const remaining=currentOptional.filter(n=>!requestedOptional.includes(n));
+          const matrixData=db.data?.matrices?.[String(String(target).split('|')[0])]||{};
+          const catalog=Array.isArray(matrixData.optionalCatalog)?matrixData.optionalCatalog:[];
+          const selected=remaining.map(n=>catalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean);
+          const next={...current,optionalChoices:remaining,optionalChoice:remaining.length===1?remaining[0]:'',name:remaining.length?remaining.join(' + '):String(a.snapshot?.name||''),ch:remaining.length?selected.reduce((sum,o)=>sum+Number(o.weekly||0),0):Number(a.snapshot?.ch||0),group:remaining.length?(selected[0]?.group||a.snapshot?.group||''):String(a.snapshot?.group||'')};
+          if(!remaining.length){delete next.optionalChoices;delete next.optionalChoice;}
+          next.validationStatus=remaining.length?'approved':'';
+          next.validationSource=remaining.length?'director_approval':'';
+          next.validationApprovalId=remaining.length?String(a.id):'';
+          next.validationUpdatedAt=new Date().toISOString();
+          next.validationBy=authUser.id;
+          db.offers[semester][target]=next;
         }else{
-          const snap=a.snapshot;
-          if(snap===null||snap===undefined)delete db.offers[semester][target];
-          else db.offers[semester][target]=JSON.parse(JSON.stringify(snap));
+          const snapshots=a.appliedSnapshots||{};
+          if(Object.keys(snapshots).length){
+            for(const [k,snap] of Object.entries(snapshots)){
+              if(snap===null||snap===undefined)delete db.offers[semester][k];
+              else db.offers[semester][k]=JSON.parse(JSON.stringify(snap));
+            }
+          }else{
+            const snap=a.snapshot;
+            if(snap===null||snap===undefined)delete db.offers[semester][target];
+            else db.offers[semester][target]=JSON.parse(JSON.stringify(snap));
+          }
+          if(db.offerDeletions?.[semester])delete db.offerDeletions[semester][target];
         }
-        if(db.offerDeletions?.[semester])delete db.offerDeletions[semester][target];
       }
       // Desfazer uma decisão da Direção não encerra a solicitação.
       // A oferta volta ao estado anterior à decisão e a própria solicitação
@@ -1211,15 +1277,23 @@ async function api(req,res){
         if(!x.semester||!semesterInAccessRange(db,authUser,x.semester))return send(res,400,{error:'Semestre não autorizado.'});
         const simulatedCoordinator=previewCoordinatorUser(db,req);
         const previewRequester=simulatedCoordinator||{id:String(x.previewRequester?.id||authUser.id),displayName:String(x.previewRequester?.name||authUser.displayName),role:String(x.previewRequester?.role||'coordenador_curso')};
+        if(x.kind==='extra'){const kind=String(x.proposed?.type||'Dependência'),course=kind==='Dependência'?'':String(x.proposed?.course||'');const err=validateExtraDemand(db,x.semester,kind,course,previewRequester.role,String(previewRequester.coordinatorCourseId||''));if(err)return send(res,400,{error:err});const a=createApproval(db,previewRequester,{type:'extra_create',semester:x.semester,proposed:{name:String(x.proposed.name||'').trim(),ch:Number(x.proposed.ch)||0,type:kind,group:String(x.proposed.group||''),turn:String(x.proposed.turn||''),course,notes:String(x.proposed.notes||'')},targetLabel:String(x.proposed.name||'Demanda avulsa')});notifyDirectors(db,'Nova demanda avulsa para avaliação',`${approvalTargetLabel(db,a)} — solicitada no modo de teste.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,preview:true,approval:a});}
         if(x.kind==='offer'){
           const resolved=resolvePreviewOffer(db,x.semester,x); if(!resolved)return send(res,404,{error:'Oferta não encontrada.'});
-          const key=resolved.key,cur=resolved.current, pth=key.split('|'), d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(String(pth[3]).split('::')[0])];
+          const key=resolved.key,cur=resolved.current, pth=key.split('|'), d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(String(pth[3]).split('::')[0])];if(Object.prototype.hasOwnProperty.call(x.changes||{},'course')){const cid=String(x.changes.course||'').trim();if(!offeredCourseIds(db,x.semester).has(cid))return send(res,400,{error:'O curso de destino não possui oferta no semestre selecionado.'});}
           if(cur?.validationStatus==='approved'&&cur?.validationSource==='coordinator_confirmation')return send(res,409,{error:'Oferta aprovada: somente é permitido desfazer a aprovação.'});
           if(x.action==='confirm' && !(d?.optional===true && (x.changes?.optionalChoices||x.changes?.optionalChoice))){
             db.offers??={};db.offers[x.semester]??={};const previous=Object.prototype.hasOwnProperty.call(db.offers[x.semester],key)?JSON.parse(JSON.stringify(db.offers[x.semester][key])):null;const next={...cur,...(x.changes||{}),validationStatus:'approved',validationSource:'coordinator_confirmation',confirmationCreatedAt:new Date().toISOString(),confirmationBy:previewRequester.id,confirmationPrevious:previous};const canonicalCourse=(db.data?.courses||[]).find(c=>String(c.matrix)===String(pth[0]))?.name;if(canonicalCourse)next.course=canonicalCourse;const optChoices=Array.isArray(next.optionalChoices)?next.optionalChoices.filter(Boolean):(next.optionalChoice?[next.optionalChoice]:[]);if(optChoices.length){next.name=optChoices.join(' + ');next.optionalChoices=optChoices;next.optionalChoice=optChoices.length===1?optChoices[0]:'';}delete next.turnScope;db.offers[x.semester][key]=next;await persistDBAndSync(db);return send(res,200,{ok:true,preview:true,approved:true,direct:true});
           }
           if(x.action==='confirm'&&d?.optional===true&&!(x.changes?.optionalChoices||x.changes?.optionalChoice))return send(res,400,{error:'Para validar uma oferta optativa, selecione a disciplina optativa.'});
-          if(db.approvals.some(v=>v.status==='pending'&&String(v.requesterId)===previewRequester.id&&v.semester===x.semester&&v.targetKey===key))return send(res,409,{error:'Já existe uma solicitação pendente para esta oferta.'});
+          const previewOptionalChoices=Array.isArray(x.changes?.optionalChoices)?x.changes.optionalChoices.filter(Boolean):(x.changes?.optionalChoice?[x.changes.optionalChoice]:[]);
+          // Optativas são solicitações independentes: a existência de uma pendência
+          // para a oferta-base não bloqueia outra disciplina optativa da mesma oferta.
+          if(!previewOptionalChoices.length && db.approvals.some(v=>v.status==='pending'&&String(v.requesterId)===previewRequester.id&&v.semester===x.semester&&String(v.targetKey)===String(key)))return send(res,409,{error:'Já existe uma solicitação pendente para esta oferta.'});
+          if(previewOptionalChoices.length){
+            const dup=db.approvals.some(v=>['pending','correction_requested'].includes(v.status)&&String(v.requesterId)===previewRequester.id&&v.semester===x.semester&&String(v.targetKey)===String(key)&&(()=>{const c=Array.isArray(v.changes?.optionalChoices)?v.changes.optionalChoices:(v.changes?.optionalChoice?[v.changes.optionalChoice]:[]);return c.some(n=>previewOptionalChoices.includes(String(n)));})());
+            if(dup)return send(res,409,{error:'Já existe uma solicitação para esta disciplina optativa.'});
+          }
           if(x.action==='duplicate'){
             const du=x.duplicate||{};const a=createApproval(db,previewRequester,{type:'offer_duplicate',action:'duplicate',semester:x.semester,targetKey:key,duplicate:{matrix:String(du.matrix||pth[0]),period:String(du.period||pth[1]),seq:String(du.seq||pth[2]),disciplineIndex:String(du.disciplineIndex||String(pth[3]).split('::')[0]),quantity:Math.max(2,Math.min(5,Number(du.quantity)||2))},changes:x.changes||{},snapshot:cur,targetLabel:approvalTargetLabel(db,{type:'offer_duplicate',targetKey:key,semester:x.semester})});notifyDirectors(db,'Nova duplicidade de oferta para avaliação',`${approvalTargetLabel(db,a)} — solicitação cadastrada no modo de teste.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,preview:true,approval:a});
           }
@@ -1230,7 +1304,7 @@ async function api(req,res){
       }
       if(!['coordenador_curso','coordenador_area'].includes(authUser.role))return send(res,403,{error:'Somente Coordenadores podem solicitar validações.'});if(!hasPageEdit(authUser,'index.html',db))return send(res,403,{error:'O Coordenador possui apenas permissão de visualização para Oferta.'});if(!x.semester||!semesterInAccessRange(db,authUser,x.semester))return send(res,400,{error:'Semestre não autorizado.'});let a;
       if(x.kind==='offer'){
-        const resolved=resolvePreviewOffer(db,x.semester,x);const resolvedKey=resolved?.key||String(x.key||'');if(!resolvedKey)return send(res,404,{error:'Oferta não encontrada.'});if(!coordinatorOwnsOffer(db,authUser,x.semester,resolvedKey))return send(res,403,{error:'Oferta fora do curso coordenado.'});const cur=resolved?.current||db.offers?.[x.semester]?.[resolvedKey]||synthesizeOfferFromKey(db,x.semester,resolvedKey);if(!cur)return send(res,404,{error:'Oferta não encontrada.'});const pth=String(resolvedKey).split('|'),d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(String(pth[3]).split('::')[0])];x.key=resolvedKey;
+        const resolved=resolvePreviewOffer(db,x.semester,x);const resolvedKey=resolved?.key||String(x.key||'');if(!resolvedKey)return send(res,404,{error:'Oferta não encontrada.'});if(!coordinatorOwnsOffer(db,authUser,x.semester,resolvedKey))return send(res,403,{error:'Oferta fora do curso coordenado.'});const cur=resolved?.current||db.offers?.[x.semester]?.[resolvedKey]||synthesizeOfferFromKey(db,x.semester,resolvedKey);if(!cur)return send(res,404,{error:'Oferta não encontrada.'});const pth=String(resolvedKey).split('|'),d=db.data?.matrices?.[pth[0]]?.disciplines?.[Number(String(pth[3]).split('::')[0])];x.key=resolvedKey;if(Object.prototype.hasOwnProperty.call(x.changes||{},'course')){const cid=String(x.changes.course||'').trim();if(!offeredCourseIds(db,x.semester).has(cid))return send(res,400,{error:'O curso de destino não possui oferta no semestre selecionado.'});}
         if(x.action==='duplicate'){
           const du=x.duplicate||{}, sameClass=du.sameClass===true, matrix=String(du.matrix||pth[0]),period=String(du.period||pth[1]),seq=String(du.seq||pth[2]),di=String(du.disciplineIndex||String(pth[3]).split('::')[0]);
           if(!coordinatorMatrixIds(db,authUser).includes(matrix))return send(res,403,{error:'A turma de destino não pertence ao curso coordenado.'});
@@ -1245,15 +1319,24 @@ async function api(req,res){
         if(x.action==='confirm'&&!isOptionalConfirmation){
           db.offers??={};db.offers[x.semester]??={};
           const previous=Object.prototype.hasOwnProperty.call(db.offers[x.semester],x.key)?JSON.parse(JSON.stringify(db.offers[x.semester][x.key])):null;
-          const next={...cur,...(x.changes||{}),validationStatus:'approved',validationSource:'coordinator_confirmation',confirmationCreatedAt:new Date().toISOString(),confirmationBy:authUser.id,confirmationPrevious:previous};
+          const next={...cur,...(x.changes||{}),validationStatus:'approved',validationSource:'coordinator_confirmation',confirmationCreatedAt:new Date().toISOString(),confirmationBy:authUser.id,confirmationPrevious:previous};delete next.requiresCoordinatorRevalidation;
           delete next.turnScope; db.offers[x.semester][x.key]=next; await persistDBAndSync(db); return send(res,200,{ok:true,approved:true,direct:true,offer:next});
         }
         if(x.action==='confirm'&&d?.optional===true&&!choices.length)return send(res,400,{error:'Para validar uma oferta optativa, o coordenador deve vincular qual disciplina optativa será ofertada.'});
-        if(db.approvals.some(v=>v.status==='pending'&&v.requesterId===authUser.id&&v.semester===x.semester&&v.targetKey===x.key))return send(res,409,{error:'Já existe uma solicitação pendente para esta oferta.'});
+        const requestedOptionalChoices=Array.isArray(x.changes?.optionalChoices)?x.changes.optionalChoices.filter(Boolean):(x.changes?.optionalChoice?[x.changes.optionalChoice]:[]);
+        const optionalRequest=d?.optional===true && requestedOptionalChoices.length>0;
+        // Uma oferta optativa pode possuir várias solicitações independentes,
+        // uma para cada disciplina escolhida. O bloqueio por oferta-base só vale
+        // para solicitações que não são optativas.
+        if(!optionalRequest && db.approvals.some(v=>v.status==='pending'&&String(v.requesterId)===String(authUser.id)&&v.semester===x.semester&&String(v.targetKey)===String(x.key)))return send(res,409,{error:'Já existe uma solicitação pendente para esta oferta.'});
+        if(optionalRequest){
+          const duplicatedChoice=db.approvals.some(v=>['pending','correction_requested'].includes(v.status)&&v.requesterId===authUser.id&&v.semester===x.semester&&String(v.targetKey||'')===String(x.key)&&(()=>{const c=Array.isArray(v.changes?.optionalChoices)?v.changes.optionalChoices:(v.changes?.optionalChoice?[v.changes.optionalChoice]:[]);return c.some(n=>requestedOptionalChoices.includes(n));})());
+          if(duplicatedChoice)return send(res,409,{error:'Já existe uma solicitação para esta disciplina optativa.'});
+        }
         a=createApproval(db,authUser,{type:x.action==='confirm'?'offer_confirm':'offer_change',action:x.action==='delete'?'delete':x.action,semester:x.semester,targetKey:x.key,changes:x.changes||{},snapshot:cur,targetLabel:approvalTargetLabel(db,{type:'offer_change',targetKey:x.key,semester:x.semester})});
       }else if(x.kind==='extra'){
         const teacher=(db.teachers||[]).find(t=>String(t.id)===String(authUser.teacherId)),cid=String(teacher?.coordinatorCourseId||'');
-        if(x.action==='create'){if(String(x.proposed?.course||'')!==cid)return send(res,403,{error:'A demanda deve pertencer ao curso coordenado.'});a=createApproval(db,authUser,{type:'extra_create',semester:x.semester,proposed:{name:String(x.proposed.name||'').trim(),ch:Number(x.proposed.ch)||0,type:String(x.proposed.type||'Dependência'),group:String(x.proposed.group||''),turn:String(x.proposed.turn||''),course:cid,notes:String(x.proposed.notes||'')},targetLabel:String(x.proposed.name||'Demanda avulsa')});}
+        if(x.action==='create'){const kind=String(x.proposed?.type||'Dependência'),course=kind==='Dependência'?'':String(x.proposed?.course||'');const err=validateExtraDemand(db,x.semester,kind,course,authUser.role,cid);if(err)return send(res,400,{error:err});a=createApproval(db,authUser,{type:'extra_create',semester:x.semester,proposed:{name:String(x.proposed.name||'').trim(),ch:Number(x.proposed.ch)||0,type:kind,group:String(x.proposed.group||''),turn:String(x.proposed.turn||''),course,notes:String(x.proposed.notes||'')},targetLabel:String(x.proposed.name||'Demanda avulsa')});}
         else{const arr=db.extraOffers?.[x.semester]||[],item=arr.find(v=>String(v.id)===String(x.id));if(!item)return send(res,404,{error:'Demanda avulsa não encontrada.'});a=createApproval(db,authUser,{type:x.action==='delete'?'extra_delete':'extra_change',semester:x.semester,targetId:x.id,changes:x.changes||{},snapshot:item,targetLabel:item.name});}
       }else return send(res,400,{error:'Tipo de solicitação inválido.'});
       notifyDirectors(db,'Nova pendência para avaliação',`${approvalTargetLabel(db,a)} — solicitação cadastrada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,201,{ok:true,pending:true,approval:a});
@@ -1544,8 +1627,8 @@ async function api(req,res){
     try{
       const x=await body(req); if(!x.semester||!String(x.name||'').trim()) return send(res,400,{error:'Semestre e disciplina são obrigatórios'});
       const db=readDB();
-      if(authUser.role==='coordenador_curso'){const teacher=(db.teachers||[]).find(t=>String(t.id)===String(authUser.teacherId)),cid=String(teacher?.coordinatorCourseId||'');if(String(x.course||'')!==cid)return send(res,403,{error:'A demanda deve pertencer ao curso coordenado.'});const a=createApproval(db,authUser,{type:'extra_create',semester:x.semester,proposed:{name:String(x.name).trim(),ch:Number(x.ch)||0,type:String(x.type||'Dependência'),group:String(x.group||''),turn:String(x.turn||''),course:cid,notes:String(x.notes||'')},targetLabel:String(x.name).trim()});notifyDirectors(db,'Nova demanda avulsa para avaliação',`${approvalTargetLabel(db,a)} — solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});}
-      db.extraOffers??={}; db.extraOffers[x.semester]??=[];
+      if(authUser.role==='coordenador_curso'){const teacher=(db.teachers||[]).find(t=>String(t.id)===String(authUser.teacherId)),cid=String(teacher?.coordinatorCourseId||''),kind=String(x.type||'Dependência');const proposedCourse=kind==='Dependência'?'':String(x.course||'');const err=validateExtraDemand(db,x.semester,kind,proposedCourse,authUser.role,cid);if(err)return send(res,400,{error:err});const a=createApproval(db,authUser,{type:'extra_create',semester:x.semester,proposed:{name:String(x.name).trim(),ch:Number(x.ch)||0,type:kind,group:String(x.group||''),turn:String(x.turn||''),course:proposedCourse,notes:String(x.notes||'')},targetLabel:String(x.name).trim()});notifyDirectors(db,'Nova demanda avulsa para avaliação',`${approvalTargetLabel(db,a)} — solicitada por ${a.requesterName}.`,a.id);writeDB(db);return send(res,202,{ok:true,pending:true,approval:a});}
+      const directKind=String(x.type||'Dependência'),directCourse=directKind==='Dependência'?'':String(x.course||'');const directErr=validateExtraDemand(db,x.semester,directKind,directCourse,authUser.role,'');if(directErr)return send(res,400,{error:directErr});db.extraOffers??={}; db.extraOffers[x.semester]??=[];
       const id=Math.max(0,...db.extraOffers[x.semester].map(v=>Number(v.id)||0))+1;
       const item={id,name:String(x.name).trim(),ch:Number(x.ch)||0,group:String(x.group||'').trim(),course:String(x.course||'').trim(),type:String(x.type||'Dependência').trim(),turn:String(x.turn||'').trim(),notes:String(x.notes||'').trim(),createdAt:new Date().toISOString()};
       db.extraOffers[x.semester].push(item); writeDB(db); return send(res,201,{ok:true,offer:item});
@@ -1832,7 +1915,8 @@ const server=http.createServer(async(req,res)=>{
     const db=readDB();ensureAuthUsers(db);const user=userFromRequest(req,db);
     if(!user){res.writeHead(302,{Location:'/login.html?next='+encodeURIComponent(pathname)});return res.end();}
     const page=pathname.slice(1);
-    if(!hasPageAccess(user,page,db)){res.writeHead(302,{Location:'/dashboard.html'});return res.end();}
+    const isCoordinatorTutorial=page==='TutorialACHA-Coordenadores.pdf' && ['coordenador_curso','coordenador_area','diretor_geral','diretoria_academica'].includes(user.role);
+    if(!isCoordinatorTutorial && !hasPageAccess(user,page,db)){res.writeHead(302,{Location:'/dashboard.html'});return res.end();}
   }
   const file=path.normalize(path.join(ROOT,pathname));
   if(!file.startsWith(ROOT))return send(res,403,{error:'Forbidden'});
@@ -1844,7 +1928,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.110'
+      'X-ACHA-Version':'1.0.145'
     });
     fs.createReadStream(file).pipe(res)
   })
@@ -1861,5 +1945,5 @@ server.on('error',(err)=>{
 (async()=>{
   const ready=await initializeDatabase();
   if(!ready){ process.exit(1); return; }
-  server.listen(PORT,()=>console.log(`ACHA 1.0.110 — servidor: http://0.0.0.0:${PORT}`));
+  server.listen(PORT,()=>console.log(`ACHA 1.0.153 — servidor: http://0.0.0.0:${PORT}`));
 })();

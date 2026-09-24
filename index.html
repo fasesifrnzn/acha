@@ -30,7 +30,7 @@ th[data-col="actions"]{width:12%;min-width:108px;cursor:default}
 
 .projection-card{margin-bottom:16px}.projection-toggle{display:flex;align-items:center;gap:8px}.projection-toggle button{padding:6px 10px;font-size:12px}.projection-table{width:100%;table-layout:fixed}.projection-table th,.projection-table td{text-align:left}.projection-table td:nth-child(3),.projection-table td:nth-child(4),.projection-table td:nth-child(5),.projection-table td:nth-child(6){text-align:center}.projection-table th:nth-child(1){width:22%}.projection-table th:nth-child(2){width:18%}.projection-table th:nth-child(3){width:13%}.projection-table th:nth-child(4){width:13%}.projection-table th:nth-child(5){width:17%}.projection-table th:nth-child(6){width:17%}.projection-ch-cell{position:relative;overflow:hidden}.projection-ch-bg{position:absolute;left:7px;top:50%;height:12px;transform:translateY(-50%);border-radius:999px;opacity:.24;pointer-events:none;max-width:calc(100% - 14px);min-width:0}.projection-ch-content{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}.projection-good .projection-ch-bg{background:#16a34a}.projection-warn .projection-ch-bg{background:#f59e0b}.projection-bad .projection-ch-bg{background:#dc2626}.projection-good .projection-status{color:#15803d}.projection-warn .projection-status{color:#d97706}.projection-bad .projection-status{color:#dc2626}.projection-index-cell{cursor:pointer;font-weight:700}.projection-index-cell:hover{background:#f0fdfa}.projection-hidden{display:none!important}
 .offer-delete-box{padding:12px 14px;border:1px solid #fecaca;background:#fff7f7;border-radius:10px}.offer-delete-row{display:flex;align-items:flex-start;gap:10px}.offer-delete-row input{width:18px;height:18px;margin-top:1px;accent-color:#b91c1c}.offer-delete-row strong{display:block;color:#991b1b;font-size:13px}.offer-delete-row small{display:block;color:#7f1d1d;font-size:11px;margin-top:2px}.offer-delete-row input:checked + div{color:#991b1b}
-</style><link rel="stylesheet" href="/style.css?v=1.0.135"><script src="/app.js?v=1.0.135"></script></head>
+</style><link rel="stylesheet" href="/style.css?v=1.0.153"><script src="/app.js?v=1.0.153"></script></head>
 <script>if(location.protocol==='file:'){location.href='http://localhost:3000/login.html';}</script><body><header><h1>ACHA — Oferta Acadêmica | IFRN Campus Natal-Zona Norte</h1><p>Planejamento de turmas e disciplinas por semestre</p></header>
 <nav class="mainnav"><a href="index.html" class="active">📋 Oferta</a><a href="projecao-cenario.html">📊 Projeção</a><a href="matrizes.html">🎓 Matrizes</a><a href="turmas.html">👥 Turmas</a><a href="docentes.html">👩‍🏫 Docentes</a><a href="grupos.html">🏷️ Grupos</a><a href="regras.html">⚙️ Regras</a></nav><main>
 <section class="panel"><div class="controls">
@@ -54,7 +54,7 @@ th[data-col="actions"]{width:12%;min-width:108px;cursor:default}
 <section class="card projection-card" id="forecastCard" data-access-feature="oferta.previsao"><div class="head"><h2>Previsão de carga-horária</h2><div class="projection-toggle"><span class="muted" id="forecastMeta">Semestre selecionado</span><button type="button" class="secondary" id="toggleForecast">Ocultar</button></div></div><div class="tablewrap" id="forecastBody"><table class="projection-table"><thead><tr><th>Grupo</th><th>Tipo</th><th>CH total</th><th>Índice docentes</th><th>Média semestral</th><th>Média anual</th></tr></thead><tbody id="forecastSummary"></tbody></table></div></section>
 <section class="card"><div class="head"><h2 id="title">Oferta</h2><span class="muted">Turma: P.CÓDIGO.NT · clique no nome de uma coluna para ordenar</span></div>
 <div id="coordinatorBatch" class="coordinator-batch"><input id="selectAllOffers" class="row-select" type="checkbox"><span class="batch-count" id="selectedOffersCount">0 selecionadas</span><button type="button" id="batchConfirmOffers">✓ Confirmar selecionadas</button><button type="button" class="secondary" id="clearOfferSelection">Limpar seleção</button></div>
-<div class="tablewrap"><table><thead><tr>
+<div class="tablewrap"><table class="offer-table"><colgroup><col data-col="select"><col data-col="turma"><col data-col="matrix"><col data-col="course"><col data-col="period"><col data-col="turn"><col data-col="name"><col data-col="ch"><col data-col="group"><col data-col="actions"></colgroup><thead><tr>
 <th draggable="true" data-col="select" class="coordinator-only-col"><input id="headerSelectOffers" class="row-select" type="checkbox" title="Selecionar todas"></th><th draggable="true" data-col="turma"><button class="sort" data-key="turma">Turma ↕</button></th><th draggable="true" data-col="matrix"><button class="sort" data-key="matrix">Matriz ↕</button></th><th draggable="true" data-col="course"><button class="sort" data-key="course">Curso ↕</button></th>
 <th draggable="true" data-col="period"><button class="sort" data-key="period">Período ↕</button></th><th draggable="true" data-col="turn"><button class="sort" data-key="turn">Turno ↕</button></th>
 <th draggable="true" data-col="name"><button class="sort" data-key="name">Disciplina ↕</button></th><th draggable="true" data-col="ch"><button class="sort" data-key="ch">CH ↕</button></th>
@@ -70,9 +70,9 @@ th[data-col="actions"]{width:12%;min-width:108px;cursor:default}
 <div style="grid-column:1/-1"><label>DISCIPLINA / NOME</label><input id="demandName" list="demandDisciplines" autocomplete="off" placeholder="Digite para buscar uma disciplina existente ou informe outra"></div>
 <div><label>CH (H/A)</label><input id="demandCh" type="number" min="0" step="1" value="4"></div>
 <div><label>GRUPO</label><select id="demandGroup"></select></div>
-<div><label>TIPO</label><select id="demandType"><option>Dependência</option><option>Demanda reprimida</option><option>Oferta especial</option><option>Outro</option></select></div>
+<div><label>TIPO</label><select id="demandType"><option>Dependência</option><option>Demanda reprimida</option><option>Outro</option></select></div>
 <div><label>TURNO</label><select id="demandTurn"><option value="">A definir</option><option>Matutino</option><option>Tarde</option><option>Noite</option></select></div>
-<div><label>CURSO / CONTEXTO</label><input id="demandCourse" placeholder="Ex.: Comércio, dependência..."></div>
+<div id="demandCourseWrap"><label>CURSO / CONTEXTO</label><select id="demandCourse"><option value="">— Selecione o curso —</option></select></div>
 <div style="grid-column:1/-1"><label>OBSERVAÇÕES</label><input id="demandNotes" placeholder="Informações adicionais"></div>
 </div>
 <datalist id="demandDisciplines"></datalist>
@@ -156,8 +156,8 @@ function courseCode(cl){return MATRIX_COURSE_CODES[String(cl.matrix)]||'0000'}
 function turnCode(t){const x=String(t||'').toLowerCase();if(x.includes('manh'))return 'M';if(x.includes('tard')||x.includes('vesp'))return 'V';if(x.includes('noit'))return 'N';return 'X'}
 function makeTurmaCode(cl){return `${cl.period}.${courseCode(cl)}.${cl.seq}${turnCode(turn(cl.matrix,cl.period,cl.seq))}`}
 function allRows(){
-  let rows=[];const semSource=DB?.data?.semesters||semesters,courseSource=DB?.data?.courses||courses,matrixSource=DB?.data?.matrices||matrix;
-  (semSource[semSel.value]||[]).forEach(cl=>{const course=POCV.courseName(courseSource,cl.matrix),m=matrixSource[String(cl.matrix)]||{};(m?.disciplines||[]).forEach((d,di)=>{let ch=d.periods?.[String(cl.period)];if(ch==null)return;let key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB?.offers?.[semSel.value]?.[key]||{};const isOptional=d?.optional===true; const mCatalog=Array.isArray(m?.optionalCatalog)?m.optionalCatalog:[]; const choice=ov.optionalChoice||''; const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(choice?[choice]:[]); const catChoices=choices.map(n=>mCatalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean); const selectedNames=catChoices.map(o=>o.name); const selectedCh=catChoices.reduce((s,o)=>s+Number(o.weekly||0),0); const serverKey=DB?.__previewOfferKeyMap?.[key]||key; const baseRow={_key:key,_baseKey:key,_serverKey:serverKey,matrix:cl.matrix,course:course,period:cl.period,turn:ov.turn??turn(cl.matrix,cl.period,cl.seq),name:ov.name??d.name,ch:Number(ov.ch??ch),group:ov.group??(d.group||''),turma:makeTurmaCode(cl),extra:false,optional:isOptional,optionalBaseName:d.name,optionalBaseGroup:d.group||'',optionalBaseCh:Number(ch),optionalCatalog:mCatalog,optionalChoice:choice,optionalChoices:selectedNames,validationStatus:ov.validationStatus||'',validationSource:ov.validationSource||'',validationApprovalId:ov.validationApprovalId||'',confirmationBy:ov.confirmationBy||''}; if(isOptional&&catChoices.length){catChoices.forEach((o,oi)=>rows.push({...baseRow,_key:`${key}::opt::${oi}`,name:o.name,ch:Number(o.weekly||0),group:o.group||'',optionalOption:true,optionalOptionIndex:oi,optionalSelectedTotal:selectedCh})); const remaining=Math.max(0,Number(ch)-selectedCh); if(remaining>0)rows.push({...baseRow,_key:`${key}::generic`,name:d.name,ch:remaining,group:d.group||'',optionalOption:true,optionalGenericRemainder:true,optionalSelectedTotal:selectedCh});}else{rows.push(baseRow)}});});
+  let rows=[];const semSource=DB?.data?.semesters||semesters,courseSource=DB?.data?.courses||courses,matrixSource=DB?.data?.matrices||matrix;const pendingOptionalMap={};(DB?.approvals||[]).filter(a=>String(a.semester)===String(semSel.value)&&['pending','correction_requested'].includes(a.status)&&['offer_change','offer_confirm'].includes(a.type)).forEach(a=>{const k=String(a.targetKey||'').split('::')[0];const opts=Array.isArray(a.changes?.optionalChoices)?a.changes.optionalChoices.filter(Boolean):(a.changes?.optionalChoice?[a.changes.optionalChoice]:[]);if(opts.length)(pendingOptionalMap[k]??=[]).push({approval:a,name:String(opts[0])});});
+  (semSource[semSel.value]||[]).forEach(cl=>{const course=POCV.courseName(courseSource,cl.matrix),m=matrixSource[String(cl.matrix)]||{};(m?.disciplines||[]).forEach((d,di)=>{let ch=d.periods?.[String(cl.period)];if(ch==null)return;let key=`${cl.matrix}|${cl.period}|${cl.seq}|${di}`,ov=DB?.offers?.[semSel.value]?.[key]||{};const isOptional=d?.optional===true; const mCatalog=Array.isArray(m?.optionalCatalog)?m.optionalCatalog:[]; const choice=ov.optionalChoice||''; const choices=Array.isArray(ov.optionalChoices)?ov.optionalChoices:(choice?[choice]:[]); const catChoices=choices.map(n=>mCatalog.find(o=>String(o?.name||'')===String(n))).filter(Boolean); const selectedNames=catChoices.map(o=>o.name); const selectedCh=catChoices.reduce((s,o)=>s+Number(o.weekly||0),0); const serverKey=DB?.__previewOfferKeyMap?.[key]||key; const baseRow={_key:key,_baseKey:key,_serverKey:serverKey,matrix:cl.matrix,course:course,period:cl.period,turn:ov.turn??turn(cl.matrix,cl.period,cl.seq),name:ov.name??d.name,ch:Number(ov.ch??ch),group:ov.group??(d.group||''),turma:makeTurmaCode(cl),extra:false,optional:isOptional,optionalBaseName:d.name,optionalBaseGroup:d.group||'',optionalBaseCh:Number(ch),optionalCatalog:mCatalog,optionalChoice:choice,optionalChoices:selectedNames,validationStatus:ov.validationStatus||'',validationSource:ov.validationSource||'',validationApprovalId:ov.validationApprovalId||'',confirmationBy:ov.confirmationBy||''}; if(isOptional){const pend=pendingOptionalMap[key]||[];catChoices.forEach((o,oi)=>rows.push({...baseRow,_key:`${key}::opt::${oi}`,name:o.name,ch:Number(o.weekly||0),group:o.group||'',optionalOption:true,optionalOptionIndex:oi,optionalSelectedTotal:selectedCh}));pend.forEach((p,pi)=>{const o=mCatalog.find(v=>String(v.name)===String(p.name))||{};rows.push({...baseRow,_key:`${key}::pendingopt::${p.approval.id}`,name:p.name,ch:Number(o.weekly||ch),group:o.group||d.group||'',optionalOption:true,optionalPending:true,optionalPendingApproval:p.approval,optionalChoice:p.name,optionalChoices:[p.name]});});const pendingCh=pend.reduce((sum,p)=>{const o=mCatalog.find(v=>String(v.name)===String(p.name));return sum+Number(o?.weekly||0)},0);const remaining=Math.max(0,Number(ch)-selectedCh-pendingCh);if(remaining>0||(!catChoices.length&&!pend.length))rows.push({...baseRow,_key:`${key}::generic`,name:d.name,ch:remaining>0?remaining:Number(ch),group:d.group||'',optionalOption:true,optionalGenericRemainder:true,optionalSelectedTotal:selectedCh+pendingCh});}else{rows.push(baseRow)}});});
   Object.entries(DB?.offerDeletions?.[semSel.value]||{}).forEach(([k,del])=>{const snap=del?.snapshot||{};const parts=String(k).split('|'),matrix=String(parts[0]||''),period=String(parts[1]||''),seq=String(parts[2]||''),di=Number(String(parts[3]||'').split('::')[0]);const cl=(semSource[semSel.value]||[]).find(c=>String(c.matrix)===matrix&&String(c.period)===period&&String(c.seq)===seq),m=matrixSource[matrix]||{},d=(m.disciplines||[])[di];if(!cl||!d)return;rows.push({_key:k,_baseKey:k,_serverKey:k,matrix,course:snap.course??courseSource.find(c=>String(c.matrix)===matrix)?.name??m.name,period:cl.period,turn:snap.turn??turn(cl.matrix,cl.period,cl.seq),name:snap.name??d.name,ch:Number(snap.ch??d.periods?.[String(cl.period)]??0),group:snap.group??d.group??'',turma:makeTurmaCode(cl),extra:false,deleted:true,validationStatus:'deleted'});});
   (DB?.extraOffers?.[semSel.value]||[]).forEach(x=>rows.push({_key:`extra:${x.id}`,_extra:true,matrix:'—',course:x.course||'Demanda reprimida',period:x.period||'—',turn:x.turn||'—',name:x.name,ch:Number(x.ch||0),group:x.group||'',turma:'AVULSA',type:x.type||'Dependência',notes:x.notes||''}));
   return rows
@@ -168,6 +168,24 @@ function disciplineValues(){
   Object.values(src||{}).forEach(m=>(m?.disciplines||[]).forEach(d=>{if(d?.name)names.push(String(d.name).trim())}));
   return [...new Set(names)].sort((a,b)=>a.localeCompare(b,'pt-BR',{sensitivity:'base'}));
 }
+function offeredCourseRecords(semester){
+  const ids=[...new Set((DB?.data?.semesters?.[semester]||[]).map(c=>String(c.matrix)))];
+  const courses=Array.isArray(DB?.data?.courses)?DB.data.courses:[];
+  const seen=new Map();
+  ids.forEach(mid=>{const c=courses.find(x=>String(x.matrix)===mid);if(!c)return;const id=String(c.course_id||c.course_name||c.name||mid);if(!seen.has(id))seen.set(id,{id,label:String(c.course_name||c.name||id),form:String(c.form||'')});});
+  return [...seen.values()].sort((a,b)=>String(a.label).localeCompare(String(b.label),'pt-BR'));
+}
+function refreshDemandCourseField(selected=''){
+  const wrap=$('demandCourseWrap'),sel=$('demandCourse'),type=$('demandType')?.value||'Dependência';
+  if(!wrap||!sel)return;
+  const required=type!=='Dependência';
+  wrap.style.display=required?'':'none';
+  const vals=offeredCourseRecords(semSel.value);
+  sel.innerHTML='<option value="">— Selecione o curso —</option>'+vals.map(v=>`<option value="${esc(v.id)}">${esc(v.label)}${v.form?` — ${esc(v.form)}`:''}</option>`).join('');
+  if(selected && [...sel.options].some(o=>o.value===String(selected)))sel.value=String(selected); else sel.value='';
+  sel.required=required;
+}
+
 function disciplineSelectHtml(selected){
   const vals=disciplineValues();
   if(selected && !vals.includes(String(selected))) vals.push(String(selected));
@@ -178,6 +196,7 @@ function disciplineSelectHtml(selected){
 function fillSelect(sel,values){let old=sel.value;sel.innerHTML='<option value="">Todos</option>';[...new Set(values)].sort((a,b)=>String(a).localeCompare(String(b),'pt-BR',{numeric:true})).forEach(v=>{let o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o)});if([...sel.options].some(o=>o.value===old))sel.value=old}
 function refreshFilterOptions(rows){fillSelect(filters.course,rows.map(r=>r.course));fillSelect(filters.matrix,rows.map(r=>r.matrix));fillSelect(filters.period,rows.map(r=>r.period));fillSelect(filters.turn,rows.map(r=>r.turn));fillSelect(filters.group,rows.map(r=>r.group))}
 function workflowInfo(r){
+  if(r._pendingOptionalApproval||r.optionalPendingApproval){const a=r._pendingOptionalApproval||r.optionalPendingApproval;return {kind:'offer',status:a.status==='correction_requested'?'correction_requested':'change_pending',approval:a};}
   if(r._extra)return {kind:'extra',status:'extra'};
   if(r.deleted)return {kind:'offer',status:'deleted',approval:DB?.offerDeletions?.[semSel.value]?.[String(r._key)]};
   const base=String(r._serverKey||r._baseKey||r._key||'').split('::')[0];
@@ -187,6 +206,7 @@ function workflowInfo(r){
   const approvals=Array.isArray(DB?.approvals)?DB.approvals:[];
   const related=approvals.filter(a=>String(a.semester)===String(semSel.value)&&String(a.targetKey||'').split('::')[0]===base);
   const pending=related.filter(a=>a.status==='pending'||a.status==='correction_requested').sort((a,b)=>String(b.updatedAt||b.createdAt).localeCompare(String(a.updatedAt||a.createdAt)));
+  if(r.optionalOption&&r.optionalChoice&&!r.optionalPending){const choice=String(r.optionalChoice);const specific=related.filter(a=>{const c=Array.isArray(a.changes?.optionalChoices)?a.changes.optionalChoices:(a.changes?.optionalChoice?[a.changes.optionalChoice]:[]);return c.map(String).includes(choice)}).sort((a,b)=>String(b.updatedAt||b.decidedAt||b.createdAt).localeCompare(String(a.updatedAt||a.decidedAt||a.createdAt)));const sa=specific[0];if(sa){if(sa.status==='pending'||sa.status==='correction_requested')return {kind:'offer',status:sa.status==='correction_requested'?'correction_requested':'change_pending',approval:sa};if(sa.status==='approved')return {kind:'offer',status:'confirmed',approval:sa,validationSource:String(stored?.validationSource||'director_approval')};}}
   const del=pending.find(a=>a.action==='delete'&&a.status==='pending');
   const deleteCorrection=pending.find(a=>a.action==='delete'&&a.status==='correction_requested');
   const change=pending.find(a=>a.action!=='delete');
@@ -266,7 +286,7 @@ function coordinatorMenuHtml(r,wf){
     if(!disabledPending && wf.status!=='deleted'){
       items+=`<button type="button" data-menu-action="request-delete" data-key="${key}">Solicitar exclusão</button>`;
       items+=`<button type="button" data-menu-action="request-name" data-key="${key}">Informar alteração de nome</button>`;
-      items+=`<button type="button" data-menu-action="request-group" data-key="${key}">Solicitar mudança de grupo</button>`;
+      items+=`<button type="button" data-menu-action="request-group" data-key="${key}">Solicitar mudança de grupo</button>`;items+=`<button type="button" data-menu-action="request-course" data-key="${key}">Solicitar mudança de curso</button>`;
       if(r.optional) items+=`<button type="button" data-menu-action="choose-optional" data-key="${key}">Escolher optativa</button>`;
     }
     if(wf.status==='change_pending'||wf.status==='correction_requested'||wf.status==='delete_pending') items+=`<button type="button" data-menu-action="cancel-pending" data-key="${key}">Desistir da solicitação</button>`;
@@ -282,6 +302,7 @@ function pendingChangeSummary(r,wf){
   const parts=[];
   const oldName=String(snap.name??r.name??'').trim(),newName=String(ch.name??'').trim();
   if(newName&&newName!==oldName)parts.push(`Nome: ${esc(oldName||'—')} → ${esc(newName)}`);
+  const oldCourse=String(snap.course??r.course??'').trim(),newCourse=String(ch.courseLabel??ch.course??'').trim();if(newCourse&&newCourse!==oldCourse)parts.push(`Curso: ${esc(oldCourse||'—')} → ${esc(newCourse)}`);
   const oldGroup=String(snap.group??r.group??'').trim(),newGroup=String(ch.group??'').trim();
   if(newGroup!==''&&newGroup!==oldGroup)parts.push(`Grupo: ${esc(oldGroup||'—')} → ${esc(newGroup)}`);
   const oldTurn=String(snap.turn??r.turn??'').trim(),newTurn=String(ch.turn??'').trim();
@@ -290,8 +311,8 @@ function pendingChangeSummary(r,wf){
   const choices=Array.isArray(ch.optionalChoices)?ch.optionalChoices.filter(Boolean):(ch.optionalChoice?[ch.optionalChoice]:[]);
   if(choices.length&&!(newName&&newName!==oldName))parts.push(`Optativa: ${esc(choices.join(' + '))}`);
   if(!parts.length)parts.push('Alteração solicitada');
-  const cls=wf.status==='correction_requested'?' correction':'';
-  return `<span class="pending-change-summary${cls}"><span class="pending-label">${wf.status==='correction_requested'?'Correção pendente':'Pendente'}</span>${parts.join(' · ')}</span>`;
+  const cls=wf.status==='correction_requested'?' correction':'';if(wf.status==='correction_requested'&&a.decisionNote)parts.push(`Observação: ${esc(a.decisionNote)}`);
+  return `<span class="pending-change-summary${cls}"><span class="pending-label">${wf.status==='correction_requested'?'Devolvida':'Pendente'}</span>${parts.join(' · ')}</span>`;
 }
 
 function build(){
@@ -357,7 +378,7 @@ columnOrder=columnOrder.filter(k=>k!=='select');
 if(!columnOrder.includes('actions')) columnOrder.push('actions');
 function normalizedColumnOrder(){ return ['select',...columnOrder.filter(k=>k!=='select')]; }
 function applyColumnOrder(){
-  const table=document.querySelector('table');
+  const table=document.querySelector('.offer-table');
   const rows=[...table.rows];
   rows.forEach(row=>{
     const cells=[...row.children];
@@ -419,7 +440,7 @@ async function openOptionalModal(row,opts={}){
     saveBtn.disabled=false;
   };
   picker.onchange=()=>{addBtn.disabled=!picker.value};
-  addBtn.onclick=()=>{const i=Number(picker.value);if(!Number.isInteger(i)||!row.optionalCatalog[i])return;selected.push(row.optionalCatalog[i]);render();};
+  addBtn.onclick=()=>{const i=Number(picker.value);if(!Number.isInteger(i)||!row.optionalCatalog[i])return;const opt=row.optionalCatalog[i];if(selected.some(v=>String(v.name)===String(opt.name))){alert('Esta disciplina optativa já foi selecionada.');return;}selected.push(opt);render();};
   selectedBox.onclick=e=>{const b=e.target.closest('.remove-optional');if(!b)return;selected.splice(Number(b.dataset.index),1);render();};
   render();
   modal.style.display='flex';
@@ -432,8 +453,19 @@ async function openOptionalModal(row,opts={}){
       const payload={optionalChoices:selected.map(o=>o.name),optionalChoice:selected.length===1?selected[0].name:'',name:selected.length?selected.map(o=>o.name).join(' + '):row.optionalBaseName,ch:selected.length?total:row.optionalBaseCh,group:selected.length?selected[0].group||'':row.optionalBaseGroup||''};
       if(mode==='confirm'){modal.style.display='none';resolve({confirmed:true,optionalChoices:payload.optionalChoices,selected});return;}
       if(isCoordinator){
-        const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key:baseKey,changes:payload});
-        if(!ok){saveBtn.disabled=false;return;}
+        // Cada disciplina optativa escolhida gera uma solicitação independente
+        // para a Direção. Assim, a Direção pode aprovar apenas uma, algumas ou
+        // todas as optativas selecionadas.
+        if(selected.length>1){
+          for(const opt of selected){
+            const one={optionalChoices:[opt.name],optionalChoice:opt.name,name:opt.name,ch:Number(opt.weekly||0),group:opt.group||row.optionalBaseGroup||''};
+            const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key:baseKey,changes:one});
+            if(!ok){saveBtn.disabled=false;return;}
+          }
+        }else{
+          const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key:baseKey,changes:payload});
+          if(!ok){saveBtn.disabled=false;return;}
+        }
       }else{
         await apiSave(semSel.value,baseKey,payload);
       }
@@ -449,7 +481,7 @@ async function openOptionalModal(row,opts={}){
 }
 
 function updateBatchSelection(){const checks=[...document.querySelectorAll('.offer-select')],selected=checks.filter(c=>c.checked);$('selectedOffersCount').textContent=`${selected.length} selecionada${selected.length===1?'':'s'}`;$('coordinatorBatch').classList.toggle('show',isCoordinator);const all=checks.length>0&&selected.length===checks.length;$('selectAllOffers').checked=all;const h=$('headerSelectOffers');if(h){h.checked=all;h.indeterminate=selected.length>0&&!all;h.disabled=!checks.length;}}
-async function confirmCoordinatorRows(rows){for(const row of rows){if(row.optional&&!(row.optionalChoices||[]).length){const result=await openOptionalModal(row,{mode:'confirm'});if(!result?.confirmed)continue;const changes={optionalChoice:result.optionalChoices.length===1?result.optionalChoices[0]:'',optionalChoices:result.optionalChoices};const selected=result.selected||[];if(selected.length){changes.name=selected.map(o=>o.name).join(' + ');changes.ch=selected.reduce((sum,o)=>sum+Number(o.weekly||0),0);changes.group=selected[0].group||row.group||'';}await submitValidation({kind:'offer',action:'confirm',semester:semSel.value,key:row._serverKey||row._baseKey||row._key,changes});}else{await submitValidation({kind:'offer',action:'confirm',semester:semSel.value,key:row._serverKey||row._baseKey||row._key,changes:{optionalChoice:row.optionalChoice||'',optionalChoices:row.optionalChoices||[]}});}}}
+async function confirmCoordinatorRows(rows){for(const row of rows){if(row.optional&&!(row.optionalChoices||[]).length){const result=await openOptionalModal(row,{mode:'confirm'});if(!result?.confirmed)continue;const selected=result.selected||[];if(selected.length>1){for(const opt of selected){await submitValidation({kind:'offer',action:'confirm',semester:semSel.value,key:row._serverKey||row._baseKey||row._key,changes:{optionalChoice:opt.name,optionalChoices:[opt.name],name:opt.name,ch:Number(opt.weekly||0),group:opt.group||row.group||''}});}}else{const changes={optionalChoice:selected.length===1?selected[0].name:'',optionalChoices:selected.map(o=>o.name)};if(selected.length){changes.name=selected[0].name;changes.ch=Number(selected[0].weekly||0);changes.group=selected[0].group||row.group||'';}await submitValidation({kind:'offer',action:'confirm',semester:semSel.value,key:row._serverKey||row._baseKey||row._key,changes});}}else{await submitValidation({kind:'offer',action:'confirm',semester:semSel.value,key:row._serverKey||row._baseKey||row._key,changes:{optionalChoice:row.optionalChoice||'',optionalChoices:row.optionalChoices||[]}});}}}
 async function submitValidation(payload){
   const body={...payload};
   if(SESSION?.__preview && body.kind==='offer' && body.key && !body.source){
@@ -501,6 +533,7 @@ async function handleCoordinatorMenuAction(action,row){
   }
   if(action==='request-name')return openCoordinatorRequestModal('name',row);
   if(action==='request-group')return openCoordinatorRequestModal('group',row);
+  if(action==='request-course')return openCoordinatorRequestModal('course',row);
   if(action==='choose-optional')return openOptionalModal(row);
   const wf=workflowInfo(row);
   if(action==='cancel-pending'){
@@ -550,6 +583,9 @@ function openCoordinatorRequestModal(kind,row){
   if(kind==='name'){
     $('coordRequestTitle').textContent='Informar alteração de nome';
     body.innerHTML=`<label>Nome atual</label><input value="${esc(row.name)}" disabled><label style="margin-top:12px">Novo nome</label><input id="coordRequestValue" value="${esc(row.name)}" placeholder="Digite o novo nome">`;
+  }else if(kind==='course'){
+    const vals=offeredCourseRecords(semSel.value);$('coordRequestTitle').textContent='Solicitar mudança de curso';
+    body.innerHTML=`<label>Curso atual</label><input value="${esc(row.course||'—')}" disabled><label style="margin-top:12px">Curso de destino</label><select id="coordRequestValue"><option value="">— Selecione o curso —</option>${vals.map(v=>`<option value="${esc(v.id)}">${esc(v.label)}${v.form?` — ${esc(v.form)}`:''}</option>`).join('')}</select>`;
   }else{
     const groups=[...new Set(Object.values(DB?.data?.matrices||{}).flatMap(m=>(m?.disciplines||[]).map(d=>d?.group).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     $('coordRequestTitle').textContent='Solicitar mudança de grupo';
@@ -558,7 +594,7 @@ function openCoordinatorRequestModal(kind,row){
   modal.style.display='flex';setTimeout(()=>$('coordRequestValue')?.focus(),20);
 }
 $('coordRequestClose').onclick=()=>$('coordRequestModal').style.display='none';$('coordRequestCancel').onclick=()=>$('coordRequestModal').style.display='none';$('coordRequestModal').onclick=e=>{if(e.target===$('coordRequestModal'))$('coordRequestModal').style.display='none'};
-$('coordRequestSave').onclick=async()=>{const modal=$('coordRequestModal'),kind=modal.dataset.kind,key=modal.dataset.key,val=$('coordRequestValue')?.value.trim();if(!val)return alert(kind==='name'?'Informe o novo nome.':'Selecione o grupo de destino.');const row=currentRows.find(r=>String(r._serverKey||r._baseKey||r._key)===String(key)||String(r._baseKey||r._key)===String(key));if(!row)return;const changes=kind==='name'?{name:val}:{group:val};const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key,changes});if(ok){modal.style.display='none';}};
+$('coordRequestSave').onclick=async()=>{const modal=$('coordRequestModal'),kind=modal.dataset.kind,key=modal.dataset.key,val=$('coordRequestValue')?.value.trim();if(!val)return alert(kind==='name'?'Informe o novo nome.':kind==='course'?'Selecione o curso de destino.':'Selecione o grupo de destino.');const row=currentRows.find(r=>String(r._serverKey||r._baseKey||r._key)===String(key)||String(r._baseKey||r._key)===String(key));if(!row)return;const changes=kind==='name'?{name:val}:kind==='course'?{course:val,courseLabel:(offeredCourseRecords(semSel.value).find(v=>String(v.id)===String(val))?.label||val)}:{group:val};const ok=await submitValidation({kind:'offer',action:'change',semester:semSel.value,key,changes});if(ok){modal.style.display='none';}};
 tbody.addEventListener('click',async e=>{
   const undo=e.target.closest('.undo-director-action[data-action="undo-director-action"]');
   if(undo){
@@ -642,7 +678,7 @@ function openDemandEditModal(row){
   const groups=[...new Set(Object.values(DB?.data?.matrices||{}).flatMap(m=>(m?.disciplines||[]).map(d=>d?.group).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
   gs.innerHTML='<option value="">— Escolha o grupo —</option>'+groups.map(g=>`<option>${esc(g)}</option>`).join('');
   $('demandName').value=row.name||''; $('demandCh').value=Number(row.ch||0); $('demandGroup').value=row.group||'';
-  $('demandType').value=row.type||'Dependência'; $('demandTurn').value=row.turn||''; $('demandCourse').value=row.course||''; $('demandNotes').value=row.notes||'';
+  $('demandType').value=row.type||'Dependência'; $('demandTurn').value=row.turn||''; refreshDemandCourseField(row.course||''); $('demandNotes').value=row.notes||'';
   $('demandModal').dataset.editId=String(row._key).split(':')[1]; $('demandModalTitle').textContent='Editar demanda avulsa'; $('saveDemand').textContent='Salvar alterações'; $('demandModal').style.display='flex'; $('demandName').focus();
 }
 function openDemandModal(){
@@ -652,13 +688,15 @@ function openDemandModal(){
   dl.innerHTML=names.map(n=>`<option value="${esc(n)}"></option>`).join('');
   const groups=[...new Set(Object.values(DB?.data?.matrices||{}).flatMap(m=>(m?.disciplines||[]).map(d=>d?.group).filter(Boolean)))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
   gs.innerHTML='<option value="">— Escolha o grupo —</option>'+groups.map(g=>`<option>${esc(g)}</option>`).join('');
-  delete $('demandModal').dataset.editId; $('demandModalTitle').textContent='Nova demanda avulsa'; $('saveDemand').textContent='Adicionar demanda'; $('demandName').value=''; $('demandCh').value='4'; $('demandGroup').value=''; $('demandType').value='Dependência'; $('demandTurn').value=''; $('demandCourse').value=''; $('demandNotes').value='';
+  delete $('demandModal').dataset.editId; $('demandModalTitle').textContent='Nova demanda avulsa'; $('saveDemand').textContent='Adicionar demanda'; $('demandName').value=''; $('demandCh').value='4'; $('demandGroup').value=''; $('demandType').value='Dependência'; $('demandTurn').value=''; refreshDemandCourseField(''); $('demandNotes').value='';
   $('demandModal').style.display='flex'; $('demandName').focus();
 }
 $('newDemandBtn').addEventListener('click',e=>{e.preventDefault();openDemandModal();});
 $('closeDemand').onclick=()=>$('demandModal').style.display='none';
 $('cancelDemand').onclick=()=>$('demandModal').style.display='none';
 $('demandModal').onclick=e=>{if(e.target===$('demandModal'))$('demandModal').style.display='none'};
+$('demandType').addEventListener('change',()=>refreshDemandCourseField($('demandCourse')?.value||''));
+$('semester').addEventListener('change',()=>refreshDemandCourseField($('demandCourse')?.value||''));
 $('saveDemand').onclick=async()=>{
   const name=$('demandName').value.trim(), ch=Number($('demandCh').value)||0;
   const group=$('demandGroup').value;
@@ -668,7 +706,7 @@ $('saveDemand').onclick=async()=>{
   const btn=$('saveDemand');btn.disabled=true;
   try{
     const modal=$('demandModal'), editId=modal.dataset.editId;
-    const payload={semester:semSel.value,name,ch,type:$('demandType').value,group,turn:$('demandTurn').value,course:(isCoordinator?(SESSION?.user?.coordinatorCourseId||''):$('demandCourse').value),notes:$('demandNotes').value};
+    const demandType=$('demandType').value;const demandCourse=demandType==='Dependência'?'':$('demandCourse').value;if(demandType!=='Dependência'&&!demandCourse){alert('Selecione o curso.');$('demandCourse').focus();return;}const payload={semester:semSel.value,name,ch,type:demandType,group,turn:$('demandTurn').value,course:demandCourse,notes:$('demandNotes').value};
     if(isCoordinator){const ok=editId?await submitValidation({kind:'extra',action:'change',semester:semSel.value,id:editId,changes:{name,ch,type:payload.type,group,turn:payload.turn,course:payload.course,notes:payload.notes}}):await submitValidation({kind:'extra',action:'create',semester:semSel.value,proposed:payload});if(ok){modal.style.display='none';}return;}
     const r=await fetch('/api/extra-offer',{
       method:editId?'PUT':'POST',headers:{'Content-Type':'application/json'},

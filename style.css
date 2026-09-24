@@ -311,3 +311,23 @@ body:has(#tbody) tr.offer-delete-pending:hover td,body:has(#tbody) tr.offer-dele
 body:has(#tbody) tr.offer-duplicate:hover td{background:#ede9fe!important}
 body:has(#tbody) tr.offer-extra:hover td{background:#dbeafe!important}
 body:has(#tbody) .icon-action{width:32px!important;height:32px!important;min-width:32px!important;max-width:32px!important;padding:0!important;font-size:15px!important}
+
+/* v1.0.152 — correção definitiva da distribuição da tabela Oferta */
+body:has(#tbody) .offer-table{width:100%!important;min-width:0!important;max-width:100%!important;table-layout:fixed!important}
+body:has(#tbody) .offer-table col[data-col="select"]{width:3%!important}
+body:has(#tbody) .offer-table col[data-col="turma"]{width:9%!important}
+body:has(#tbody) .offer-table col[data-col="matrix"]{width:6%!important}
+body:has(#tbody) .offer-table col[data-col="course"]{width:14%!important}
+body:has(#tbody) .offer-table col[data-col="period"]{width:6%!important}
+body:has(#tbody) .offer-table col[data-col="turn"]{width:8%!important}
+body:has(#tbody) .offer-table col[data-col="name"]{width:19%!important}
+body:has(#tbody) .offer-table col[data-col="ch"]{width:5%!important}
+body:has(#tbody) .offer-table col[data-col="group"]{width:10%!important}
+body:has(#tbody) .offer-table col[data-col="actions"]{width:10%!important}
+body:has(#tbody) .offer-table th[data-col="select"],body:has(#tbody) .offer-table td[data-col="select"],body:has(#tbody) .offer-table th[data-col="actions"],body:has(#tbody) .offer-table td[data-col="actions"]{min-width:0!important;max-width:none!important}
+body:has(#tbody) .offer-table th[data-col="course"],body:has(#tbody) .offer-table td[data-col="course"],body:has(#tbody) .offer-table th[data-col="name"],body:has(#tbody) .offer-table td[data-col="name"]{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere}
+body:has(#tbody) .offer-table td[data-col="course"] .pocv-tag{max-width:100%;white-space:normal!important;line-height:1.15}
+body:has(#tbody) .offer-table .actions-cell{overflow:visible!important;text-align:center!important}
+body:has(#tbody) .offer-table .row-actions{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:100%!important}
+body:has(#tbody) .offer-table .row-actions .icon-action{width:32px!important;height:32px!important;min-width:32px!important;max-width:32px!important;flex:0 0 32px!important}
+@media(max-width:720px){body:has(#tbody) .offer-table{table-layout:auto!important}body:has(#tbody) .offer-table col{width:auto!important}}
