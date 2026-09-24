@@ -125,7 +125,7 @@ No cadastro da aplicação ACHA:
 - Name: `ACHA`;
 - Authorization grant type: `Implicit`;
 - Client type: `Public`;
-- Redirect URI: `http://localhost:5002/login.html`;
+- Redirect URI: definida no ambiente; em produção deve ser `https://acha.fases.site/login.html` e, em desenvolvimento, `http://localhost:3000/login.html`.;
 - Algorithm: `No OIDC support`;
 - Ativo: marcado.
 

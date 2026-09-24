@@ -1,3 +1,33 @@
+# v1.0.161
+
+- Login: substituído o logo do Campus Natal-Zona Norte pelo logo institucional preto do IFRN.
+- Login: mantido o ACHA como identidade principal e o logo do IFRN em tamanho reduzido no rodapé.
+- Login: criado pequeno espaçamento entre o logo do IFRN e o texto de rodapé para melhorar a leitura.
+
+# ACHA 1.0.160
+
+- Tela de login centralizada, com maior contraste e identidade visual do ACHA.
+- Logo oficial do IFRN Campus Natal-Zona Norte posicionada com menor destaque no rodapé.
+- Corrigidos os caminhos dos arquivos de logo, agora servidos a partir de `/assets`.
+- Login SUAP passa a usar a rota do servidor para construir a autorização, garantindo que a `redirect_uri` usada pelo navegador seja exatamente a configurada no servidor.
+- Quando `SUAP_REDIRECT_URI` não for definida, a URI é derivada do domínio/protocolo da requisição, incluindo suporte a Nginx Proxy Manager via `X-Forwarded-Proto` e `X-Forwarded-Host`.
+- Docker Compose passou a repassar as variáveis de configuração do SUAP ao container.
+- Corrigido o parâmetro `grant_type` para `implicit`.
+
+## 1.0.159
+- Tela de login redesenhada sem imagem de fundo.
+- Inclusão das marcas oficiais do IFRN e do Campus Natal-Zona Norte.
+- Fundo da tela de acesso com maior contraste e tratamento visual institucional.
+- Mantido o acesso exclusivamente via SUAP/IFRN.
+
+# v1.0.158
+
+- Acesso ao ACHA exclusivamente pelo SUAP/IFRN.
+- Removido da tela de login o formulário de usuário e senha próprios do sistema.
+- Endpoint legado de login local bloqueado; não cria mais sessões por usuário/senha do ACHA.
+- Removida do Meu Perfil a alteração de senha própria do ACHA.
+- Mantida a autenticação institucional via OAuth2 do SUAP/IFRN como única porta de entrada.
+
 # v1.0.156
 
 - Corrigida a associação visual e de status de cada pendência de disciplina optativa à sua própria solicitação.

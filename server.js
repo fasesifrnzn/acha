@@ -32,11 +32,19 @@ const SUAP_OAUTH={
   clientId:String(process.env.SUAP_CLIENT_ID||'Q5F9WuFPXVdTMVel6lBUdb3Z3kplWk17MiKools4').trim(),
   // O fluxo JavaScript do cliente oficial do IFRN é Implicit + Public:
   // o Client Secret NÃO é usado nem armazenado pelo ACHA.
-  redirectUri:String(process.env.SUAP_REDIRECT_URI||'http://localhost:3000/login.html').trim(),
+  redirectUri:String(process.env.SUAP_REDIRECT_URI||'').trim(),
   baseUrl:String(process.env.SUAP_BASE_URL||'https://suap.ifrn.edu.br').replace(/\/$/,''),
   scope:String(process.env.SUAP_SCOPE||'identificacao email documentos_pessoais').trim()
 };
-function suapConfigured(){return !!(SUAP_OAUTH.clientId&&SUAP_OAUTH.redirectUri)}
+function suapConfigured(){return !!SUAP_OAUTH.clientId}
+function requestOrigin(req){
+  const proto=String(req.headers['x-forwarded-proto']||'').split(',')[0].trim() || (req.socket.encrypted?'https':'http');
+  const host=String(req.headers['x-forwarded-host']||req.headers.host||'localhost:3000').split(',')[0].trim();
+  return `${proto}://${host}`;
+}
+function suapRedirectUri(req){
+  return SUAP_OAUTH.redirectUri || `${requestOrigin(req)}/login.html`;
+}
 
 function httpRequestJson(method,target,headers={},bodyText=''){
   return new Promise((resolve,reject)=>{
@@ -960,7 +968,7 @@ async function api(req,res){
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.145'
+      'X-ACHA-Version':'1.0.161'
     });
     return res.end(payload);
   }
@@ -975,10 +983,7 @@ async function api(req,res){
       const x=await body(req);const changes={};
       if(x.photoData!==undefined){const photo=String(x.photoData||'');if(photo.length>2_000_000)return send(res,400,{error:'A foto é muito grande. Escolha uma imagem menor.'});if(photo && !/^data:image\/(png|jpeg|jpg|webp);base64,/i.test(photo))return send(res,400,{error:'Formato de foto não suportado.'});changes.photoData=photo;}
       if(x.currentPassword!==undefined || x.newPassword!==undefined){
-        const current=String(x.currentPassword||''),next=String(x.newPassword||'');
-        if(user.passwordHash!==hashPassword(current))return send(res,400,{error:'Senha atual inválida.'});
-        if(next.length<6)return send(res,400,{error:'A nova senha deve ter pelo menos 6 caracteres.'});
-        changes.passwordHash=hashPassword(next);
+        return send(res,410,{error:'O ACHA não possui senha própria. O acesso é feito exclusivamente pelo SUAP/IFRN.'});
       }
       Object.assign(user,changes);writeDB(db);return send(res,200,{ok:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
     }catch(e){return send(res,400,{error:e.message||'Não foi possível salvar o perfil.'});}
@@ -987,7 +992,8 @@ async function api(req,res){
     return send(res,200,{
       configured:suapConfigured(),
       clientId:SUAP_OAUTH.clientId,
-      redirectUri:SUAP_OAUTH.redirectUri,
+      redirectUri:suapRedirectUri(req),
+      configuredRedirectUri:SUAP_OAUTH.redirectUri||null,
       baseUrl:SUAP_OAUTH.baseUrl,
       scope:SUAP_OAUTH.scope,
       flow:'implicit-public'
@@ -1000,9 +1006,9 @@ async function api(req,res){
     if(!suapConfigured())return send(res,503,{error:'Integração SUAP não configurada. Verifique o Client ID e a Redirect URI.'});
     const q=new URLSearchParams({
       response_type:'token',
-      grant_type:'implict',
+      grant_type:'implicit',
       client_id:SUAP_OAUTH.clientId,
-      redirect_uri:SUAP_OAUTH.redirectUri,
+      redirect_uri:suapRedirectUri(req),
       scope:SUAP_OAUTH.scope
     });
     return redirect(res,302,`${SUAP_OAUTH.baseUrl}/o/authorize/?${q.toString()}`);
@@ -1103,17 +1109,7 @@ async function api(req,res){
   }
 
   if(p==='/api/login' && req.method==='POST'){
-    try{
-      const x=await body(req),db=readDB(); ensureAuthUsers(db);
-      const username=String(x.username||'').trim().toLowerCase(), password=String(x.password||'');
-      const user=(db.authUsers||[]).find(u=>String(u.username||'').toLowerCase()===username && u.passwordHash===hashPassword(password));
-      if(!user)return send(res,401,{error:'Usuário ou senha inválidos.'});
-      const token=crypto.randomBytes(32).toString('hex');
-      sessions.set(token,{userId:user.id,expires:Date.now()+8*60*60*1000});
-      res.setHeader('Set-Cookie',`pocv_session=${encodeURIComponent(token)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=28800`);
-      const teacher=(db.teachers||[]).find(t=>String(t.id)===String(user.teacherId));
-      return send(res,200,{ok:true,user:authUserPayload(db,user),access:roleAccess(db,user)});
-    }catch(e){return send(res,500,{error:e.message})}
+    return send(res,410,{error:'O ACHA utiliza exclusivamente a autenticação institucional do SUAP/IFRN. Faça o acesso pelo botão Entrar com SUAP / IFRN.'});
   }
   if(p==='/api/logout' && req.method==='POST'){
     const raw=String(req.headers.cookie||'').split(';').map(v=>v.trim()).find(v=>v.startsWith('pocv_session='));
@@ -1928,7 +1924,7 @@ const server=http.createServer(async(req,res)=>{
       'Cache-Control':'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma':'no-cache',
       'Expires':'0',
-      'X-ACHA-Version':'1.0.145'
+      'X-ACHA-Version':'1.0.161'
     });
     fs.createReadStream(file).pipe(res)
   })

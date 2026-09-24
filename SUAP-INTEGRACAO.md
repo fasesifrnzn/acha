@@ -9,7 +9,7 @@ Cadastre a aplicação com:
 - **Name:** ACHA
 - **Authorization grant type:** Implicit
 - **Client type:** Public
-- **Redirect URI:** `http://localhost:3000/login.html`
+- **Redirect URI:** deve ser cadastrada exatamente igual à URL usada pelo ambiente, por exemplo `http://localhost:3000/login.html` no desenvolvimento ou `https://acha.fases.site/login.html` em produção.
 - **Algorithm:** No OIDC support
 - **Ativo:** marcado
 
@@ -51,10 +51,12 @@ Use `.env.example` como modelo:
 
 ```env
 SUAP_CLIENT_ID=...
-SUAP_REDIRECT_URI=http://localhost:3000/login.html
+SUAP_REDIRECT_URI=
 SUAP_BASE_URL=https://suap.ifrn.edu.br
 SUAP_SCOPE=identificacao email documentos_pessoais
 ```
+
+Se `SUAP_REDIRECT_URI` ficar vazio, o ACHA calcula automaticamente a URI a partir do domínio/protocolo da requisição. Em produção atrás do Nginx Proxy Manager, os cabeçalhos `X-Forwarded-Proto` e `X-Forwarded-Host` são utilizados.
 
 O arquivo `.env` local não deve ser versionado.
 
